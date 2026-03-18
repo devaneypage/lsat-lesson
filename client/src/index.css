@@ -65,6 +65,21 @@
 }
 
 :root {
+  --lsat-bg: #F7F4EF;
+  --lsat-bg-alt: #EEEAE3;
+  --lsat-surface: #FFFFFF;
+  --lsat-border: rgba(0,0,0,0.09);
+  --lsat-text: #1E2130;
+  --lsat-text-muted: rgba(30,33,48,0.55);
+  --lsat-amber: #C8860A;
+  --lsat-amber-bg: rgba(200,134,10,0.1);
+  --lsat-amber-border: rgba(200,134,10,0.3);
+  --lsat-green: #2E7D52;
+  --lsat-green-bg: rgba(46,125,82,0.1);
+  --lsat-green-border: rgba(46,125,82,0.3);
+  --lsat-red: #B84030;
+  --lsat-red-bg: rgba(184,64,48,0.08);
+  --lsat-red-border: rgba(184,64,48,0.25);
   --radius: 0.5rem;
   --background: oklch(0.13 0.01 265);
   --foreground: oklch(0.94 0.005 65);
