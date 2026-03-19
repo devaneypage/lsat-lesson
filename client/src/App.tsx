@@ -4,13 +4,20 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import LessonNecessaryAssumptions from "./pages/lessons/LessonNecessaryAssumptions";
+import LessonCommonFlaws from "./pages/lessons/LessonCommonFlaws";
+import LessonStrengthenWeaken from "./pages/lessons/LessonStrengthenWeaken";
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={"/"} component={Dashboard} />
+      <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
+      <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
+      <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
       <Route path={"/404"} component={NotFound} />
+      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
@@ -19,7 +26,7 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Router />
