@@ -15,6 +15,7 @@ import ProTipSection from "@/components/ProTipSection";
 import PracticeSection from "@/components/PracticeSection";
 import RecapSection from "@/components/RecapSection";
 import FooterSection from "@/components/FooterSection";
+import SessionPlanCTA from "@/components/SessionPlanCTA";
 
 export type LessonStep = "hero" | "bridge" | "negation" | "protip" | "practice" | "recap";
 
@@ -99,6 +100,10 @@ export default function LessonNecessaryAssumptions() {
         <div style={{ paddingTop: currentStep === 5 ? "80px" : "0" }}>
           <RecapSection />
           <FooterSection />
+          <SessionPlanCTA
+            lessonTitle="Necessary Assumptions"
+            lessonDescription="Master the Negation Test™ framework to identify necessary assumptions in LSAT arguments."
+          />
         </div>
       )}
     </div>
