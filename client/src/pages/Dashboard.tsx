@@ -5,7 +5,7 @@
 
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked } from "lucide-react";
+import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain } from "lucide-react";
 
 const LESSONS = [
   {
@@ -53,6 +53,18 @@ const LESSONS = [
     bgColor: "rgba(91,74,138,0.08)",
     borderColor: "rgba(91,74,138,0.25)",
     duration: "~15 min",
+    difficulty: "Intermediate",
+    status: "available",
+  },
+  {
+    id: "formal-logic",
+    title: "Formal Logic Fundamentals",
+    description: "Master logical notation, conditionals, negation, and quantifiers—the foundation of LSAT reasoning.",
+    icon: Brain,
+    color: "#6B5B95",
+    bgColor: "rgba(107,91,149,0.08)",
+    borderColor: "rgba(107,91,149,0.25)",
+    duration: "~17 min",
     difficulty: "Intermediate",
     status: "available",
   },

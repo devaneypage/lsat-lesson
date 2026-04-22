@@ -9,6 +9,7 @@ import LessonNecessaryAssumptions from "./pages/lessons/LessonNecessaryAssumptio
 import LessonCommonFlaws from "./pages/lessons/LessonCommonFlaws";
 import LessonStrengthenWeaken from "./pages/lessons/LessonStrengthenWeaken";
 import LessonReadingComprehension from "./pages/lessons/LessonReadingComprehension";
+import LessonFormalLogic from "./pages/lessons/LessonFormalLogic";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
       <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
       <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
+      <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
