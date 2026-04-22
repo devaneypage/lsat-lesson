@@ -1,6 +1,8 @@
 /**
- * DESIGN: Academic Light — Warm Parchment
- * Dashboard: course overview with lesson cards, progress tracking, and navigation.
+ * DESIGN: High Contrast, Bold & Distinctive
+ * Dashboard: Course overview with lesson cards and navigation.
+ * 
+ * Color Palette: Off-white background, indigo text, electric blue CTAs, golden yellow accents, neon orange success
  */
 
 import { motion } from "framer-motion";
@@ -13,9 +15,9 @@ const LESSONS = [
     title: "Necessary Assumptions",
     description: "Master the Negation Test™ to identify unstated premises that arguments depend on.",
     icon: BookOpen,
-    color: "#C8860A",
-    bgColor: "rgba(200,134,10,0.08)",
-    borderColor: "rgba(200,134,10,0.25)",
+    color: "#0066FF",
+    bgColor: "rgba(0,102,255,0.08)",
+    borderColor: "rgba(0,102,255,0.25)",
     duration: "~14 min",
     difficulty: "Intermediate",
     status: "completed",
@@ -25,9 +27,9 @@ const LESSONS = [
     title: "Common Flaws in LSAT Arguments",
     description: "Learn the 19 most tested logical fallacies and how to spot them instantly.",
     icon: Zap,
-    color: "#B84030",
-    bgColor: "rgba(184,64,48,0.08)",
-    borderColor: "rgba(184,64,48,0.25)",
+    color: "#FF6B35",
+    bgColor: "rgba(255,107,53,0.08)",
+    borderColor: "rgba(255,107,53,0.25)",
     duration: "~18 min",
     difficulty: "Intermediate",
     status: "available",
@@ -37,9 +39,9 @@ const LESSONS = [
     title: "Strengthen & Weaken Questions",
     description: "Develop the systematic approach to finding answers that impact argument validity.",
     icon: Target,
-    color: "#2E7D52",
-    bgColor: "rgba(46,125,82,0.08)",
-    borderColor: "rgba(46,125,82,0.25)",
+    color: "#FFB81C",
+    bgColor: "rgba(255,184,28,0.08)",
+    borderColor: "rgba(255,184,28,0.25)",
     duration: "~16 min",
     difficulty: "Advanced",
     status: "available",
@@ -49,9 +51,9 @@ const LESSONS = [
     title: "Reading Comprehension: Passage Mapping",
     description: "Master efficient passage annotation to identify structure, tone, and key details.",
     icon: BookMarked,
-    color: "#5B4A8A",
-    bgColor: "rgba(91,74,138,0.08)",
-    borderColor: "rgba(91,74,138,0.25)",
+    color: "#0066FF",
+    bgColor: "rgba(0,102,255,0.08)",
+    borderColor: "rgba(0,102,255,0.25)",
     duration: "~15 min",
     difficulty: "Intermediate",
     status: "available",
@@ -61,9 +63,9 @@ const LESSONS = [
     title: "Formal Logic Fundamentals",
     description: "Master logical notation, conditionals, negation, and quantifiers—the foundation of LSAT reasoning.",
     icon: Brain,
-    color: "#6B5B95",
-    bgColor: "rgba(107,91,149,0.08)",
-    borderColor: "rgba(107,91,149,0.25)",
+    color: "#FF6B35",
+    bgColor: "rgba(255,107,53,0.08)",
+    borderColor: "rgba(255,107,53,0.25)",
     duration: "~17 min",
     difficulty: "Intermediate",
     status: "available",
@@ -80,70 +82,76 @@ export default function Dashboard() {
   return (
     <div
       className="min-h-screen"
-      style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
+      style={{ background: "var(--background)" }}
     >
       {/* Header */}
       <header
         className="border-b"
         style={{
-          borderColor: "rgba(0,0,0,0.08)",
-          background: "rgba(247,244,239,0.95)",
+          borderColor: "var(--border)",
+          background: "rgba(249,248,246,0.95)",
           backdropFilter: "blur(12px)",
         }}
       >
-        <div className="container py-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{
-                background: "rgba(200,134,10,0.12)",
-                border: "1px solid rgba(200,134,10,0.3)",
-              }}
-            >
-              <BookOpen size={22} style={{ color: "#C8860A" }} />
-            </div>
-            <div>
-              <h1
+        <div className="container py-8">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "1.8rem",
-                  color: "#1E2130",
+                  background: "rgba(0,102,255,0.12)",
+                  border: "2px solid var(--primary)",
                 }}
               >
-                LSAT Mastery
-              </h1>
-              <p
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: "0.75rem",
-                  color: "rgba(30,33,48,0.4)",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Interactive Logical Reasoning Lessons
-              </p>
+                <BookOpen size={24} style={{ color: "var(--primary)" }} />
+              </div>
+              <div>
+                <h1
+                  style={{
+                    fontFamily: "'Poppins', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "2rem",
+                    color: "var(--foreground)",
+                    margin: 0,
+                  }}
+                >
+                  LSAT Mastery
+                </h1>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "0.9rem",
+                    color: "var(--muted-foreground)",
+                    margin: 0,
+                  }}
+                >
+                  Interactive Logical Reasoning Lessons
+                </p>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </header>
 
-      {/* Main content */}
+      {/* Main Content */}
       <main className="container py-12">
-        {/* Welcome section */}
+        {/* Section Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-10"
         >
           <h2
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Poppins', sans-serif",
               fontWeight: 700,
-              fontSize: "2rem",
-              color: "#1E2130",
+              fontSize: "1.75rem",
+              color: "var(--foreground)",
               marginBottom: "0.5rem",
             }}
           >
@@ -151,19 +159,18 @@ export default function Dashboard() {
           </h2>
           <p
             style={{
-              fontFamily: "'Lora', serif",
-              fontSize: "1.05rem",
-              color: "rgba(30,33,48,0.6)",
-              lineHeight: 1.8,
-              maxWidth: "600px",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "1rem",
+              color: "var(--muted-foreground)",
+              lineHeight: 1.6,
             }}
           >
             Each lesson combines theory, frameworks, and interactive practice questions to build your Logical Reasoning mastery.
           </p>
         </motion.div>
 
-        {/* Lesson grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {/* Lesson Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {LESSONS.map((lesson, idx) => {
             const Icon = lesson.icon;
             const isCompleted = lesson.status === "completed";
@@ -171,206 +178,175 @@ export default function Dashboard() {
             return (
               <motion.div
                 key={lesson.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -4, boxShadow: "0 12px 32px rgba(0,0,0,0.1)" }}
                 onClick={() => handleLessonClick(lesson.id)}
-                className="rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
-                style={{
-                  background: "#FFFFFF",
-                  border: `1px solid ${lesson.borderColor}`,
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                }}
+                className="group cursor-pointer"
               >
-                {/* Card header with color accent */}
                 <div
-                  className="h-1"
-                  style={{ background: lesson.color }}
-                />
+                  className="rounded-xl overflow-hidden transition-all duration-300 h-full flex flex-col"
+                  style={{
+                    background: "var(--card)",
+                    border: `2px solid ${lesson.borderColor}`,
+                    boxShadow: "0 2px 8px rgba(45,27,105,0.12)",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget;
+                    el.style.boxShadow = "0 8px 24px rgba(45,27,105,0.2)";
+                    el.style.transform = "translateY(-4px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget;
+                    el.style.boxShadow = "0 2px 8px rgba(45,27,105,0.12)";
+                    el.style.transform = "translateY(0)";
+                  }}
+                >
+                  {/* Top Border Accent */}
+                  <div
+                    style={{
+                      height: "4px",
+                      background: lesson.color,
+                    }}
+                  />
 
-                {/* Card content */}
-                <div className="p-6">
-                  {/* Icon and status */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center"
+                  {/* Content */}
+                  <div className="p-6 flex flex-col flex-1">
+                    {/* Icon & Status */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div
+                        className="w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{
+                          background: lesson.bgColor,
+                          border: `1px solid ${lesson.borderColor}`,
+                        }}
+                      >
+                        <Icon size={24} style={{ color: lesson.color }} />
+                      </div>
+                      {isCompleted && (
+                        <span
+                          style={{
+                            fontFamily: "'Poppins', sans-serif",
+                            fontSize: "0.7rem",
+                            fontWeight: 700,
+                            color: "#2E7D52",
+                            background: "rgba(46,125,82,0.12)",
+                            padding: "0.4rem 0.6rem",
+                            borderRadius: "0.25rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                          }}
+                        >
+                          ✓ Completed
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Title */}
+                    <h3
                       style={{
-                        background: lesson.bgColor,
-                        border: `1px solid ${lesson.borderColor}`,
+                        fontFamily: "'Poppins', sans-serif",
+                        fontWeight: 700,
+                        fontSize: "1.1rem",
+                        color: "var(--foreground)",
+                        marginBottom: "0.5rem",
                       }}
                     >
-                      <Icon size={24} style={{ color: lesson.color }} />
+                      {lesson.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "0.9rem",
+                        color: "var(--muted-foreground)",
+                        lineHeight: 1.5,
+                        marginBottom: "1rem",
+                        flex: 1,
+                      }}
+                    >
+                      {lesson.description}
+                    </p>
+
+                    {/* Meta */}
+                    <div
+                      className="flex items-center justify-between mb-4 pb-4"
+                      style={{ borderBottom: "1px solid var(--border)" }}
+                    >
+                      <div className="flex gap-4">
+                        <div>
+                          <p
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: "0.7rem",
+                              color: "var(--muted-foreground)",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.08em",
+                              marginBottom: "0.2rem",
+                            }}
+                          >
+                            Duration
+                          </p>
+                          <p
+                            style={{
+                              fontFamily: "'Poppins', sans-serif",
+                              fontWeight: 600,
+                              fontSize: "0.9rem",
+                              color: "var(--foreground)",
+                            }}
+                          >
+                            {lesson.duration}
+                          </p>
+                        </div>
+                        <div>
+                          <p
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: "0.7rem",
+                              color: "var(--muted-foreground)",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.08em",
+                              marginBottom: "0.2rem",
+                            }}
+                          >
+                            Difficulty
+                          </p>
+                          <p
+                            style={{
+                              fontFamily: "'Poppins', sans-serif",
+                              fontWeight: 600,
+                              fontSize: "0.9rem",
+                              color: lesson.color,
+                            }}
+                          >
+                            {lesson.difficulty}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    {isCompleted && (
-                      <span
-                        className="text-xs font-bold px-2.5 py-1 rounded-full"
-                        style={{
-                          background: "rgba(46,125,82,0.1)",
-                          color: "#2E7D52",
-                          border: "1px solid rgba(46,125,82,0.25)",
-                          fontFamily: "'Space Grotesk', sans-serif",
-                        }}
-                      >
-                        ✓ Completed
-                      </span>
-                    )}
+
+                    {/* CTA Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+                      style={{
+                        background: isCompleted ? "rgba(0,102,255,0.1)" : "var(--primary)",
+                        color: isCompleted ? "var(--primary)" : "var(--primary-foreground)",
+                        fontFamily: "'Poppins', sans-serif",
+                        border: isCompleted ? "1px solid var(--primary)" : "none",
+                      }}
+                    >
+                      {isCompleted ? "Review Lesson" : "Start Lesson"}
+                      <ChevronRight size={18} />
+                    </motion.button>
                   </div>
-
-                  {/* Title */}
-                  <h3
-                    className="mb-2"
-                    style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontWeight: 700,
-                      fontSize: "1.1rem",
-                      color: "#1E2130",
-                    }}
-                  >
-                    {lesson.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p
-                    className="mb-4"
-                    style={{
-                      fontFamily: "'Lora', serif",
-                      fontSize: "0.9rem",
-                      color: "rgba(30,33,48,0.6)",
-                      lineHeight: 1.7,
-                      minHeight: "2.8rem",
-                    }}
-                  >
-                    {lesson.description}
-                  </p>
-
-                  {/* Metadata */}
-                  <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
-                    <div>
-                      <p
-                        style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontSize: "0.7rem",
-                          color: "rgba(30,33,48,0.35)",
-                          letterSpacing: "0.05em",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        Duration
-                      </p>
-                      <p
-                        style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontWeight: 600,
-                          fontSize: "0.85rem",
-                          color: "#1E2130",
-                        }}
-                      >
-                        {lesson.duration}
-                      </p>
-                    </div>
-                    <div>
-                      <p
-                        style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontSize: "0.7rem",
-                          color: "rgba(30,33,48,0.35)",
-                          letterSpacing: "0.05em",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        Difficulty
-                      </p>
-                      <p
-                        style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontWeight: 600,
-                          fontSize: "0.85rem",
-                          color: lesson.color,
-                        }}
-                      >
-                        {lesson.difficulty}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <button
-                    className="w-full py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
-                    style={{
-                      background: lesson.bgColor,
-                      color: lesson.color,
-                      border: `1px solid ${lesson.borderColor}`,
-                      fontFamily: "'Space Grotesk', sans-serif",
-                    }}
-                  >
-                    {isCompleted ? "Review Lesson" : "Start Lesson"}
-                    <ChevronRight size={16} />
-                  </button>
                 </div>
               </motion.div>
             );
           })}
         </div>
-
-        {/* Stats section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="rounded-xl p-6"
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid rgba(0,0,0,0.07)",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-          }}
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <BarChart3 size={20} style={{ color: "#C8860A" }} />
-            <h3
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "1.1rem",
-                color: "#1E2130",
-              }}
-            >
-              Your Progress
-            </h3>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: "Lessons Completed", value: "1/3" },
-              { label: "Total Study Time", value: "~14 min" },
-              { label: "Next: Common Flaws", value: "18 min" },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "0.7rem",
-                    color: "rgba(30,33,48,0.35)",
-                    letterSpacing: "0.05em",
-                    textTransform: "uppercase",
-                    marginBottom: "0.25rem",
-                  }}
-                >
-                  {stat.label}
-                </p>
-                <p
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontWeight: 700,
-                    fontSize: "1.2rem",
-                    color: "#1E2130",
-                  }}
-                >
-                  {stat.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
       </main>
     </div>
   );
