@@ -25,4 +25,4 @@
 - [x] Animations smooth
 - [x] Accessibility checks pass
 - [x] Mobile responsive
-- [ ] Checkpoint created
+- [x] Checkpoint created
