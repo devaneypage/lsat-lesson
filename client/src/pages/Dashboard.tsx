@@ -5,7 +5,7 @@
 
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { BookOpen, ChevronRight, Zap, Target, BarChart3 } from "lucide-react";
+import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked } from "lucide-react";
 
 const LESSONS = [
   {
@@ -42,6 +42,18 @@ const LESSONS = [
     borderColor: "rgba(46,125,82,0.25)",
     duration: "~16 min",
     difficulty: "Advanced",
+    status: "available",
+  },
+  {
+    id: "reading-comprehension",
+    title: "Reading Comprehension: Passage Mapping",
+    description: "Master efficient passage annotation to identify structure, tone, and key details.",
+    icon: BookMarked,
+    color: "#5B4A8A",
+    bgColor: "rgba(91,74,138,0.08)",
+    borderColor: "rgba(91,74,138,0.25)",
+    duration: "~15 min",
+    difficulty: "Intermediate",
     status: "available",
   },
 ];

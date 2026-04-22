@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import LessonNecessaryAssumptions from "./pages/lessons/LessonNecessaryAssumptions";
 import LessonCommonFlaws from "./pages/lessons/LessonCommonFlaws";
 import LessonStrengthenWeaken from "./pages/lessons/LessonStrengthenWeaken";
+import LessonReadingComprehension from "./pages/lessons/LessonReadingComprehension";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
       <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
       <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
+      <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
