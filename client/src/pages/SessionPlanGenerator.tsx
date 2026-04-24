@@ -50,7 +50,6 @@ export default function SessionPlanGenerator() {
     notes: SAMPLE_SESSION_PLAN.notes || "",
   });
   const [isExporting, setIsExporting] = useState(false);
-  const [tutorName] = useState("Devaney M. Page");
   const [exportError, setExportError] = useState("");
 
   const handleActivitiesGenerated = (activities: ActivityFormData[]) => {
@@ -234,7 +233,7 @@ export default function SessionPlanGenerator() {
 
             {/* Preview */}
             <Card className="p-6 bg-white">
-              <SessionPlanPreview plan={sessionPlan} tutorName={tutorName} />
+              <SessionPlanPreview plan={sessionPlan} tutorName="Devaney M. Page" />
             </Card>
 
             {/* Back to Edit */}
