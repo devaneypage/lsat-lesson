@@ -42,3 +42,18 @@
 - [x] Update QuickImportModal to call backend API
 - [x] Integrate mutation handling and error states
 - [x] Test import flow end-to-end
+
+
+## Question Bank Display Page
+
+- [x] Create QuestionBank page component with filtering UI
+- [x] Add search functionality by question text
+- [x] Implement category filter dropdown
+- [x] Implement difficulty filter dropdown
+- [x] Implement source filter dropdown
+- [x] Add pagination controls (via grid layout)
+- [x] Create question card component for display
+- [x] Integrate with tRPC questions.list procedure
+- [x] Add loading and empty states
+- [x] Add practice mode for answering questions
+- [x] Add statistics view
