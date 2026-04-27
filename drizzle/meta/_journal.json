@@ -15,6 +15,13 @@
       "when": 1777328721145,
       "tag": "0001_careful_umar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1777333819574,
+      "tag": "0002_mixed_captain_britain",
+      "breakpoints": true
     }
   ]
 }

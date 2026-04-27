@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
-import { insertQuestions, createImportHistory, getQuestions, getQuestionCount } from "./db";
+import { insertQuestions, createImportHistory, getQuestions, getQuestionCount, createTag, getTags, getQuestionTags, addTagToQuestion, removeTagFromQuestion, getQuestionsByTag } from "./db";
 import { TRPCError } from "@trpc/server";
 
 export const appRouter = router({
@@ -120,6 +120,116 @@ export const appRouter = router({
     count: publicProcedure.query(async () => {
       return await getQuestionCount();
     }),
+  }),
+
+  tags: router({
+    create: protectedProcedure
+      .input(
+        z.object({
+          name: z.string().min(1).max(128),
+          type: z.enum(["topic", "objective", "section", "custom"]).default("topic"),
+          description: z.string().optional(),
+          color: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only admins can create tags",
+          });
+        }
+
+        try {
+          const tagId = await createTag({
+            name: input.name,
+            type: input.type,
+            description: input.description,
+            color: input.color,
+            createdBy: ctx.user.id,
+          });
+          return { success: true, tagId };
+        } catch (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create tag",
+          });
+        }
+      }),
+
+    list: publicProcedure.query(async () => {
+      return await getTags();
+    }),
+
+    getForQuestion: publicProcedure
+      .input(z.object({ questionId: z.number() }))
+      .query(async ({ input }) => {
+        return await getQuestionTags(input.questionId);
+      }),
+
+    addToQuestion: protectedProcedure
+      .input(
+        z.object({
+          questionId: z.number(),
+          tagId: z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only admins can tag questions",
+          });
+        }
+
+        try {
+          await addTagToQuestion(input.questionId, input.tagId);
+          return { success: true };
+        } catch (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to add tag to question",
+          });
+        }
+      }),
+
+    removeFromQuestion: protectedProcedure
+      .input(
+        z.object({
+          questionId: z.number(),
+          tagId: z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only admins can remove tags",
+          });
+        }
+
+        try {
+          await removeTagFromQuestion(input.questionId, input.tagId);
+          return { success: true };
+        } catch (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to remove tag from question",
+          });
+        }
+      }),
+
+    getQuestions: publicProcedure
+      .input(
+        z.object({
+          tagId: z.number(),
+          limit: z.number().default(100),
+          offset: z.number().default(0),
+        })
+      )
+      .query(async ({ input }) => {
+        return await getQuestionsByTag(input.tagId, input.limit, input.offset);
+      }),
   }),
 });
 

@@ -57,3 +57,17 @@
 - [x] Add loading and empty states
 - [x] Add practice mode for answering questions
 - [x] Add statistics view
+
+
+## Question Tagging System
+
+- [x] Create tags and questionTags tables in database schema
+- [x] Add tag management database helpers
+- [x] Create tRPC procedures for tag CRUD operations
+- [x] Create tRPC procedure to add/remove tags from questions
+- [x] Write tests for tagging operations (18 tests passing)
+- [ ] Build tag management UI component for tutors
+- [ ] Add tag filtering to Question Bank page
+- [ ] Create tag browser/hierarchy view
+- [ ] Add bulk tag operations (assign tags to multiple questions)
+- [ ] Implement tag suggestions based on question content

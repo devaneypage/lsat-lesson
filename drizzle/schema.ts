@@ -70,3 +70,35 @@ export const importHistory = mysqlTable("importHistory", {
 
 export type ImportHistory = typeof importHistory.$inferSelect;
 export type InsertImportHistory = typeof importHistory.$inferInsert;
+
+/**
+ * Tags table for organizing questions by topic and learning objectives
+ */
+export const tags = mysqlTable("tags", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 128 }).notNull().unique(),
+  type: mysqlEnum("type", ["topic", "objective", "section", "custom"])
+    .default("topic")
+    .notNull(),
+  description: text("description"),
+  color: varchar("color", { length: 7 }), // Hex color code
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Tag = typeof tags.$inferSelect;
+export type InsertTag = typeof tags.$inferInsert;
+
+/**
+ * Junction table for many-to-many relationship between questions and tags
+ */
+export const questionTags = mysqlTable("questionTags", {
+  id: int("id").autoincrement().primaryKey(),
+  questionId: int("questionId").notNull(),
+  tagId: int("tagId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type QuestionTag = typeof questionTags.$inferSelect;
+export type InsertQuestionTag = typeof questionTags.$inferInsert;

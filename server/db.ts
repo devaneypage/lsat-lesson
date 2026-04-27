@@ -188,3 +188,133 @@ export async function getImportHistory(limit = 50, offset = 0) {
     return [];
   }
 }
+
+import { and } from "drizzle-orm";
+import { Tag, InsertTag, InsertQuestionTag, tags, questionTags } from "../drizzle/schema";
+
+/**
+ * Create a new tag
+ */
+export async function createTag(data: InsertTag): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  try {
+    const result = await db.insert(tags).values(data);
+    return (result as any)[0]?.insertId || 0;
+  } catch (error) {
+    console.error("[Database] Failed to create tag:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get all tags
+ */
+export async function getTags() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get tags: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db.select().from(tags);
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get tags:", error);
+    return [];
+  }
+}
+
+/**
+ * Get tags for a specific question
+ */
+export async function getQuestionTags(questionId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get question tags: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db
+      .select({
+        id: tags.id,
+        name: tags.name,
+        type: tags.type,
+        description: tags.description,
+        color: tags.color,
+      })
+      .from(questionTags)
+      .innerJoin(tags, eq(questionTags.tagId, tags.id))
+      .where(eq(questionTags.questionId, questionId));
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get question tags:", error);
+    return [];
+  }
+}
+
+/**
+ * Add a tag to a question
+ */
+export async function addTagToQuestion(questionId: number, tagId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  try {
+    await db.insert(questionTags).values({ questionId, tagId });
+  } catch (error) {
+    console.error("[Database] Failed to add tag to question:", error);
+    throw error;
+  }
+}
+
+/**
+ * Remove a tag from a question
+ */
+export async function removeTagFromQuestion(questionId: number, tagId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  try {
+    await db
+      .delete(questionTags)
+      .where(and(eq(questionTags.questionId, questionId), eq(questionTags.tagId, tagId)));
+  } catch (error) {
+    console.error("[Database] Failed to remove tag from question:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get questions by tag
+ */
+export async function getQuestionsByTag(tagId: number, limit = 100, offset = 0) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get questions by tag: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db
+      .select()
+      .from(questions)
+      .innerJoin(questionTags, eq(questions.id, questionTags.questionId))
+      .where(eq(questionTags.tagId, tagId))
+      .limit(limit)
+      .offset(offset);
+    return result.map((r) => r.questions);
+  } catch (error) {
+    console.error("[Database] Failed to get questions by tag:", error);
+    return [];
+  }
+}
