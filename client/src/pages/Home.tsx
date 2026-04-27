@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuth } from "@/_core/hooks/useAuth";
 import HeroSection from "@/components/HeroSection";
 import ProgressBar from "@/components/ProgressBar";
 import BridgeSection from "@/components/BridgeSection";
@@ -33,6 +34,10 @@ const SectionReveal = ({ children, id }: { children: React.ReactNode; id: string
 );
 
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   const advanceTo = (step: number) => {

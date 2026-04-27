@@ -385,9 +385,8 @@ export default function MainNavigationBar() {
       <QuickImportModal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
-        onImport={(file, preview) => {
-          console.log("Importing file:", file.name, "with", preview.rowCount, "rows");
-          // TODO: Implement actual import logic
+        onImportSuccess={(count) => {
+          console.log("Successfully imported", count, "questions");
         }}
       />
     </>

@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 interface ImportPreview {
   fileName: string;
@@ -32,13 +34,13 @@ interface ImportPreview {
 interface QuickImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onImport?: (file: File, preview: ImportPreview) => void;
+  onImportSuccess?: (count: number) => void;
 }
 
 export default function QuickImportModal({
   isOpen,
   onClose,
-  onImport,
+  onImportSuccess,
 }: QuickImportModalProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
@@ -47,6 +49,9 @@ export default function QuickImportModal({
   const [importStatus, setImportStatus] = useState<
     "idle" | "processing" | "success" | "error"
   >("idle");
+  const [parsedData, setParsedData] = useState<Record<string, string>[] | null>(null);
+
+  const importMutation = trpc.questions.import.useMutation();
 
   const parseCSV = (csvFile: File): Promise<ImportPreview> => {
     return new Promise((resolve) => {
@@ -58,14 +63,21 @@ export default function QuickImportModal({
           const headers = lines[0].split(",").map((h) => h.trim());
 
           const previewData: Record<string, string>[] = [];
-          for (let i = 1; i < Math.min(4, lines.length); i++) {
+          const allData: Record<string, string>[] = [];
+
+          for (let i = 1; i < lines.length; i++) {
             const values = lines[i].split(",");
             const row: Record<string, string> = {};
             headers.forEach((header, idx) => {
               row[header] = values[idx]?.trim() || "";
             });
-            previewData.push(row);
+            allData.push(row);
+            if (i < 4) {
+              previewData.push(row);
+            }
           }
+
+          setParsedData(allData);
 
           resolve({
             fileName: csvFile.name,
@@ -101,17 +113,46 @@ export default function QuickImportModal({
     }
   };
 
-  const handleImport = () => {
-    if (file && preview) {
-      setImportStatus("processing");
-      // Simulate import process
+  const handleImport = async () => {
+    if (!file || !preview || !parsedData) return;
+
+    setImportStatus("processing");
+
+    try {
+      // Transform CSV data to match API schema
+      const questions = parsedData.map((row) => ({
+        question_id: row.question_id || `Q_${Date.now()}_${Math.random()}`,
+        question_text: row.question_text || "",
+        option_a: row.option_a || "",
+        option_b: row.option_b || "",
+        option_c: row.option_c || "",
+        option_d: row.option_d || "",
+        option_e: row.option_e || undefined,
+        correct_answer: row.correct_answer || "A",
+        explanation: row.explanation || "",
+        category: row.category || undefined,
+        difficulty: row.difficulty || undefined,
+        source: row.source || undefined,
+      }));
+
+      const result = await importMutation.mutateAsync({
+        fileName: file.name,
+        questions,
+      });
+
+      setImportStatus("success");
+      toast.success(`Successfully imported ${result.importedCount} questions!`);
+      onImportSuccess?.(result.importedCount);
+
       setTimeout(() => {
-        onImport?.(file, preview);
-        setImportStatus("success");
-        setTimeout(() => {
-          handleClose();
-        }, 1500);
-      }, 1000);
+        handleClose();
+      }, 1500);
+    } catch (error) {
+      setImportStatus("error");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to import questions";
+      toast.error(errorMessage);
+      console.error("Import error:", error);
     }
   };
 
@@ -120,6 +161,7 @@ export default function QuickImportModal({
     setPreview(null);
     setShowPreview(false);
     setImportStatus("idle");
+    setParsedData(null);
     onClose();
   };
 
@@ -304,7 +346,7 @@ export default function QuickImportModal({
                       }}
                     >
                       <strong>Required columns:</strong> question_id, question_text,
-                      option_a, option_b, option_c, option_d, option_e, correct_answer,
+                      option_a, option_b, option_c, option_d, correct_answer,
                       explanation
                     </p>
                   </div>
@@ -418,7 +460,8 @@ export default function QuickImportModal({
                           onClick={handleImport}
                           disabled={
                             importStatus === "processing" ||
-                            preview.status !== "success"
+                            preview.status !== "success" ||
+                            importMutation.isPending
                           }
                           className="flex-1"
                           style={{
@@ -432,7 +475,7 @@ export default function QuickImportModal({
                                 : "white",
                           }}
                         >
-                          {importStatus === "processing" ? (
+                          {importStatus === "processing" || importMutation.isPending ? (
                             <motion.div
                               animate={{ rotate: 360 }}
                               transition={{

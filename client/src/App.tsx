@@ -19,8 +19,8 @@ import QuestionBank from "./pages/QuestionBank";
 import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
 import MainNavigationBar from "./components/MainNavigationBar";
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <>
       <MainNavigationBar />

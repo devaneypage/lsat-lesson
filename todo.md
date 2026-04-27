@@ -26,3 +26,19 @@
 - [x] Accessibility checks pass
 - [x] Mobile responsive
 - [x] Checkpoint created
+
+
+## CSV Import Backend Implementation
+
+- [x] Upgrade project to web-db-user (database + server + auth)
+- [x] Add questions and importHistory tables to database schema
+- [x] Create database migration for new tables
+- [x] Add question database helpers (insert, list, count)
+- [x] Add import history database helpers
+- [x] Create tRPC procedures for CSV import
+- [x] Implement admin-only access control for imports
+- [x] Add CSV validation and data transformation logic
+- [x] Write unit tests for import validation
+- [x] Update QuickImportModal to call backend API
+- [x] Integrate mutation handling and error states
+- [x] Test import flow end-to-end
