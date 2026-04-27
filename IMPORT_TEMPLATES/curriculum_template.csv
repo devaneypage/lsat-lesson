@@ -1,0 +1,11 @@
+id,number,title,part,description,estimatedHours,difficulty,topics,relatedLessons,relatedQuestions,source
+CH001,1,Introduction to Logical Reasoning,Part 1,Overview of LSAT structure and logical reasoning fundamentals,2,Foundational,"LSAT Overview, Argument Structure, Main Point",Necessary Assumptions,15,Study Master Guide
+CH002,2,Formal Logic Foundations,Part 1,Logical notation, conditionals, and quantifiers,3,Foundational,"Logical Notation, Conditionals, Quantifiers",Formal Logic Fundamentals,20,Study Master Guide
+CH003,3,Argument Analysis,Part 1,Breaking down arguments into premises and conclusions,2.5,Foundational,"Premises, Conclusions, Argument Mapping",Necessary Assumptions,18,Study Master Guide
+CH004,4,Necessary Assumptions,Part 2,Identifying assumptions required for argument validity,3,Intermediate,"Assumptions, Negation Test, Bridge Analogy",Necessary Assumptions,25,Study Master Guide
+CH005,5,Sufficient Assumptions,Part 2,Identifying sufficient conditions for argument support,2.5,Intermediate,"Sufficient Conditions, Conditional Logic",,20,Study Master Guide
+CH006,6,Strengthen & Weaken,Part 2,Strengthening and weakening arguments effectively,3.5,Intermediate,"Strengthen, Weaken, Impact Arguments",Strengthen & Weaken,30,Study Master Guide
+CH007,7,Common Flaws,Part 2,Recognizing 19 most tested logical fallacies,4,Intermediate,"Logical Flaws, Fallacies, Flaw Recognition",Common Flaws,35,Study Master Guide
+CH008,8,Comparative & Principle Questions,Part 3,Handling comparative reasoning and principle application,3,Advanced,"Comparative Reasoning, Principle Application",,22,Study Master Guide
+CH009,9,Reading Comprehension Strategies,Part 3,Passage mapping and question type strategies,3.5,Advanced,"Passage Mapping, Question Types, Speed Reading",Reading Comprehension,28,Study Master Guide
+CH010,10,Test Strategy & Time Management,Part 4,Optimal pacing and test-day execution,2,Advanced,"Time Management, Section Strategy, Test Day",,0,Study Master Guide

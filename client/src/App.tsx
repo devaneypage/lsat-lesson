@@ -14,7 +14,10 @@ import LessonCommonFlaws from "@/pages/lessons/LessonCommonFlaws";
 import LessonStrengthenWeaken from "@/pages/lessons/LessonStrengthenWeaken";
 import LessonReadingComprehension from "@/pages/lessons/LessonReadingComprehension";
 import LessonFormalLogic from "@/pages/lessons/LessonFormalLogic";
-import Resources from "@/pages/Resources";
+import Resources from "./pages/Resources";
+import QuestionBank from "./pages/QuestionBank";
+import CurriculumGuide from "./pages/CurriculumGuide";
+import CSVImportManager from "./pages/CSVImportManager";
 
 function Router() {
   return (
@@ -30,7 +33,10 @@ function Router() {
       <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
       <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
       <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
-      <Route path={"/resources"} component={Resources} />
+       <Route path="/resources" component={Resources} />
+      <Route path="/question-bank" component={QuestionBank} />
+      <Route path="/curriculum" component={CurriculumGuide} />
+      <Route path="/import" component={CSVImportManager} />
       
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
