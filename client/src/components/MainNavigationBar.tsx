@@ -19,6 +19,7 @@ import {
   Upload,
   Zap,
 } from "lucide-react";
+import QuickImportModal from "./QuickImportModal";
 
 interface NavItem {
   label: string;
@@ -63,6 +64,7 @@ const NAV_ITEMS: NavItem[] = [
 export default function MainNavigationBar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const isActive = (route: string) => {
     return location.startsWith(route.split("/").slice(0, 2).join("/"));
@@ -166,6 +168,31 @@ export default function MainNavigationBar() {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
+            style={{
+              color: "white",
+              background: "var(--primary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.9";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+            }}
+          >
+            <Upload size={18} />
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.9rem",
+                fontWeight: 600,
+              }}
+            >
+              Import CSV
+            </span>
+          </button>
           <a
             href="/progress"
             className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
@@ -297,13 +324,41 @@ export default function MainNavigationBar() {
                 );
               })}
 
+              {/* Import CSV Button in Mobile Menu */}
+              <motion.button
+                onClick={() => {
+                  setIsImportModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, delay: NAV_ITEMS.length * 0.05 }}
+                className="w-full px-4 py-3 flex items-center gap-3 transition-all duration-200 border-b"
+                style={{
+                  background: "var(--primary)",
+                  color: "white",
+                  borderColor: "var(--border)",
+                }}
+              >
+                <Upload size={18} />
+                <div
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  Quick Import
+                </div>
+              </motion.button>
+
               {/* Progress Link in Mobile Menu */}
               <motion.a
                 href="/progress"
                 onClick={() => setIsMobileMenuOpen(false)}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, delay: NAV_ITEMS.length * 0.05 }}
+                transition={{ duration: 0.2, delay: (NAV_ITEMS.length + 1) * 0.05 }}
                 className="px-4 py-3 flex items-center gap-3 transition-all duration-200"
                 style={{
                   background: "rgba(45, 27, 105, 0.05)",
@@ -325,6 +380,16 @@ export default function MainNavigationBar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Quick Import Modal */}
+      <QuickImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={(file, preview) => {
+          console.log("Importing file:", file.name, "with", preview.rowCount, "rows");
+          // TODO: Implement actual import logic
+        }}
+      />
     </>
   );
 }
