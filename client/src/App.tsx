@@ -18,10 +18,13 @@ import Resources from "./pages/Resources";
 import QuestionBank from "./pages/QuestionBank";
 import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
+import MainNavigationBar from "./components/MainNavigationBar";
 
 function Router() {
   return (
-    <Switch>
+    <>
+      <MainNavigationBar />
+      <Switch>
       <Route path={"/"} component={PathSelector} />
       <Route path={"/dashboard"} component={UnifiedDashboard} />
       <Route path={"/progress"} component={ProgressTracker} />
@@ -41,7 +44,8 @@ function Router() {
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
-    </Switch>
+      </Switch>
+    </>
   );
 }
 
