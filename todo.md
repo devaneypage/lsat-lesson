@@ -203,3 +203,25 @@
 - [x] Enrich Study Guide modules with LR II lesson content
 - [x] Run deduplication on full question database
 - [x] Verify final question count after deduplication (173 unique questions)
+
+## LR III: Argument-Based Questions (Objective) — PDF Extraction & Import
+
+- [x] Extract questions from LR_1 Introduction to Argument-Based Questions (Lesson + Practice)
+- [x] Extract questions from LR_2 Main Point Questions (Lesson + Practice)
+- [x] Extract questions from LR_3 Role of Statement Questions (Lesson + Practice)
+- [x] Extract questions from LR_4 Method of Argument Questions (Lesson + Practice)
+- [x] Extract questions from LR_5 Point at Issue Questions (Lesson + Practice)
+- [x] Extract questions from LR_6 Parallel Reasoning Questions (Lesson + Practice)
+- [x] Extract questions from LR_I_V Outlining Complete Argument Drill Set
+- [x] Extract questions from LR_I_a Reasoning Structure Question Set (image-based)
+- [x] Extract questions from LR_I_b Mixed MP/Method/Point at Issue Pool (image-based)
+- [x] Extract questions from LR_I_i What's the Conclusion Warm-Up Drill
+- [x] Extract questions from LR_I_ii Identifying the Argument Core Warm-Up
+- [x] Extract questions from LR_I_iii ID Main Conclusion + Name That Role Warm-Up
+- [x] Extract questions from LR_I_iv Identifying + Paraphrasing Conclusions
+- [x] Extract questions from LR_I_z Introduction to Assumption Family (Lesson + Practice)
+- [x] Consolidate all extracted questions into unified CSV
+- [x] Import all LR III questions into Question Bank
+- [x] Enrich Study Guide modules with LR III lesson content
+- [x] Run deduplication on full question database
+- [x] Verify final question count after deduplication (189 unique questions)
