@@ -165,7 +165,7 @@
 - [ ] Count total duplicates found
 - [ ] Write deduplication script preserving the earliest/best record
 - [ ] Run deduplication on production database
-- [ ] Verify final question count after deduplication
+- [x] Verify final question count after deduplication (173 unique questions)
 - [ ] Confirm no data loss on live site
 
 ## AI Lesson Plan Generator
@@ -181,3 +181,25 @@
 - [x] Register /lesson-plan-generator route in App.tsx
 - [x] Add nav link in MainNavigationBar
 - [x] Write tests for lessonPlan.generate procedure (7 tests passing)
+
+## LR II: Argument-Based Questions (Subjective) — PDF Extraction & Import
+
+- [x] Extract questions from LR_II_3 Overlooked Possibilities (#24-41)
+- [x] Extract questions from LR_II_5 Sufficient & Necessary Assumption Guided Practice (#42-54)
+- [x] Extract questions from LR_II_6a Flaw Questions Guided Practice (#55-60)
+- [x] Extract questions from LR_II_6b Flaw Questions (#73-80)
+- [x] Extract questions from LR_II_7+8 Strengthen & Weaken Questions (#81-92)
+- [x] Extract questions from LR_II_10 Review Set 1 (large)
+- [x] Extract questions from LR_II_11 Review Set 2 (large)
+- [x] Extract questions from LR_II_17 Flaw & Match Flaw Question Set
+- [x] Extract questions from LR_II_a What's Wrong Drill
+- [x] Extract questions from LR_II_b One Argument & Ten Answers Drill
+- [x] Extract questions from LR_II_c Mixed Pool (#65-84)
+- [x] Extract questions from LR_II_d Review Set (Objective & Subjective)
+- [x] Extract questions from LR_Necessary & Sufficient Assumption Questions (MHP)
+- [x] Extract questions from LR_II Intro to Assumption Family (Lesson + Practice)
+- [x] Consolidate all extracted questions into unified CSV
+- [x] Import all LR II questions into Question Bank
+- [x] Enrich Study Guide modules with LR II lesson content
+- [x] Run deduplication on full question database
+- [x] Verify final question count after deduplication (173 unique questions)
