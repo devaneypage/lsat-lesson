@@ -37,8 +37,15 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { motion } from "framer-motion";
+import { useSearch } from "wouter";
 
 export default function QuestionBank() {
+  // Get URL parameters for module filtering
+  const queryParams = useSearch();
+  const params = new URLSearchParams(queryParams);
+  const moduleId = params.get("module");
+  const moduleName = params.get("moduleName");
+
   // Fetch questions from backend
   const { data: questionsData, isLoading } = trpc.questions.list.useQuery({
     limit: 10000,
@@ -49,7 +56,7 @@ export default function QuestionBank() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | "all">("all");
-  const [selectedCategory, setSelectedCategory] = useState<string | "all">("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | "all">(moduleId ? moduleId : "all");
   const [selectedSource, setSelectedSource] = useState<string | "all">("all");
   const [viewMode, setViewMode] = useState<"grid" | "practice" | "stats" | string>("grid");
   const [selectedQuestion, setSelectedQuestion] = useState<typeof questions[0] | null>(null);
@@ -328,9 +335,16 @@ export default function QuestionBank() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#2D3561] mb-2">
-            Question Bank
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-bold text-[#2D3561]">
+              Question Bank
+            </h1>
+            {moduleName && (
+              <Badge variant="secondary" className="text-base px-3 py-1">
+                Module: {moduleName}
+              </Badge>
+            )}
+          </div>
           <p className="text-[#4A5578]">
             {filteredQuestions.length} questions available
           </p>

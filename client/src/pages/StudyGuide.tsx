@@ -16,6 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 
 interface StudyModule {
   id: string;
@@ -253,6 +254,12 @@ const PRACTICE_TIERS: StudyTier[] = [
 export default function StudyGuide() {
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<"all" | "LR" | "RC">("all");
+  const [, setLocation] = useLocation();
+
+  const handlePracticeModule = (moduleId: string, moduleName: string) => {
+    // Navigate to Question Bank with module filter
+    setLocation(`/question-bank?module=${moduleId}&moduleName=${encodeURIComponent(moduleName)}`);
+  };
 
   const allModules = [...LR_MODULES, ...RC_MODULES];
   const filteredModules = selectedCategory === "all" 
@@ -355,8 +362,12 @@ export default function StudyGuide() {
                               <Clock className="w-4 h-4" />
                               <span>Estimated: {module.estimatedHours} hours</span>
                             </div>
-                            <Button className="w-full mt-4" variant="default">
-                              Start Module
+                            <Button 
+                              className="w-full mt-4" 
+                              variant="default"
+                              onClick={() => handlePracticeModule(module.id, module.title)}
+                            >
+                              Practice Questions
                             </Button>
                           </motion.div>
                         )}
@@ -425,8 +436,12 @@ export default function StudyGuide() {
                               <Clock className="w-4 h-4" />
                               <span>Estimated: {module.estimatedHours} hours</span>
                             </div>
-                            <Button className="w-full mt-4" variant="default">
-                              Start Module
+                            <Button 
+                              className="w-full mt-4" 
+                              variant="default"
+                              onClick={() => handlePracticeModule(module.id, module.title)}
+                            >
+                              Practice Questions
                             </Button>
                           </motion.div>
                         )}

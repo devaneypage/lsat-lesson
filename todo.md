@@ -84,3 +84,17 @@
 - [x] Add category filtering (All/LR/RC)
 - [x] Integrate with main navigation
 - [x] Register /study-guide route in App.tsx
+
+
+## Study Guide to Question Bank Integration
+
+- [x] Add practice question filtering by module ID
+- [x] Create module-to-question mapping in database
+- [x] Add "Practice Questions" button to each module
+- [x] Implement filtered question view for each module
+- [x] Create practice session workflow from Study Guide
+- [ ] Add module progress tracking (questions completed)
+- [ ] Add difficulty progression within each module
+- [ ] Implement module mastery criteria
+- [ ] Write tests for module-question filtering
+- [ ] Test end-to-end practice workflow
