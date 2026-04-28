@@ -7,7 +7,7 @@
  */
 
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -105,7 +105,7 @@ export default function MainNavigationBar() {
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.route);
             return (
-              <a
+              <Link
                 key={item.route}
                 href={item.route}
                 className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 relative group"
@@ -161,7 +161,7 @@ export default function MainNavigationBar() {
                     {item.description}
                   </div>
                 )}
-              </a>
+              </Link>
             );
           })}
         </div>
@@ -193,7 +193,7 @@ export default function MainNavigationBar() {
               Import CSV
             </span>
           </button>
-          <a
+          <Link
             href="/progress"
             className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
             style={{
@@ -217,7 +217,7 @@ export default function MainNavigationBar() {
             >
               Progress
             </span>
-          </a>
+          </Link>
         </div>
       </nav>
 
@@ -280,13 +280,10 @@ export default function MainNavigationBar() {
               {NAV_ITEMS.map((item, idx) => {
                 const active = isActive(item.route);
                 return (
-                  <motion.a
+                  <Link
                     key={item.route}
                     href={item.route}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2, delay: idx * 0.05 }}
                     className="px-4 py-3 flex items-center gap-3 border-b transition-all duration-200"
                     style={{
                       borderColor: "var(--border)",
@@ -320,7 +317,7 @@ export default function MainNavigationBar() {
                         </div>
                       )}
                     </div>
-                  </motion.a>
+                  </Link>
                 );
               })}
 
@@ -353,12 +350,9 @@ export default function MainNavigationBar() {
               </motion.button>
 
               {/* Progress Link in Mobile Menu */}
-              <motion.a
+              <Link
                 href="/progress"
                 onClick={() => setIsMobileMenuOpen(false)}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, delay: (NAV_ITEMS.length + 1) * 0.05 }}
                 className="px-4 py-3 flex items-center gap-3 transition-all duration-200"
                 style={{
                   background: "rgba(45, 27, 105, 0.05)",
@@ -375,7 +369,7 @@ export default function MainNavigationBar() {
                 >
                   Progress Tracker
                 </div>
-              </motion.a>
+              </Link>
             </div>
           </motion.div>
         )}

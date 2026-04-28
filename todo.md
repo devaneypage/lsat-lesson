@@ -132,3 +132,20 @@
 - [x] Identify root cause: /lessons had no registered route; nav linked to /lessons/necessary-assumptions
 - [x] Implement targeted fix: added Route path="/lessons" → StudyGuide; updated nav link to /lessons
 - [x] Verify fix resolves the issue (Study Guide renders correctly at /lessons on dev server)
+
+## Navigation Link Verification (devasophy.blog)
+
+- [x] Verify / (home/path selector) loads correctly — PASS
+- [x] Verify /dashboard loads correctly — FIXED: was full-page reloading to /; replaced <a href> with wouter <Link> in MainNavigationBar
+- [x] Verify /lessons loads Study Guide correctly — PASS (previously fixed)
+- [x] Verify /question-bank loads correctly — PASS
+- [x] Verify /curriculum loads correctly — PASS
+- [x] Verify /import loads correctly — PASS
+- [x] Verify /progress loads correctly — PASS
+- [ ] Verify /lessons/necessary-assumptions loads correctly
+- [ ] Verify /lessons/common-flaws loads correctly
+- [ ] Verify /lessons/strengthen-weaken loads correctly
+- [ ] Verify /lessons/reading-comprehension loads correctly
+- [ ] Verify /lessons/formal-logic loads correctly
+- [ ] Verify /study-guide loads correctly
+- [x] Fix broken routes: replaced all <a href> with wouter <Link> in MainNavigationBar
