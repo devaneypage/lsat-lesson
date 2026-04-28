@@ -18,6 +18,7 @@ import {
   FileText,
   Upload,
   Zap,
+  Sparkles,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
 
@@ -52,6 +53,12 @@ const NAV_ITEMS: NavItem[] = [
     route: "/curriculum",
     icon: <FileText size={18} />,
     description: "30-chapter guide",
+  },
+  {
+    label: "AI Plan",
+    route: "/lesson-plan-generator",
+    icon: <Sparkles size={18} />,
+    description: "Generate study plan",
   },
   {
     label: "Import",

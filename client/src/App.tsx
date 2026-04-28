@@ -19,6 +19,7 @@ import QuestionBank from "./pages/QuestionBank";
 import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
 import StudyGuide from "./pages/StudyGuide";
+import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import MainNavigationBar from "./components/MainNavigationBar";
 
 function Router() {
@@ -45,7 +46,8 @@ function Router() {
         <Route path={"/question-bank"} component={QuestionBank} />
         <Route path={"/curriculum"} component={CurriculumGuide} />
         <Route path={"/import"} component={CSVImportManager} />
-        <Route path={"/study-guide"} component={StudyGuide} />
+        <Route path={'/study-guide'} component={StudyGuide} />
+        <Route path={'/lesson-plan-generator'} component={LessonPlanGenerator} />
         
         {/* Error handling */}
         <Route path={"/404"} component={NotFound} />

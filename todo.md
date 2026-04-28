@@ -149,3 +149,35 @@
 - [ ] Verify /lessons/formal-logic loads correctly
 - [ ] Verify /study-guide loads correctly
 - [x] Fix broken routes: replaced all <a href> with wouter <Link> in MainNavigationBar
+
+## Live Database Connection & Question Import
+
+- [ ] Diagnose why 189 questions are not showing on live site
+- [ ] Verify live DATABASE_URL is correctly configured
+- [ ] Check tRPC questions.list endpoint on live site
+- [ ] Re-import all 189 questions to production database
+- [ ] Verify all questions display correctly on devasophy.blog/question-bank
+- [ ] Confirm filtering and search work with live data
+
+## Question Bank Deduplication
+
+- [ ] Analyze database for duplicate questions (exact and near-exact stimulus matches)
+- [ ] Count total duplicates found
+- [ ] Write deduplication script preserving the earliest/best record
+- [ ] Run deduplication on production database
+- [ ] Verify final question count after deduplication
+- [ ] Confirm no data loss on live site
+
+## AI Lesson Plan Generator
+
+- [x] Add tRPC lessonPlan.generate procedure with LLM integration
+- [x] Build intake form (score, target, test date, hours/week, weak areas)
+- [x] Implement streaming LLM response with Streamdown rendering
+- [x] Build priority rankings section in output
+- [x] Build week-by-week schedule section in output
+- [x] Build session breakdowns section in output
+- [x] Add Copy to Clipboard export button
+- [x] Add Print/PDF export button
+- [x] Register /lesson-plan-generator route in App.tsx
+- [x] Add nav link in MainNavigationBar
+- [x] Write tests for lessonPlan.generate procedure (7 tests passing)

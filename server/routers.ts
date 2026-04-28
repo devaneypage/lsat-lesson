@@ -3,20 +3,30 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
-import { insertQuestions, createImportHistory, getQuestions, getQuestionCount, createTag, getTags, getQuestionTags, addTagToQuestion, removeTagFromQuestion, getQuestionsByTag } from "./db";
+import {
+  insertQuestions,
+  createImportHistory,
+  getQuestions,
+  getQuestionCount,
+  createTag,
+  getTags,
+  getQuestionTags,
+  addTagToQuestion,
+  removeTagFromQuestion,
+  getQuestionsByTag,
+} from "./db";
 import { TRPCError } from "@trpc/server";
+import { invokeLLM } from "./_core/llm";
 
 export const appRouter = router({
-  // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
+
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
 
@@ -69,7 +79,6 @@ export const appRouter = router({
 
           const importedCount = await insertQuestions(questionsData);
 
-          // Log import history
           await createImportHistory({
             fileName: input.fileName,
             importedBy: ctx.user.id,
@@ -229,6 +238,112 @@ export const appRouter = router({
       )
       .query(async ({ input }) => {
         return await getQuestionsByTag(input.tagId, input.limit, input.offset);
+      }),
+  }),
+
+  lessonPlan: router({
+    generate: publicProcedure
+      .input(
+        z.object({
+          currentScore: z.union([z.number().min(120).max(180), z.literal("untested")]),
+          targetScore: z.number().min(120).max(180),
+          testDate: z.string(),
+          hoursPerWeek: z.enum(["4", "8", "12", "16+"]),
+          weakAreas: z
+            .array(
+              z.enum([
+                "Main Point",
+                "Assumption",
+                "Strengthen/Weaken",
+                "Flaw",
+                "Inference",
+                "Role of Statement",
+                "Point at Issue",
+                "Method of Argument",
+                "Parallel Reasoning",
+                "Conditional Reasoning",
+                "Reading Comprehension",
+              ])
+            )
+            .min(1),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const weeksUntilTest = Math.max(
+          1,
+          Math.round(
+            (new Date(input.testDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 7)
+          )
+        );
+
+        const scoreGap =
+          input.currentScore === "untested"
+            ? "unknown (no diagnostic taken yet)"
+            : `${input.targetScore - (input.currentScore as number)} points`;
+
+        const systemPrompt = `You are an expert LSAT instructor and curriculum designer. You create personalized, actionable LSAT study plans grounded in evidence-based instructional design. The 2026 LSAT does NOT include Logic Games — focus only on Logical Reasoning and Reading Comprehension.
+
+Available Study Guide modules on the platform:
+- Argument Anatomy (LR-0, LR-2a)
+- Introduction to Argument-Based Questions (LR-1)
+- Main Point Questions (LR-2)
+- Role of Statement Questions (LR-3)
+- Method of Argument Questions (LR-4)
+- Point at Issue Questions (LR-5)
+- Parallel Reasoning Questions (LR-6)
+- Conditional Reasoning & Diagramming
+- Necessary Assumptions (Bridge & Defender)
+- Logical Flaws (19 Common Flaws)
+- LSAT Vocabulary & Terminology
+- Reading Comprehension Strategy
+
+Format your response in clean Markdown with three clearly labeled sections:
+1. ## Priority Rankings
+2. ## Week-by-Week Schedule
+3. ## Session Breakdowns (first 2 weeks only)
+
+Be specific, practical, and encouraging. Reference the platform's modules by name.`;
+
+        const userMessage = `Please create a personalized LSAT study plan for a student with the following profile:
+
+- **Current Score:** ${input.currentScore === "untested" ? "No diagnostic taken yet" : input.currentScore}
+- **Target Score:** ${input.targetScore}
+- **Score Gap:** ${scoreGap}
+- **Test Date:** ${new Date(input.testDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+- **Weeks Until Test:** ${weeksUntilTest}
+- **Study Hours Per Week:** ${input.hoursPerWeek} hours
+- **Self-Reported Weak Areas:** ${input.weakAreas.join(", ")}
+
+Generate a complete study plan with:
+1. **Priority Rankings** — Top 5 focus areas ranked by score impact, each with a 1-2 sentence rationale explaining why this area will yield the most improvement for this student
+2. **Week-by-Week Schedule** — A full schedule from now until the test date, organized by week, with specific Study Guide modules and Question Bank practice sets for each session
+3. **Session Breakdowns** — Detailed 45-60 minute session plans for Weeks 1 and 2, following a lesson → practice → review structure`;
+
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userMessage },
+            ],
+          });
+
+          const content = response.choices?.[0]?.message?.content ?? "";
+          if (!content) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "AI returned an empty response. Please try again.",
+            });
+          }
+
+          return { plan: content, weeksUntilTest, scoreGap };
+        } catch (error) {
+          if (error instanceof TRPCError) throw error;
+          console.error("[LessonPlan] LLM error:", error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to generate lesson plan. Please try again.",
+          });
+        }
       }),
   }),
 });
