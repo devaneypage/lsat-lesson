@@ -114,3 +114,14 @@
 - [x] Import all questions into Question Bank (27 total in DB)
 - [x] Update Study Guide modules with lesson content from PDFs
 - [ ] Verify all questions display with correct tags
+
+## New PDF Batch 2 Extraction & Integration
+
+- [x] Extract from Lesson-19 Common Flaws in LSAT Arguments (lesson content extracted)
+- [x] Extract from Lesson 5 Flaws Abridged (LSAT Trainer) (18 questions)
+- [x] Extract from Conditional Statement Diagramming Drill (Testmasters) (30 questions)
+- [x] Extract from Anatomy of an LR Argument (6 questions)
+- [x] Extract from LR II Assumption Questions Bridge & Defender (lesson content extracted)
+- [x] Build unified question CSV from batch 2 (54 questions)
+- [x] Import batch 2 questions into Question Bank (189 total in DB)
+- [x] Enrich Study Guide modules with batch 2 lesson content
