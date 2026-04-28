@@ -71,3 +71,16 @@
 - [ ] Create tag browser/hierarchy view
 - [ ] Add bulk tag operations (assign tags to multiple questions)
 - [ ] Implement tag suggestions based on question content
+
+
+## Study Guide Integration from Master Guide
+
+- [x] Extract content from LSAT Study Master Guide HTML
+- [x] Create StudyGuide page component with 18 LR modules
+- [x] Add 5 RC modules to Study Guide
+- [x] Implement practice tier system (Tier 1-3)
+- [x] Add difficulty-based color coding
+- [x] Implement expandable module details
+- [x] Add category filtering (All/LR/RC)
+- [x] Integrate with main navigation
+- [x] Register /study-guide route in App.tsx

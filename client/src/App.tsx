@@ -18,32 +18,37 @@ import Resources from "./pages/Resources";
 import QuestionBank from "./pages/QuestionBank";
 import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
+import StudyGuide from "./pages/StudyGuide";
 import MainNavigationBar from "./components/MainNavigationBar";
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <>
       <MainNavigationBar />
       <Switch>
-      <Route path={"/"} component={PathSelector} />
-      <Route path={"/dashboard"} component={UnifiedDashboard} />
-      <Route path={"/progress"} component={ProgressTracker} />
-      <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
-      
-      {/* Lessons */}
-      <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
-      <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
-      <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
-      <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
-      <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
-       <Route path="/resources" component={Resources} />
-      <Route path="/question-bank" component={QuestionBank} />
-      <Route path="/curriculum" component={CurriculumGuide} />
-      <Route path="/import" component={CSVImportManager} />
-      
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
+        <Route path={"/"} component={PathSelector} />
+        <Route path={"/dashboard"} component={UnifiedDashboard} />
+        <Route path={"/progress"} component={ProgressTracker} />
+        <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
+        
+        {/* Lessons */}
+        <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
+        <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
+        <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
+        <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
+        <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
+        
+        {/* Main Features */}
+        <Route path="/resources" component={Resources} />
+        <Route path={"/question-bank"} component={QuestionBank} />
+        <Route path={"/curriculum"} component={CurriculumGuide} />
+        <Route path={"/import"} component={CSVImportManager} />
+        <Route path={"/study-guide"} component={StudyGuide} />
+        
+        {/* Error handling */}
+        <Route path={"/404"} component={NotFound} />
+        <Route component={NotFound} />
       </Switch>
     </>
   );
