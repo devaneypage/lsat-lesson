@@ -98,3 +98,19 @@
 - [ ] Implement module mastery criteria
 - [ ] Write tests for module-question filtering
 - [ ] Test end-to-end practice workflow
+
+
+## PDF Lesson Content Extraction & Integration
+
+- [x] Extract questions from LR_0 Introduction PDF (lesson content only)
+- [x] Extract questions from LR_1 Argument-Based Questions PDF (15 reported, JSON parse issue)
+- [x] Extract questions from LR_2a Anatomy PDF (lesson content only)
+- [x] Extract questions from LR_2 Main Point Questions PDF (5 questions)
+- [x] Extract questions from LR_3 Role of Statement PDF (4 questions)
+- [x] Extract questions from LR_4 Method of Argument PDF (7 questions)
+- [x] Extract questions from LR_5 Point at Issue PDF (3 questions)
+- [x] Extract questions from LR_6 Parallel Reasoning PDF (skipped per user)
+- [x] Build unified question CSV with tags (19 questions)
+- [x] Import all questions into Question Bank (27 total in DB)
+- [x] Update Study Guide modules with lesson content from PDFs
+- [ ] Verify all questions display with correct tags
