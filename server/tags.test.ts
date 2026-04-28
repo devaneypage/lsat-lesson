@@ -60,7 +60,7 @@ describe("tags router", () => {
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.tags.create({
-      name: "Logical Reasoning",
+      name: `Logical Reasoning ${Date.now()}`,
       type: "topic",
       description: "Questions focused on logical reasoning",
       color: "#0052CC",
@@ -93,7 +93,7 @@ describe("tags router", () => {
 
     // Create a tag first
     await caller.tags.create({
-      name: "Test Tag",
+      name: `Test Tag ${Date.now()}`,
       type: "objective",
       color: "#FF0000",
     });

@@ -203,7 +203,12 @@ export async function createTag(data: InsertTag): Promise<number> {
 
   try {
     const result = await db.insert(tags).values(data);
-    return (result as any)[0]?.insertId || 0;
+    // MySQL returns insertId in the result object
+    const insertId = (result as any)?.insertId || (result as any)?.[0]?.insertId || 0;
+    if (insertId === 0) {
+      throw new Error("Failed to get insert ID from tag creation");
+    }
+    return insertId;
   } catch (error) {
     console.error("[Database] Failed to create tag:", error);
     throw error;
