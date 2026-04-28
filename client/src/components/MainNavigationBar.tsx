@@ -37,7 +37,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Lessons",
-    route: "/lessons/necessary-assumptions",
+    route: "/lessons",
     icon: <BookOpen size={18} />,
     description: "Core concepts",
   },

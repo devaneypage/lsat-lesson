@@ -125,3 +125,10 @@
 - [x] Build unified question CSV from batch 2 (54 questions)
 - [x] Import batch 2 questions into Question Bank (189 total in DB)
 - [x] Enrich Study Guide modules with batch 2 lesson content
+
+## Bug: /lessons page issue at devasophy.blog
+
+- [x] Reproduce and document the exact error at https://devasophy.blog/lessons (404 — missing route)
+- [x] Identify root cause: /lessons had no registered route; nav linked to /lessons/necessary-assumptions
+- [x] Implement targeted fix: added Route path="/lessons" → StudyGuide; updated nav link to /lessons
+- [x] Verify fix resolves the issue (Study Guide renders correctly at /lessons on dev server)

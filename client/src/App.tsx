@@ -32,7 +32,8 @@ function Router() {
         <Route path={"/progress"} component={ProgressTracker} />
         <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
         
-        {/* Lessons */}
+        {/* Lessons — /lessons is the hub (Study Guide), sub-routes are specific lessons */}
+        <Route path={"/lessons"} component={StudyGuide} />
         <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
         <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
         <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
