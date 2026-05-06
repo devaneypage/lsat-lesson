@@ -225,3 +225,18 @@
 - [x] Enrich Study Guide modules with LR III lesson content
 - [x] Run deduplication on full question database
 - [x] Verify final question count after deduplication (189 unique questions)
+
+## RC: Reading Comprehension — PDF Extraction & Import
+
+- [x] Unpack and classify all 11 RC PDF files (text vs image-based)
+- [x] Extract questions from RC_35 Questions in Categories Drill Set (6 questions, 2 passages)
+- [x] Extract questions from RC_38 Sample RC Section (27 questions, multiple passages)
+- [x] Extract questions from RC_40 Passage Types & Question Types Practice Set (2 questions)
+- [x] Extract questions from RC_23 Reading Strategies Mini Drill Set
+- [x] Extract questions from RC_25 Practice Set II (Comparative)
+- [x] Use LLM to determine correct answers for all 35 RC questions (no answer key in source)
+- [x] Import 35 RC questions into Question Bank database
+- [x] Enrich RC Study Guide modules with lesson content (RC_22 reasoning structure framework, RC_25 comparative passages, RC_REF question types & wrong answer patterns)
+- [x] Add new Comparative Passages module to Study Guide
+- [x] Run deduplication on full question database
+- [x] Verify final question count after deduplication (196 unique questions)
