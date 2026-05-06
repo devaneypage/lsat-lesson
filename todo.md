@@ -271,3 +271,13 @@
 - [x] Register /tag-manager route in App.tsx
 - [x] Add nav link in MainNavigationBar
 - [x] Write tests for tag assignment and bulk operations (18 tests, all passing)
+
+## Core Tag Taxonomy Seeding
+
+- [x] Audit all question categories and sources in the database (196 questions, 19 categories)
+- [x] Design taxonomy structure: Curriculum Sections, Lesson Units, Question Types, Flaw Types, Difficulty, Source Sets
+- [x] Create 68 tags across 6 taxonomy layers
+- [x] Auto-assign 988 tag-question associations based on category and source fields
+- [x] Flaw type tags created (12 subtypes: Causal, Overlooked Possibilities, Conditional Error, Sampling, Analogy, Circular, Ad Hominem, Equivocation, Composition/Division, False Dichotomy, Inappropriate Appeal, Scope Shift)
+- [x] Difficulty tags normalized (Easy/Medium/Hard) and assigned to all 196 questions
+- [x] Source set tags assigned (LSAT Trainer, Testmasters, LR II Drill Sets, LR III Drill Sets, RC Drill Sets)
