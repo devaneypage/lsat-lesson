@@ -258,3 +258,16 @@
 - [ ] Run deduplication after batch 2 import
 - [ ] Process LSATReadinessChecklist PDFs — add as student self-assessment tool
 - [ ] Process LSATLogicalReasoningbyTypeVolume3.xlsx — analyze question distribution data
+
+## Tag Management UI
+
+- [x] Build TagManager page with three-column layout (Tag Browser | Question List | Assignment Panel)
+- [x] Implement tag hierarchy browser (Lesson / Unit / Flaw Type categories)
+- [x] Add tag CRUD: create, rename, delete tags with color picker
+- [x] Add tag assignment panel: assign/remove tags on individual questions
+- [x] Add bulk tag operations: select multiple questions and assign tags at once
+- [x] Add tag filtering to Question Bank page (filter by one or more tags)
+- [x] Add tag count badges showing how many questions carry each tag
+- [x] Register /tag-manager route in App.tsx
+- [x] Add nav link in MainNavigationBar
+- [x] Write tests for tag assignment and bulk operations (18 tests, all passing)

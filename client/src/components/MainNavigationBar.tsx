@@ -19,6 +19,7 @@ import {
   Upload,
   Zap,
   Sparkles,
+  Tag,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
 
@@ -65,6 +66,12 @@ const NAV_ITEMS: NavItem[] = [
     route: "/import",
     icon: <Upload size={18} />,
     description: "CSV upload",
+  },
+  {
+    label: "Tags",
+    route: "/tag-manager",
+    icon: <Tag size={18} />,
+    description: "Organize questions",
   },
 ];
 

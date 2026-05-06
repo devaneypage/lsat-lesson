@@ -4,6 +4,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +63,20 @@ export default function QuestionBank() {
   const [selectedQuestion, setSelectedQuestion] = useState<typeof questions[0] | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
+
+  // Fetch tags for the filter dropdown
+  const { data: tagsWithCounts = [] } = trpc.tags.listWithCounts.useQuery();
+
+  // Fetch question IDs for the selected tag
+  const { data: taggedQuestionData } = trpc.tags.getQuestions.useQuery(
+    { tagId: selectedTagId ?? 0, limit: 10000, offset: 0 },
+    { enabled: selectedTagId !== null }
+  );
+  const taggedQuestionIds = useMemo(
+    () => new Set((taggedQuestionData || []).map((q: { id: number }) => q.id)),
+    [taggedQuestionData]
+  );
 
   // Filter and search logic
   const filteredQuestions = useMemo(() => {
@@ -77,11 +92,14 @@ export default function QuestionBank() {
       const matchesSource =
         selectedSource === "all" || q.source === selectedSource;
 
+      const matchesTag =
+        selectedTagId === null || taggedQuestionIds.has(q.id);
+
       return (
-        matchesSearch && matchesDifficulty && matchesCategory && matchesSource
+        matchesSearch && matchesDifficulty && matchesCategory && matchesSource && matchesTag
       );
     });
-  }, [questions, searchQuery, selectedDifficulty, selectedCategory, selectedSource]);
+  }, [questions, searchQuery, selectedDifficulty, selectedCategory, selectedSource, selectedTagId, taggedQuestionIds]);
 
   // Get unique categories and sources
   const categories = Array.from(
@@ -351,7 +369,7 @@ export default function QuestionBank() {
         </div>
 
         {/* Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           {/* Search */}
           <div className="lg:col-span-2">
             <div className="relative">
@@ -400,6 +418,29 @@ export default function QuestionBank() {
               <SelectItem value="easy">Easy</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="hard">Hard</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Tag Filter */}
+          <Select
+            value={selectedTagId !== null ? String(selectedTagId) : "all"}
+            onValueChange={(value) =>
+              setSelectedTagId(value === "all" ? null : Number(value))
+            }
+          >
+            <SelectTrigger className="bg-white border-[#E8E6E1]">
+              <div className="flex items-center gap-1.5">
+                <Tag size={14} className="text-amber-600" />
+                <SelectValue placeholder="Filter by tag" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tags</SelectItem>
+              {tagsWithCounts.map((tag) => (
+                <SelectItem key={tag.id} value={String(tag.id)}>
+                  {tag.name} ({tag.questionCount})
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 

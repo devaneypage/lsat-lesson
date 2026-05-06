@@ -189,4 +189,135 @@ describe("tags router", () => {
       expect(error.message).toContain("Only admins can remove tags");
     }
   });
+
+  it("allows admin to update a tag", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    // Create a tag first, then update it
+    const created = await caller.tags.create({
+      name: `UpdateMe ${Date.now()}`,
+      type: "topic",
+      color: "#0052CC",
+    });
+    expect(created.tagId).toBeGreaterThan(0);
+
+    // Update only name and color (type cast is safe since we just created it)
+    const result = await caller.tags.update({
+      tagId: created.tagId,
+      name: `Updated ${Date.now()}`,
+      color: "#FF0000",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("prevents non-admin from updating a tag", async () => {
+    const { ctx } = createUserContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      await caller.tags.update({ tagId: 1, name: "Hacked" });
+      expect.fail("Should have thrown FORBIDDEN error");
+    } catch (error: any) {
+      expect(error.code).toBe("FORBIDDEN");
+    }
+  });
+
+  it("allows admin to delete a tag", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    // Create a tag to delete
+    const created = await caller.tags.create({
+      name: `DeleteMe ${Date.now()}`,
+      type: "custom",
+      color: "#FF0000",
+    });
+
+    const result = await caller.tags.delete({ tagId: created.tagId });
+    expect(result.success).toBe(true);
+  });
+
+  it("prevents non-admin from deleting a tag", async () => {
+    const { ctx } = createUserContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      await caller.tags.delete({ tagId: 1 });
+      expect.fail("Should have thrown FORBIDDEN error");
+    } catch (error: any) {
+      expect(error.code).toBe("FORBIDDEN");
+    }
+  });
+
+  it("allows admin to bulk assign a tag to multiple questions", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    // Create a tag for bulk assignment
+    const created = await caller.tags.create({
+      name: `BulkTag ${Date.now()}`,
+      type: "section",
+      color: "#10B981",
+    });
+
+    const result = await caller.tags.bulkAssign({
+      questionIds: [1, 2, 3],
+      tagId: created.tagId,
+    });
+
+    expect(result.success).toBe(true);
+    expect(typeof result.added).toBe("number");
+  });
+
+  it("prevents non-admin from bulk assigning tags", async () => {
+    const { ctx } = createUserContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      await caller.tags.bulkAssign({ questionIds: [1], tagId: 1 });
+      expect.fail("Should have thrown FORBIDDEN error");
+    } catch (error: any) {
+      expect(error.code).toBe("FORBIDDEN");
+    }
+  });
+
+  it("returns tags with question counts", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const tags = await caller.tags.listWithCounts();
+    expect(Array.isArray(tags)).toBe(true);
+    if (tags.length > 0) {
+      expect(typeof tags[0].questionCount).toBe("number");
+    }
+  });
+
+  it("returns questions with their tags", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.tags.questionsWithTags({ limit: 10, offset: 0 });
+    expect(Array.isArray(result)).toBe(true);
+    if (result.length > 0) {
+      expect(Array.isArray(result[0].tags)).toBe(true);
+    }
+  });
+
+  it("returns filtered questions by tag IDs", async () => {
+    const { ctx } = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.tags.filteredQuestions({
+      tagIds: [],
+      limit: 10,
+      offset: 0,
+    });
+    // filteredQuestions returns { questions, total } shape
+    expect(result).toHaveProperty("questions");
+    expect(result).toHaveProperty("total");
+    expect(Array.isArray(result.questions)).toBe(true);
+    expect(typeof result.total).toBe("number");
+  });
 });

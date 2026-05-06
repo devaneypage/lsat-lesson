@@ -20,6 +20,7 @@ import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
 import StudyGuide from "./pages/StudyGuide";
 import LessonPlanGenerator from "./pages/LessonPlanGenerator";
+import TagManager from "./pages/TagManager";
 import MainNavigationBar from "./components/MainNavigationBar";
 
 function Router() {
@@ -48,6 +49,7 @@ function Router() {
         <Route path={"/import"} component={CSVImportManager} />
         <Route path={'/study-guide'} component={StudyGuide} />
         <Route path={'/lesson-plan-generator'} component={LessonPlanGenerator} />
+        <Route path={'/tag-manager'} component={TagManager} />
         
         {/* Error handling */}
         <Route path={"/404"} component={NotFound} />

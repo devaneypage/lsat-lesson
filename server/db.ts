@@ -1,7 +1,17 @@
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, questions, InsertQuestion, importHistory, InsertImportHistory } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import {
+  InsertUser,
+  users,
+  questions,
+  InsertQuestion,
+  importHistory,
+  InsertImportHistory,
+  InsertTag,
+  tags,
+  questionTags,
+} from "../drizzle/schema";
+import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -56,8 +66,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
+      values.role = "admin";
+      updateSet.role = "admin";
     }
 
     if (!values.lastSignedIn) {
@@ -118,11 +128,7 @@ export async function getQuestions(limit = 100, offset = 0) {
   }
 
   try {
-    const result = await db
-      .select()
-      .from(questions)
-      .limit(limit)
-      .offset(offset);
+    const result = await db.select().from(questions).limit(limit).offset(offset);
     return result;
   } catch (error) {
     console.error("[Database] Failed to get questions:", error);
@@ -177,11 +183,7 @@ export async function getImportHistory(limit = 50, offset = 0) {
   }
 
   try {
-    const result = await db
-      .select()
-      .from(importHistory)
-      .limit(limit)
-      .offset(offset);
+    const result = await db.select().from(importHistory).limit(limit).offset(offset);
     return result;
   } catch (error) {
     console.error("[Database] Failed to get import history:", error);
@@ -189,28 +191,54 @@ export async function getImportHistory(limit = 50, offset = 0) {
   }
 }
 
-import { and } from "drizzle-orm";
-import { Tag, InsertTag, InsertQuestionTag, tags, questionTags } from "../drizzle/schema";
+// ─── Tag Helpers ──────────────────────────────────────────────────────────────
 
 /**
  * Create a new tag
  */
 export async function createTag(data: InsertTag): Promise<number> {
   const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
+  if (!db) throw new Error("Database not available");
 
   try {
     const result = await db.insert(tags).values(data);
-    // MySQL returns insertId in the result object
     const insertId = (result as any)?.insertId || (result as any)?.[0]?.insertId || 0;
-    if (insertId === 0) {
-      throw new Error("Failed to get insert ID from tag creation");
-    }
+    if (insertId === 0) throw new Error("Failed to get insert ID from tag creation");
     return insertId;
   } catch (error) {
     console.error("[Database] Failed to create tag:", error);
+    throw error;
+  }
+}
+
+/**
+ * Update a tag's name, type, color, or description
+ */
+export async function updateTag(
+  tagId: number,
+  data: { name?: string; type?: "topic" | "objective" | "section" | "custom"; description?: string; color?: string | null }
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  try {
+    await db.update(tags).set(data).where(eq(tags.id, tagId));
+  } catch (error) {
+    console.error("[Database] Failed to update tag:", error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a tag and all its question associations
+ */
+export async function deleteTag(tagId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  try {
+    await db.delete(questionTags).where(eq(questionTags.tagId, tagId));
+    await db.delete(tags).where(eq(tags.id, tagId));
+  } catch (error) {
+    console.error("[Database] Failed to delete tag:", error);
     throw error;
   }
 }
@@ -230,6 +258,26 @@ export async function getTags() {
     return result;
   } catch (error) {
     console.error("[Database] Failed to get tags:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all tags with their question counts
+ */
+export async function getTagsWithCounts() {
+  const db = await getDb();
+  if (!db) return [];
+  try {
+    const allTags = await db.select().from(tags);
+    const counts = await db
+      .select({ tagId: questionTags.tagId, count: sql<number>`count(*)` })
+      .from(questionTags)
+      .groupBy(questionTags.tagId);
+    const countMap = new Map(counts.map((c) => [c.tagId, Number(c.count)]));
+    return allTags.map((t) => ({ ...t, questionCount: countMap.get(t.id) ?? 0 }));
+  } catch (error) {
+    console.error("[Database] Failed to get tags with counts:", error);
     return [];
   }
 }
@@ -268,9 +316,7 @@ export async function getQuestionTags(questionId: number) {
  */
 export async function addTagToQuestion(questionId: number, tagId: number): Promise<void> {
   const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
+  if (!db) throw new Error("Database not available");
 
   try {
     await db.insert(questionTags).values({ questionId, tagId });
@@ -285,9 +331,7 @@ export async function addTagToQuestion(questionId: number, tagId: number): Promi
  */
 export async function removeTagFromQuestion(questionId: number, tagId: number): Promise<void> {
   const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
+  if (!db) throw new Error("Database not available");
 
   try {
     await db
@@ -295,6 +339,50 @@ export async function removeTagFromQuestion(questionId: number, tagId: number): 
       .where(and(eq(questionTags.questionId, questionId), eq(questionTags.tagId, tagId)));
   } catch (error) {
     console.error("[Database] Failed to remove tag from question:", error);
+    throw error;
+  }
+}
+
+/**
+ * Bulk add a tag to multiple questions (skips duplicates)
+ */
+export async function bulkAddTagToQuestions(questionIds: number[], tagId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  try {
+    let added = 0;
+    for (const questionId of questionIds) {
+      try {
+        await db.insert(questionTags).values({ questionId, tagId });
+        added++;
+      } catch {
+        // skip duplicate key errors
+      }
+    }
+    return added;
+  } catch (error) {
+    console.error("[Database] Failed to bulk add tag:", error);
+    throw error;
+  }
+}
+
+/**
+ * Bulk remove a tag from multiple questions
+ */
+export async function bulkRemoveTagFromQuestions(
+  questionIds: number[],
+  tagId: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  try {
+    for (const questionId of questionIds) {
+      await db
+        .delete(questionTags)
+        .where(and(eq(questionTags.questionId, questionId), eq(questionTags.tagId, tagId)));
+    }
+  } catch (error) {
+    console.error("[Database] Failed to bulk remove tag:", error);
     throw error;
   }
 }
@@ -321,5 +409,102 @@ export async function getQuestionsByTag(tagId: number, limit = 100, offset = 0) 
   } catch (error) {
     console.error("[Database] Failed to get questions by tag:", error);
     return [];
+  }
+}
+
+/**
+ * Get all questions with their associated tags (for the tag manager view)
+ */
+export async function getQuestionsWithTags(limit = 200, offset = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  try {
+    const qs = await db.select().from(questions).limit(limit).offset(offset);
+    if (qs.length === 0) return [];
+
+    const questionIds = qs.map((q) => q.id);
+    const tagAssignments = await db
+      .select({
+        questionId: questionTags.questionId,
+        tagId: tags.id,
+        tagName: tags.name,
+        tagType: tags.type,
+        tagColor: tags.color,
+      })
+      .from(questionTags)
+      .innerJoin(tags, eq(questionTags.tagId, tags.id))
+      .where(inArray(questionTags.questionId, questionIds));
+
+    const tagsByQuestion = new Map<number, typeof tagAssignments>();
+    for (const ta of tagAssignments) {
+      if (!tagsByQuestion.has(ta.questionId)) tagsByQuestion.set(ta.questionId, []);
+      tagsByQuestion.get(ta.questionId)!.push(ta);
+    }
+
+    return qs.map((q) => ({
+      ...q,
+      tags: (tagsByQuestion.get(q.id) ?? []).map((t) => ({
+        id: t.tagId,
+        name: t.tagName,
+        type: t.tagType,
+        color: t.tagColor,
+      })),
+    }));
+  } catch (error) {
+    console.error("[Database] Failed to get questions with tags:", error);
+    return [];
+  }
+}
+
+/**
+ * Get questions filtered by tag IDs (AND logic — must have all specified tags)
+ * Also supports search and category filter
+ */
+export async function getQuestionsFilteredByTags(
+  tagIds: number[],
+  limit = 100,
+  offset = 0,
+  search?: string,
+  category?: string
+) {
+  const db = await getDb();
+  if (!db) return { questions: [], total: 0 };
+  try {
+    let allQs = await db.select().from(questions);
+
+    if (category) {
+      allQs = allQs.filter((q) => q.category === category);
+    }
+
+    if (search) {
+      const lower = search.toLowerCase();
+      allQs = allQs.filter((q) => q.questionText.toLowerCase().includes(lower));
+    }
+
+    if (tagIds.length > 0) {
+      const tagAssignments = await db
+        .select({ questionId: questionTags.questionId, tagId: questionTags.tagId })
+        .from(questionTags)
+        .where(inArray(questionTags.tagId, tagIds));
+
+      const questionTagMap = new Map<number, Set<number>>();
+      for (const ta of tagAssignments) {
+        if (!questionTagMap.has(ta.questionId)) questionTagMap.set(ta.questionId, new Set());
+        questionTagMap.get(ta.questionId)!.add(ta.tagId);
+      }
+
+      allQs = allQs.filter((q) => {
+        const qTags = questionTagMap.get(q.id);
+        if (!qTags) return false;
+        return tagIds.every((tid) => qTags.has(tid));
+      });
+    }
+
+    const total = allQs.length;
+    const paginated = allQs.slice(offset, offset + limit);
+    return { questions: paginated, total };
+  } catch (error) {
+    console.error("[Database] Failed to filter questions by tags:", error);
+    return { questions: [], total: 0 };
   }
 }

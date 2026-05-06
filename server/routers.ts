@@ -9,11 +9,18 @@ import {
   getQuestions,
   getQuestionCount,
   createTag,
+  updateTag,
+  deleteTag,
   getTags,
+  getTagsWithCounts,
   getQuestionTags,
   addTagToQuestion,
   removeTagFromQuestion,
   getQuestionsByTag,
+  bulkAddTagToQuestions,
+  bulkRemoveTagFromQuestions,
+  getQuestionsWithTags,
+  getQuestionsFilteredByTags,
 } from "./db";
 import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
@@ -238,6 +245,100 @@ export const appRouter = router({
       )
       .query(async ({ input }) => {
         return await getQuestionsByTag(input.tagId, input.limit, input.offset);
+      }),
+
+    listWithCounts: publicProcedure.query(async () => {
+      return await getTagsWithCounts();
+    }),
+
+    update: protectedProcedure
+      .input(
+        z.object({
+          tagId: z.number(),
+          name: z.string().min(1).max(128).optional(),
+          type: z.enum(["topic", "objective", "section", "custom"]).optional(),
+          description: z.string().optional(),
+          color: z.string().regex(/^#[0-9A-F]{6}$/i).nullable().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can update tags" });
+        }
+        const { tagId, ...data } = input;
+        await updateTag(tagId, data);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ tagId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can delete tags" });
+        }
+        await deleteTag(input.tagId);
+        return { success: true };
+      }),
+
+    bulkAssign: protectedProcedure
+      .input(
+        z.object({
+          questionIds: z.array(z.number()).min(1),
+          tagId: z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can bulk tag questions" });
+        }
+        const added = await bulkAddTagToQuestions(input.questionIds, input.tagId);
+        return { success: true, added };
+      }),
+
+    bulkRemove: protectedProcedure
+      .input(
+        z.object({
+          questionIds: z.array(z.number()).min(1),
+          tagId: z.number(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can bulk remove tags" });
+        }
+        await bulkRemoveTagFromQuestions(input.questionIds, input.tagId);
+        return { success: true };
+      }),
+
+    questionsWithTags: publicProcedure
+      .input(
+        z.object({
+          limit: z.number().default(200),
+          offset: z.number().default(0),
+        })
+      )
+      .query(async ({ input }) => {
+        return await getQuestionsWithTags(input.limit, input.offset);
+      }),
+
+    filteredQuestions: publicProcedure
+      .input(
+        z.object({
+          tagIds: z.array(z.number()).default([]),
+          limit: z.number().default(100),
+          offset: z.number().default(0),
+          search: z.string().optional(),
+          category: z.string().optional(),
+        })
+      )
+      .query(async ({ input }) => {
+        return await getQuestionsFilteredByTags(
+          input.tagIds,
+          input.limit,
+          input.offset,
+          input.search,
+          input.category
+        );
       }),
   }),
 
