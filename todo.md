@@ -281,3 +281,11 @@
 - [x] Flaw type tags created (12 subtypes: Causal, Overlooked Possibilities, Conditional Error, Sampling, Analogy, Circular, Ad Hominem, Equivocation, Composition/Division, False Dichotomy, Inappropriate Appeal, Scope Shift)
 - [x] Difficulty tags normalized (Easy/Medium/Hard) and assigned to all 196 questions
 - [x] Source set tags assigned (LSAT Trainer, Testmasters, LR II Drill Sets, LR III Drill Sets, RC Drill Sets)
+
+## Flaw Subtype Tag Assignment
+
+- [x] Fetch all 47 Flaw questions from the database
+- [x] Write heuristic pattern-matching classifier (12 flaw subtypes, priority-ordered rules)
+- [x] Assign flaw subtype tags to all 47 questions (47/47 assigned)
+- [x] 15 high-confidence assignments (Inappropriate Appeal, Sampling, Causal, Analogy, Conditional, Ad Hominem, Composition/Division)
+- [ ] Re-classify 32 "Overlooked Possibilities" fallbacks using LLM in fresh session (run assign_flaw_tags.mjs)
