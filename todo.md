@@ -240,3 +240,21 @@
 - [x] Add new Comparative Passages module to Study Guide
 - [x] Run deduplication on full question database
 - [x] Verify final question count after deduplication (196 unique questions)
+
+## Batch 2: Resolve the Paradox, Inference, Reasoning Conforms To, Supporting Principle
+*Note: All batch 2 PDFs use custom font encoding (zeros) — require visual/image extraction. LLM quota exhausted during this session; defer to next session.*
+
+- [ ] Visual extraction: LR_V.3_ResolvetheParadox(#1-71).pdf (71 questions, answer key pp.257-275)
+- [ ] Visual extraction: 6.ResolvetheParadoxQuestions.pdf (~25 questions, answer key available)
+- [ ] Visual extraction: LR_III_5_ResolvetheParadoxQuestionSet.pdf (~8 questions, image-based)
+- [ ] Visual extraction: LR_V.3_Inference(MustBeTrue)(#1-50).pdf (50 questions, answer key pp.9-22)
+- [ ] Visual extraction: LR_V.3_Inference(MostStronglySupported)(#1-62).pdf (62 questions, answer key pp.23-40)
+- [ ] Visual extraction: LR_V.3_Inference(CannotBeTrue)(#1-13).pdf (13 questions, answer key pp.45-48)
+- [ ] Visual extraction: LR_V.3_Inference(CompletetheArgument)(#1-14).pdf (14 questions, answer key pp.41-44)
+- [ ] Visual extraction: 5.ReasoningConformsToQuestions.pdf (~40 questions, answer key pp.167-179)
+- [ ] Visual extraction: 4.SupportingPrincipleQuestions.pdf (~39 questions, answer key pp.299-312)
+- [ ] Import all batch 2 questions into Question Bank
+- [ ] Enrich Study Guide modules: Resolve the Paradox, Inference (4 subtypes), Principle
+- [ ] Run deduplication after batch 2 import
+- [ ] Process LSATReadinessChecklist PDFs — add as student self-assessment tool
+- [ ] Process LSATLogicalReasoningbyTypeVolume3.xlsx — analyze question distribution data
