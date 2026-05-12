@@ -244,9 +244,9 @@
 ## Batch 2: Resolve the Paradox, Inference, Reasoning Conforms To, Supporting Principle
 *Note: All batch 2 PDFs use custom font encoding (zeros) — require visual/image extraction. LLM quota exhausted during this session; defer to next session.*
 
-- [ ] Visual extraction: LR_V.3_ResolvetheParadox(#1-71).pdf (71 questions, answer key pp.257-275)
-- [ ] Visual extraction: 6.ResolvetheParadoxQuestions.pdf (~25 questions, answer key available)
-- [ ] Visual extraction: LR_III_5_ResolvetheParadoxQuestionSet.pdf (~8 questions, image-based)
+- [x] Visual extraction: LR_V.3_ResolvetheParadox(#1-71).pdf (71 questions, answer key pp.257-275) — COMPLETE
+- [x] Visual extraction: 6.ResolvetheParadoxQuestions.pdf — deduplicated against primary source
+- [x] Visual extraction: LR_III_5_ResolvetheParadoxQuestionSet.pdf — 0 complete questions (lesson-only page)
 - [ ] Visual extraction: LR_V.3_Inference(MustBeTrue)(#1-50).pdf (50 questions, answer key pp.9-22)
 - [ ] Visual extraction: LR_V.3_Inference(MostStronglySupported)(#1-62).pdf (62 questions, answer key pp.23-40)
 - [ ] Visual extraction: LR_V.3_Inference(CannotBeTrue)(#1-13).pdf (13 questions, answer key pp.45-48)

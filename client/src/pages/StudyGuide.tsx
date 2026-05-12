@@ -223,11 +223,11 @@ const LR_MODULES: StudyModule[] = [
     id: "lr-resolve",
     title: "Resolve the Paradox",
     category: "LR",
-    description: "Explain apparent contradictions by finding the missing information that reconciles them.",
-    drills: "Paradox drills",
+    description: "Resolve the Paradox (also called Explain the Discrepancy) questions present two facts that seem contradictory and ask you to find the answer choice that explains how both can be true simultaneously. The correct answer introduces new information that makes both statements compatible — it does NOT eliminate one fact or simply restate the paradox. The four-step approach: (1) identify the two seemingly contradictory facts, (2) articulate exactly what makes them surprising together, (3) predict the type of information that would reconcile them, (4) select the answer that allows both facts to coexist. Common wrong answer patterns: answers that explain only one side of the paradox, answers that deepen the contradiction, answers that are irrelevant to the specific discrepancy, and answers that use extreme or absolute language. Source: LR Logical Reasoning by Type, Volume 3 (pp. 257–275), 71 questions.",
+    drills: "LR_V.3 Resolve the Paradox (#1–71) + LR_III_5 Paradox Question Set + 6.ResolvetheParadoxQuestions",
     difficulty: "Advanced",
-    estimatedHours: 4,
-    keyTopics: ["Paradox resolution", "Hidden assumptions", "Scope distinctions", "Reconciliation"],
+    estimatedHours: 6,
+    keyTopics: ["Identifying the two contradictory facts", "Articulating the exact discrepancy", "Predicting reconciling information", "New information vs. restating the paradox", "One-sided explanations (wrong answer trap)", "Scope distinctions", "Causal paradoxes", "Statistical paradoxes"],
   },
 ];
 
