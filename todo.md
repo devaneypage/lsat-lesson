@@ -289,3 +289,15 @@
 - [x] Assign flaw subtype tags to all 47 questions (47/47 assigned)
 - [x] 15 high-confidence assignments (Inappropriate Appeal, Sampling, Causal, Analogy, Conditional, Ad Hominem, Composition/Division)
 - [ ] Re-classify 32 "Overlooked Possibilities" fallbacks using LLM in fresh session (run assign_flaw_tags.mjs)
+
+## Inference PDFs + Flaw Re-classification (Session 6)
+
+- [x] Visual extraction: LR_V.3_Inference(MustBeTrue)(#1-50).pdf — 50 questions
+- [x] Visual extraction: LR_V.3_Inference(MostStronglySupported)(#1-62).pdf — 62 questions
+- [x] Visual extraction: LR_V.3_Inference(CannotBeTrue)(#1-13).pdf — 13 questions
+- [x] Visual extraction: LR_V.3_Inference(CompletetheArgument)(#1-14).pdf — 14 questions
+- [x] Import 139 Inference questions with answer key into Question Bank
+- [x] Enrich Study Guide Inference & Must Be True module
+- [x] Assign taxonomy tags to 139 Inference questions (5 new tags, 695 assignments)
+- [x] Re-classify 32 flaw fallback questions using LLM (19 re-classified, 13 confirmed Overlooked Possibilities)
+- [x] Deduplication: 0 duplicates found — database clean at 406 questions

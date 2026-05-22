@@ -151,13 +151,13 @@ const LR_MODULES: StudyModule[] = [
   },
   {
     id: "lr-inference",
-    title: "Inference & Must Be True",
+    title: "Inference Questions (All Subtypes)",
     category: "LR",
-    description: "Master questions that require you to derive conclusions from given premises.",
-    drills: "Drills 94–102",
+    description: "Master all four Inference question subtypes from LSAT Logical Reasoning by Type, Vol. 3. Must Be True (50 questions): the correct answer is proven true by the stimulus \u2014 eliminate anything that goes beyond or contradicts the passage. Most Strongly Supported (62 questions): the correct answer is best supported but not necessarily 100% proven \u2014 it is more strongly supported than the other choices. Cannot Be True (13 questions): the correct answer directly contradicts or is impossible given the stimulus \u2014 the other four choices could all be true. Complete the Argument (14 questions): the correct answer logically completes the argument, following directly from the premises and fitting the argument\u2019s structure. Key pitfall across all subtypes: scope creep \u2014 never choose an answer that introduces information not in the stimulus.",
+    drills: "50 Must Be True + 62 Most Strongly Supported + 13 Cannot Be True + 14 Complete the Argument = 139 questions (LR V.3 Drill Sets)",
     difficulty: "Advanced",
-    estimatedHours: 7,
-    keyTopics: ["Logical inference", "Deductive reasoning", "Scope management", "Answer certainty"],
+    estimatedHours: 9,
+    keyTopics: ["Must Be True: proven by stimulus", "Most Strongly Supported: best supported", "Cannot Be True: contradicts stimulus", "Complete the Argument: logical completion", "Scope management", "Certainty language", "Eliminating overreach", "Deductive vs. inductive inference"],
   },
   {
     id: "lr-parallel",

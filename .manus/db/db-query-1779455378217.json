@@ -1,0 +1,88 @@
+{
+  "query": "SELECT COUNT(*) as total FROM questions;\nSELECT category, COUNT(*) as cnt FROM questions GROUP BY category ORDER BY cnt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3ecwSL7MSEz9ShF.f33f9cfed73a --database 4kXdUkpMX9ujMWJCTbKx2q --execute SELECT COUNT(*) as total FROM questions;\nSELECT category, COUNT(*) as cnt FROM questions GROUP BY category ORDER BY cnt DESC;",
+  "rows": [
+    {
+      "total": "406"
+    },
+    {
+      "total": "category\tcnt"
+    },
+    {
+      "total": "Resolve the Paradox\t71"
+    },
+    {
+      "total": "Most Strongly Supported (Inference)\t62"
+    },
+    {
+      "total": "Must Be True (Inference)\t50"
+    },
+    {
+      "total": "Flaw\t47"
+    },
+    {
+      "total": "Conditional Reasoning\t30"
+    },
+    {
+      "total": "Necessary Assumption\t22"
+    },
+    {
+      "total": "Strengthen\t17"
+    },
+    {
+      "total": "Complete the Argument (Inference)\t14"
+    },
+    {
+      "total": "Cannot Be True (Inference)\t13"
+    },
+    {
+      "total": "Weaken\t12"
+    },
+    {
+      "total": "Method of Argument\t12"
+    },
+    {
+      "total": "Main Point\t12"
+    },
+    {
+      "total": "Sufficient Assumption\t9"
+    },
+    {
+      "total": "Role of Statement\t7"
+    },
+    {
+      "total": "Match Flaw\t7"
+    },
+    {
+      "total": "Main Idea\t5"
+    },
+    {
+      "total": "Point at Issue\t4"
+    },
+    {
+      "total": "Argument Construction\t4"
+    },
+    {
+      "total": "Logical Reasoning\t2"
+    },
+    {
+      "total": "Inference\t2"
+    },
+    {
+      "total": "Parallel Reasoning\t1"
+    },
+    {
+      "total": "Detail\t1"
+    },
+    {
+      "total": "Vocabulary in Context\t1"
+    },
+    {
+      "total": "Assumption\t1"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n406\ncategory\tcnt\nResolve the Paradox\t71\nMost Strongly Supported (Inference)\t62\nMust Be True (Inference)\t50\nFlaw\t47\nConditional Reasoning\t30\nNecessary Assumption\t22\nStrengthen\t17\nComplete the Argument (Inference)\t14\nCannot Be True (Inference)\t13\nWeaken\t12\nMethod of Argument\t12\nMain Point\t12\nSufficient Assumption\t9\nRole of Statement\t7\nMatch Flaw\t7\nMain Idea\t5\nPoint at Issue\t4\nArgument Construction\t4\nLogical Reasoning\t2\nInference\t2\nParallel Reasoning\t1\nDetail\t1\nVocabulary in Context\t1\nAssumption\t1\n",
+  "stderr": "",
+  "execution_time_ms": 322
+}
