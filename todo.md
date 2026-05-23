@@ -247,15 +247,15 @@
 - [x] Visual extraction: LR_V.3_ResolvetheParadox(#1-71).pdf (71 questions, answer key pp.257-275) — COMPLETE
 - [x] Visual extraction: 6.ResolvetheParadoxQuestions.pdf — deduplicated against primary source
 - [x] Visual extraction: LR_III_5_ResolvetheParadoxQuestionSet.pdf — 0 complete questions (lesson-only page)
-- [ ] Visual extraction: LR_V.3_Inference(MustBeTrue)(#1-50).pdf (50 questions, answer key pp.9-22)
-- [ ] Visual extraction: LR_V.3_Inference(MostStronglySupported)(#1-62).pdf (62 questions, answer key pp.23-40)
-- [ ] Visual extraction: LR_V.3_Inference(CannotBeTrue)(#1-13).pdf (13 questions, answer key pp.45-48)
-- [ ] Visual extraction: LR_V.3_Inference(CompletetheArgument)(#1-14).pdf (14 questions, answer key pp.41-44)
-- [ ] Visual extraction: 5.ReasoningConformsToQuestions.pdf (~40 questions, answer key pp.167-179)
-- [ ] Visual extraction: 4.SupportingPrincipleQuestions.pdf (~39 questions, answer key pp.299-312)
-- [ ] Import all batch 2 questions into Question Bank
-- [ ] Enrich Study Guide modules: Resolve the Paradox, Inference (4 subtypes), Principle
-- [ ] Run deduplication after batch 2 import
+- [x] Visual extraction: LR_V.3_Inference(MustBeTrue)(#1-50).pdf — 50 questions
+- [x] Visual extraction: LR_V.3_Inference(MostStronglySupported)(#1-62).pdf — 62 questions
+- [x] Visual extraction: LR_V.3_Inference(CannotBeTrue)(#1-13).pdf — 13 questions
+- [x] Visual extraction: LR_V.3_Inference(CompletetheArgument)(#1-14).pdf — 14 questions
+- [x] Visual extraction: 5.ReasoningConformsToQuestions.pdf — 39 questions
+- [x] Visual extraction: 4.SupportingPrincipleQuestions.pdf — 39 questions (keyed) + 32 without key
+- [x] Import all batch 2 questions into Question Bank (484 total)
+- [x] Enrich Study Guide modules: Resolve the Paradox, Inference (4 subtypes), Principle, Reasoning Conforms To
+- [x] Run deduplication after batch 2 import — 0 duplicates, database clean at 484 questions
 - [ ] Process LSATReadinessChecklist PDFs — add as student self-assessment tool
 - [ ] Process LSATLogicalReasoningbyTypeVolume3.xlsx — analyze question distribution data
 
