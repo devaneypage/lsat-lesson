@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StudentPathType } from "@/types/unified";
 import { usePath } from "@/contexts/PathContext";
-import { BookOpen, Brain, Zap, Target, User, ArrowRight } from "lucide-react";
+import { BookOpen, Brain, Zap, Target, User, ArrowRight, Calendar } from "lucide-react";
 
 interface PathOption {
   type: StudentPathType;
@@ -216,8 +216,36 @@ export default function PathSelector() {
           </Button>
         </div>
 
+        {/* Book a Session CTA */}
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => navigate("/booking")}
+            className="group inline-flex items-center gap-3 px-7 py-3.5 rounded-xl transition-all duration-200"
+            style={{
+              background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
+              color: "white",
+              boxShadow: "0 4px 16px rgba(91,74,138,0.35)",
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.95rem",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.9";
+              e.currentTarget.style.boxShadow = "0 6px 20px rgba(91,74,138,0.45)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(91,74,138,0.35)";
+            }}
+          >
+            <Calendar size={18} />
+            Book a Session with Devaney
+            <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
+          </button>
+        </div>
+
         {/* Meet Your Instructor */}
-        <div className="mt-10 flex justify-center">
+        <div className="mt-5 flex justify-center">
           <button
             onClick={() => navigate("/about")}
             className="group inline-flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-200"

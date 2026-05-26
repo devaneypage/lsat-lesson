@@ -8,7 +8,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, RotateCcw, Calendar } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import PageMeta from "@/components/PageMeta";
@@ -708,6 +708,28 @@ export default function LessonCommonFlaws() {
               >
                 Master the 19 common flaws, and you'll recognize these patterns instantly. Look for logical errors like <strong style={{ color: "#1E2130" }}>confusing correlation with causation</strong>, <strong style={{ color: "#1E2130" }}>hasty generalizations</strong>, and <strong style={{ color: "#1E2130" }}>circular reasoning</strong>.
               </p>
+            </div>
+
+            {/* Book a Session CTA */}
+            <div
+              className="mt-8 mb-6 rounded-2xl p-7 text-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(91,74,138,0.07) 0%, rgba(123,94,167,0.05) 100%)",
+                border: "1px solid rgba(91,74,138,0.18)",
+              }}
+            >
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "0.75rem", color: "#5B4A8A", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.5rem" }}>Ready to go further?</p>
+              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#1E2130", marginBottom: "0.6rem" }}>Work one-on-one with Devaney</h3>
+              <p style={{ fontFamily: "'Lora', serif", fontSize: "0.92rem", color: "rgba(30,33,48,0.6)", lineHeight: 1.75, marginBottom: "1.25rem" }}>Get targeted feedback, personalized strategy, and score-focused coaching from a JD-credentialed LSAT tutor.</p>
+              <button
+                onClick={() => navigate("/booking")}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200"
+                style={{ background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)", color: "white", fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.9rem", boxShadow: "0 3px 12px rgba(91,74,138,0.35)" }}
+              >
+                <Calendar size={16} />
+                Book a Session
+                <ChevronRight size={15} />
+              </button>
             </div>
 
             <motion.button

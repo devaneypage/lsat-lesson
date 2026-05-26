@@ -9,6 +9,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
+import BookingCTA from "@/components/BookingCTA";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import PageMeta from "@/components/PageMeta";
@@ -915,6 +916,8 @@ export default function LessonStrengthenWeaken() {
                 Always read the question carefully: does it ask you to strengthen OR weaken? Then eliminate answers that do the opposite of what's asked.
               </p>
             </div>
+
+            <BookingCTA className="mt-8 mb-6" />
 
             <motion.button
               whileHover={{ scale: 1.03 }}

@@ -21,6 +21,7 @@ import {
   Sparkles,
   Tag,
   User,
+  Calendar,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
 
@@ -189,6 +190,29 @@ export default function MainNavigationBar() {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2">
+          {/* Book a Session CTA */}
+          <Link
+            href="/booking"
+            className="px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 font-semibold"
+            style={{
+              background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
+              color: "white",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "0.875rem",
+              boxShadow: "0 2px 8px rgba(91,74,138,0.35)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.9";
+              e.currentTarget.style.boxShadow = "0 4px 14px rgba(91,74,138,0.45)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.boxShadow = "0 2px 8px rgba(91,74,138,0.35)";
+            }}
+          >
+            <Calendar size={16} />
+            Book a Session
+          </Link>
           <button
             onClick={() => setIsImportModalOpen(true)}
             className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
@@ -369,6 +393,29 @@ export default function MainNavigationBar() {
                   Quick Import
                 </div>
               </motion.button>
+
+              {/* Book a Session — Mobile */}
+              <Link
+                href="/booking"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-4 py-3 flex items-center gap-3 transition-all duration-200 border-b"
+                style={{
+                  background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
+                  color: "white",
+                  borderColor: "var(--border)",
+                }}
+              >
+                <Calendar size={18} />
+                <div
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "0.9rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  Book a Session
+                </div>
+              </Link>
 
               {/* Progress Link in Mobile Menu */}
               <Link

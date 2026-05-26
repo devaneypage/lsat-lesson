@@ -28,6 +28,7 @@ import { useLessonProgress } from "@/hooks/useLessonProgress";
 import type { LessonStep } from "@/components/ProgressBar";
 import ProgressBar from "@/components/ProgressBar";
 import SessionPlanCTA from "@/components/SessionPlanCTA";
+import BookingCTA from "@/components/BookingCTA";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import { useFeatureFlag } from "@/lib/flags";
 import PageMeta from "@/components/PageMeta";
@@ -1114,6 +1115,8 @@ function RecapStep() {
 
       {/* Assumption Family Arc CTA — feature flagged */}
       <ArcCTA navigate={navigate} />
+
+      <BookingCTA className="mb-6" />
 
       <motion.button
         whileHover={{ scale: 1.03 }}

@@ -361,3 +361,24 @@
 - [x] Route added to App.tsx (/lessons/flaw-in-reasoning)
 - [x] Lesson card added to Dashboard.tsx (red accent, AlertTriangle icon)
 - [x] TypeScript clean (0 errors)
+
+## Contact/Booking — Calendly Integration
+
+- [x] Create /booking page with inline Calendly embed widget
+- [x] Add rate card ($75/hr online, $85/hr in-person) to /booking page
+- [x] Add Good Fit Guarantee callout to /booking page
+- [x] Add Cancellation Policy card to /booking page
+- [x] Add "What to Expect" checklist to /booking page
+- [x] Add "Prefer Email?" contact card to /booking page
+- [x] Add "Book a Session" CTA button to MainNavigationBar (desktop + mobile)
+- [x] Add "Book a Session" CTA button to PathSelector landing page
+- [x] Update About page "Book a Session" button to route to /booking (was direct Calendly link)
+- [x] Add BookingCTA component to RecapSection (Lesson 1 — Necessary Assumptions)
+- [x] Add BookingCTA to LessonCommonFlaws recap section
+- [x] Add BookingCTA to LessonStrengthenWeaken recap section
+- [x] Add BookingCTA to LessonReadingComprehension recap section
+- [x] Add BookingCTA to LessonFormalLogic recap section
+- [x] Add BookingCTA to LessonSufficientAssumptions recap section
+- [x] Add BookingCTA to LessonFlawInReasoning recap section
+- [x] Add /booking to sitemap.xml
+- [x] TypeScript: 0 errors

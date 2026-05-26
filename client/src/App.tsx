@@ -26,6 +26,7 @@ import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import TagManager from "./pages/TagManager";
 import MainNavigationBar from "./components/MainNavigationBar";
 import About from "@/pages/About";
+import Booking from "@/pages/Booking";
 import FlagAdmin from "@/pages/FlagAdmin";
 
 function Router() {
@@ -60,6 +61,9 @@ function Router() {
         
         {/* About / Hire Me */}
         <Route path="/about" component={About} />
+
+        {/* Contact & Booking — Calendly embed */}
+        <Route path="/booking" component={Booking} />
 
         {/* Admin — owner-only */}
         <Route path="/admin/flags" component={FlagAdmin} />

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, Lightbulb, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
+import BookingCTA from "@/components/BookingCTA";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import PageMeta from "@/components/PageMeta";
@@ -1259,10 +1260,12 @@ export default function LessonFormalLogic() {
               </div>
             </div>
 
+            <BookingCTA className="mt-8 mb-6" />
+
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/lessons")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
               style={{
                 background: "#1E2130",
@@ -1271,7 +1274,7 @@ export default function LessonFormalLogic() {
                 boxShadow: "0 2px 12px rgba(30,33,48,0.15)",
               }}
             >
-              Back to Dashboard
+              Back to Lessons
               <ChevronRight size={18} />
             </motion.button>
           </motion.div>

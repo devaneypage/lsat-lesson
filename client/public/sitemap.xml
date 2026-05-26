@@ -67,6 +67,14 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Contact & Booking page -->
+  <url>
+    <loc>https://devasophy.blog/booking</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- About / Hire Me page -->
   <url>
     <loc>https://devasophy.blog/about</loc>

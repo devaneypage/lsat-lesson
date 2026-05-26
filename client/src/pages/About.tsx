@@ -20,6 +20,7 @@ import {
   Clock,
   DollarSign,
   Quote,
+  Calendar,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useFeatureFlag } from "@/lib/flags";
@@ -611,23 +612,20 @@ export default function About() {
 
           {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href="https://calendly.com/thedevanagari"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => navigate("/booking")}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200"
               style={{
-                background: "#C8860A",
+                background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
                 color: "#FFFFFF",
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontSize: "0.95rem",
-                boxShadow: "0 2px 12px rgba(200,134,10,0.28)",
-                textDecoration: "none",
+                boxShadow: "0 2px 12px rgba(91,74,138,0.35)",
               }}
             >
-              <CalendarDays size={18} />
+              <Calendar size={18} />
               Book a Session
-            </a>
+            </button>
 
             <a
               href="mailto:thedevanagari@gmail.com"

@@ -31,6 +31,7 @@ import { useLessonProgress } from "@/hooks/useLessonProgress";
 import type { LessonStep } from "@/components/ProgressBar";
 import ProgressBar from "@/components/ProgressBar";
 import SessionPlanCTA from "@/components/SessionPlanCTA";
+import BookingCTA from "@/components/BookingCTA";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import PageMeta from "@/components/PageMeta";
 
@@ -1565,6 +1566,8 @@ function RecapStep() {
           </button>
         </p>
       </div>
+
+      <BookingCTA className="mb-6" />
 
       <motion.button
         whileHover={{ scale: 1.03 }}
