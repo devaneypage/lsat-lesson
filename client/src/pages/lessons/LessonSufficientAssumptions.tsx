@@ -30,6 +30,7 @@ import ProgressBar from "@/components/ProgressBar";
 import SessionPlanCTA from "@/components/SessionPlanCTA";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import { useFeatureFlag } from "@/lib/flags";
+import PageMeta from "@/components/PageMeta";
 
 // ─── Step definitions ────────────────────────────────────────────────────────
 
@@ -1192,6 +1193,11 @@ export default function LessonSufficientAssumptions() {
   };
 
   return (
+    <>
+      <PageMeta
+        title="Sufficient Assumptions | LSAT Mastery"
+        description="Learn the Conditional Bridge Method for Sufficient Assumption questions. Step-by-step LSAT lesson taught by Devaney M. Page, JD."
+      />
     <div className="min-h-screen" style={{ background: PARCHMENT }}>
       {/* Back button */}
       <motion.button
@@ -1274,5 +1280,6 @@ export default function LessonSufficientAssumptions() {
         </div>
       )}
     </div>
+    </>
   );
 }

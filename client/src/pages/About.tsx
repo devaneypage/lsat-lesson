@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useFeatureFlag } from "@/lib/flags";
+import PageMeta from "@/components/PageMeta";
 
 const CREDENTIALS = [
   {
@@ -128,10 +129,15 @@ export default function About() {
   const [, navigate] = useLocation();
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
-    >
+    <>
+      <PageMeta
+        title="About Devaney M. Page, JD | LSAT Mastery"
+        description="Meet Devaney M. Page, JD — freelance LSAT and Bar Exam tutor. Book a session, view rates, and read student reviews."
+      />
+      <div
+        className="min-h-screen"
+        style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
+      >
       <div className="container py-16 max-w-4xl mx-auto px-6">
 
         {/* ── Hero headline ── */}
@@ -695,11 +701,11 @@ export default function About() {
           </div>
         </motion.div>
 
-      </div>
+       </div>
     </div>
+    </>
   );
 }
-
 // ─── TestimonialsSection — feature flagged ────────────────────────────────────
 
 function TestimonialsSection() {

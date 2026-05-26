@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, Lightbulb, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
+import PageMeta from "@/components/PageMeta";
 
 type FLStep = "intro" | "notation" | "conditionals" | "negation" | "quantifiers" | "practice" | "recap";
 const STEPS = ["intro", "notation", "conditionals", "negation", "quantifiers", "practice", "recap"] as const satisfies readonly FLStep[];
@@ -180,7 +181,12 @@ export default function LessonFormalLogic() {
   };
 
   return (
-    <div
+    <>
+      <PageMeta
+        title="Formal Logic Foundations | LSAT Mastery"
+        description="Build a solid foundation in LSAT formal logic: conditionals, contrapositives, quantifiers, and De Morgan's Laws. Taught by Devaney M. Page, JD."
+      />
+      <div
       className="min-h-screen"
       style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
     >
@@ -1272,5 +1278,6 @@ export default function LessonFormalLogic() {
         )}
       </div>
     </div>
+    </>
   );
 }

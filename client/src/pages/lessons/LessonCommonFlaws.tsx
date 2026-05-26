@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
+import PageMeta from "@/components/PageMeta";
 
 type FlawStep = "intro" | "flaws" | "practice" | "recap";
 const STEPS = ["intro", "flaws", "practice", "recap"] as const satisfies readonly FlawStep[];
@@ -131,7 +132,12 @@ export default function LessonCommonFlaws() {
   const isCorrect = selectedAnswer === "A";
 
   return (
-    <div
+    <>
+      <PageMeta
+        title="Common Flaws in Reasoning | LSAT Mastery"
+        description="Identify the 6 most common logical flaws on the LSAT. Interactive lesson with a Flaw Spotter exercise, taught by Devaney M. Page, JD."
+      />
+      <div
       className="min-h-screen"
       style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
     >
@@ -723,5 +729,6 @@ export default function LessonCommonFlaws() {
         )}
       </div>
     </div>
+    </>
   );
 }

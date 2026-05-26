@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, BookMarked, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
+import PageMeta from "@/components/PageMeta";
 
 type RCStep = "intro" | "framework" | "mapping" | "practice" | "recap";
 const STEPS = ["intro", "framework", "mapping", "practice", "recap"] as const satisfies readonly RCStep[];
@@ -110,7 +111,12 @@ export default function LessonReadingComprehension() {
   };
 
   return (
-    <div
+    <>
+      <PageMeta
+        title="RC Passage Mapping | LSAT Mastery"
+        description="Master LSAT Reading Comprehension with passage mapping, question strategies, and comparative passage techniques. Taught by Devaney M. Page, JD."
+      />
+      <div
       className="min-h-screen"
       style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
     >
@@ -774,5 +780,6 @@ export default function LessonReadingComprehension() {
         )}
       </div>
     </div>
+    </>
   );
 }

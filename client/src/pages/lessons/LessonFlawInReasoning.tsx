@@ -32,6 +32,7 @@ import type { LessonStep } from "@/components/ProgressBar";
 import ProgressBar from "@/components/ProgressBar";
 import SessionPlanCTA from "@/components/SessionPlanCTA";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
+import PageMeta from "@/components/PageMeta";
 
 // ─── Step definitions ────────────────────────────────────────────────────────
 
@@ -1618,6 +1619,11 @@ export default function LessonFlawInReasoning() {
   };
 
   return (
+    <>
+      <PageMeta
+        title="Flaw in the Reasoning | LSAT Mastery"
+        description="Identify logical flaws in LSAT arguments with the Flaw Spotter method. Master all 7 flaw types with Devaney M. Page, JD."
+      />
     <div className="min-h-screen" style={{ background: PARCHMENT }}>
       {/* Back button */}
       <motion.button
@@ -1706,5 +1712,6 @@ export default function LessonFlawInReasoning() {
         </div>
       )}
     </div>
+    </>
   );
 }

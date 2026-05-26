@@ -20,6 +20,7 @@ import SessionPlanCTA from "@/components/SessionPlanCTA";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import type { LessonStep } from "@/components/ProgressBar";
+import PageMeta from "@/components/PageMeta";
 
 const STEPS: LessonStep[] = ["hero", "bridge", "negation", "protip", "practice", "recap"];
 
@@ -56,93 +57,99 @@ export default function LessonNecessaryAssumptions() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#F7F4EF" }}>
-      {/* Back button */}
-      <motion.button
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        whileHover={{ x: -4 }}
-        onClick={handleBack}
-        className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
-        style={{
-          background: "rgba(255,255,255,0.9)",
-          border: "1px solid rgba(0,0,0,0.1)",
-          backdropFilter: "blur(12px)",
-        }}
-        title="Back to Lessons"
-      >
-        <ChevronLeft size={20} style={{ color: "#1E2130" }} />
-      </motion.button>
-
-      {/* Reset Progress button — only shown after lesson has started */}
-      {hasStarted && (
+    <>
+      <PageMeta
+        title="Necessary Assumptions | LSAT Mastery"
+        description="Master the Negation Test for Necessary Assumption questions. Step-by-step LSAT lesson taught by Devaney M. Page, JD."
+      />
+      <div className="min-h-screen" style={{ background: "#F7F4EF" }}>
+        {/* Back button */}
         <motion.button
-          initial={{ opacity: 0, x: 10 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          whileHover={{ scale: 1.05 }}
-          onClick={handleReset}
-          className="fixed top-20 right-4 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+          whileHover={{ x: -4 }}
+          onClick={handleBack}
+          className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
           style={{
             background: "rgba(255,255,255,0.9)",
             border: "1px solid rgba(0,0,0,0.1)",
             backdropFilter: "blur(12px)",
-            color: "rgba(30,33,48,0.5)",
-            fontFamily: "'Space Grotesk', sans-serif",
           }}
-          title="Reset lesson progress"
+          title="Back to Lessons"
         >
-          <RotateCcw size={14} />
-          Reset Progress
+          <ChevronLeft size={20} style={{ color: "#1E2130" }} />
         </motion.button>
-      )}
 
-      {/* Progress bar */}
-      {currentStep > 0 && (
-        <ProgressBar currentStep={currentStep} totalSteps={STEPS.length} steps={STEPS} />
-      )}
+        {/* Reset Progress button — only shown after lesson has started */}
+        {hasStarted && (
+          <motion.button
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            whileHover={{ scale: 1.05 }}
+            onClick={handleReset}
+            className="fixed top-20 right-4 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+            style={{
+              background: "rgba(255,255,255,0.9)",
+              border: "1px solid rgba(0,0,0,0.1)",
+              backdropFilter: "blur(12px)",
+              color: "rgba(30,33,48,0.5)",
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}
+            title="Reset lesson progress"
+          >
+            <RotateCcw size={14} />
+            Reset Progress
+          </motion.button>
+        )}
 
-      {/* Hero section */}
-      {currentStep === 0 && <HeroSection onStart={handleStart} />}
+        {/* Progress bar */}
+        {currentStep > 0 && (
+          <ProgressBar currentStep={currentStep} totalSteps={STEPS.length} steps={STEPS} />
+        )}
 
-      {/* Bridge section */}
-      {currentStep >= 1 && (
-        <div style={{ paddingTop: currentStep === 1 ? "80px" : "0" }}>
-          <BridgeSection onComplete={handleStepComplete} />
-        </div>
-      )}
+        {/* Hero section */}
+        {currentStep === 0 && <HeroSection onStart={handleStart} />}
 
-      {/* Negation Test section */}
-      {currentStep >= 2 && (
-        <div style={{ paddingTop: currentStep === 2 ? "80px" : "0" }}>
-          <NegationTestSection onComplete={handleStepComplete} />
-        </div>
-      )}
+        {/* Bridge section */}
+        {currentStep >= 1 && (
+          <div style={{ paddingTop: currentStep === 1 ? "80px" : "0" }}>
+            <BridgeSection onComplete={handleStepComplete} />
+          </div>
+        )}
 
-      {/* Pro Tip section */}
-      {currentStep >= 3 && (
-        <div style={{ paddingTop: currentStep === 3 ? "80px" : "0" }}>
-          <ProTipSection onComplete={handleStepComplete} />
-        </div>
-      )}
+        {/* Negation Test section */}
+        {currentStep >= 2 && (
+          <div style={{ paddingTop: currentStep === 2 ? "80px" : "0" }}>
+            <NegationTestSection onComplete={handleStepComplete} />
+          </div>
+        )}
 
-      {/* Practice section */}
-      {currentStep >= 4 && (
-        <div style={{ paddingTop: currentStep === 4 ? "80px" : "0" }}>
-          <PracticeSection onComplete={handleStepComplete} />
-        </div>
-      )}
+        {/* Pro Tip section */}
+        {currentStep >= 3 && (
+          <div style={{ paddingTop: currentStep === 3 ? "80px" : "0" }}>
+            <ProTipSection onComplete={handleStepComplete} />
+          </div>
+        )}
 
-      {/* Recap section */}
-      {currentStep >= 5 && (
-        <div style={{ paddingTop: currentStep === 5 ? "80px" : "0" }}>
-          <RecapSection />
-          <FooterSection />
-          <SessionPlanCTA
-            lessonTitle="Necessary Assumptions"
-            lessonDescription="Master the Negation Test™ framework to identify necessary assumptions in LSAT arguments."
-          />
-        </div>
-      )}
-    </div>
+        {/* Practice section */}
+        {currentStep >= 4 && (
+          <div style={{ paddingTop: currentStep === 4 ? "80px" : "0" }}>
+            <PracticeSection onComplete={handleStepComplete} />
+          </div>
+        )}
+
+        {/* Recap section */}
+        {currentStep >= 5 && (
+          <div style={{ paddingTop: currentStep === 5 ? "80px" : "0" }}>
+            <RecapSection />
+            <FooterSection />
+            <SessionPlanCTA
+              lessonTitle="Necessary Assumptions"
+              lessonDescription="Master the Negation Test™ framework to identify necessary assumptions in LSAT arguments."
+            />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
