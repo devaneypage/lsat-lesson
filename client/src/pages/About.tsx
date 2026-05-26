@@ -2,8 +2,8 @@
  * DESIGN: Academic Light — Warm Parchment
  * Page: About & Hire Me
  *
- * Devaney's professional bio, credentials, teaching philosophy, and booking CTA.
- * Anchors the site in personal teaching authority.
+ * Devaney's professional bio, credentials, teaching philosophy, rates, policies,
+ * and live contact/booking links.
  */
 
 import { motion } from "framer-motion";
@@ -11,14 +11,14 @@ import {
   GraduationCap,
   Scale,
   BookOpen,
-  Star,
   Mail,
-  MessageSquare,
+  CalendarDays,
   CheckCircle2,
   ArrowRight,
   Award,
-  Users,
-  Target,
+  ShieldCheck,
+  Clock,
+  DollarSign,
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -32,57 +32,28 @@ const CREDENTIALS = [
   {
     icon: Scale,
     label: "LSAT & Bar Exam Tutor",
-    detail: "Freelance · Hampton/Newport News, VA",
+    detail: "Freelance · Hampton Roads, Virginia",
     color: "#C8860A",
   },
   {
     icon: BookOpen,
     label: "Logical Reasoning Expert",
-    detail: "Necessary Assumptions · Strengthen/Weaken · RC",
+    detail: "Assumptions · Flaws · Strengthen/Weaken · RC",
     color: "#2E7D52",
   },
   {
-    icon: Star,
-    label: "Personalized Instruction",
-    detail: "One-on-one sessions tailored to your score goals",
-    color: "#B84030",
-  },
-];
-
-const TEACHING_PRINCIPLES = [
-  {
-    number: "01",
-    title: "Intelligence Is Trainable",
-    body: "The LSAT does not test what you know — it tests how you think. That means every skill on this exam is learnable. I don't believe in fixed aptitude; I believe in deliberate practice and the right framework.",
-    color: "#C8860A",
-  },
-  {
-    number: "02",
-    title: "Understand Before You Memorize",
-    body: "Most test-prep programs hand you rules to memorize. I teach you the underlying logic so you can derive the rules yourself. When you understand why a Necessary Assumption must be true, you never need to memorize a template again.",
-    color: "#2E7D52",
-  },
-  {
-    number: "03",
-    title: "Precision Over Speed",
-    body: "Speed is a byproduct of mastery, not a starting point. We slow down first — dissecting every argument, every answer choice — until the patterns become automatic. Then the clock stops being your enemy.",
-    color: "#5B4A8A",
-  },
-  {
-    number: "04",
-    title: "Charge It to Your Head",
-    body: "A principle I inherited from my father: separate emotion from analysis. On the LSAT, the answer that feels right is often a trap. I train students to reason from evidence, not intuition — and to extend that same rigor to themselves when they make mistakes.",
+    icon: ShieldCheck,
+    label: "Background Check Passed",
+    detail: "Verified June 18, 2025",
     color: "#B84030",
   },
 ];
 
 const WHAT_TO_EXPECT = [
-  "Diagnostic session to identify your specific weaknesses",
-  "Custom study plan aligned to your target score and timeline",
-  "Deep-dive lessons on Logical Reasoning question types",
-  "Reading Comprehension passage mapping and annotation strategy",
-  "Timed practice under real test conditions with detailed review",
-  "Ongoing accountability and progress tracking between sessions",
+  "A structured diagnostic in our first session to locate the specific gaps",
+  "Concept-forward instruction — we address the why before the how",
+  "Targeted practice calibrated to your actual weak points, not a standardized syllabus",
+  "Sessions available online or in-person in the Hampton Roads, Virginia area",
 ];
 
 export default function About() {
@@ -93,14 +64,14 @@ export default function About() {
       className="min-h-screen"
       style={{ background: "linear-gradient(160deg, #F7F4EF 0%, #EDE8DF 60%, #E4DDD0 100%)" }}
     >
-      <div className="container py-16 max-w-4xl mx-auto">
+      <div className="container py-16 max-w-4xl mx-auto px-6">
 
-        {/* ── Hero ── */}
+        {/* ── Hero headline ── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65 }}
-          className="mb-16"
+          className="mb-14"
         >
           <div className="flex items-center gap-3 mb-6">
             <span
@@ -117,49 +88,30 @@ export default function About() {
           </div>
 
           <h1
-            className="mb-4"
+            className="mb-5"
             style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
-              fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
+              fontSize: "clamp(1.9rem, 4.5vw, 3rem)",
               color: "#1E2130",
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}
           >
-            Devaney M. Page, JD
+            The LSAT rewards a specific kind of reasoning.
+            <br />
+            <span style={{ color: "#C8860A" }}>My job is to help you build it.</span>
           </h1>
 
           <p
-            className="mb-8"
             style={{
               fontFamily: "'Lora', serif",
               fontStyle: "italic",
-              fontSize: "1.2rem",
-              color: "rgba(30,33,48,0.55)",
-              lineHeight: 1.7,
-              maxWidth: "42rem",
+              fontSize: "1rem",
+              color: "rgba(30,33,48,0.45)",
+              lineHeight: 1.6,
             }}
           >
-            Legal Education Specialist · Freelance LSAT & Bar Exam Tutor ·
-            Hampton/Newport News, Virginia
-          </p>
-
-          <p
-            style={{
-              fontFamily: "'Lora', serif",
-              fontSize: "1.05rem",
-              color: "rgba(30,33,48,0.7)",
-              lineHeight: 1.9,
-              maxWidth: "44rem",
-            }}
-          >
-            I built this platform because the best LSAT instruction I ever
-            encountered was never in a book — it was in a conversation. My
-            approach is rooted in the belief that logical reasoning is a
-            learnable craft, not a talent you either have or don't. Every lesson
-            here reflects the same principles I bring to one-on-one sessions:
-            slow down, understand the structure, then let the speed follow
-            naturally.
+            Devaney M. Page, JD · Legal Education Specialist · Hampton Roads, Virginia
           </p>
         </motion.div>
 
@@ -167,8 +119,8 @@ export default function About() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-16"
+          transition={{ duration: 0.6, delay: 0.08 }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-14"
         >
           {CREDENTIALS.map((cred, idx) => {
             const Icon = cred.icon;
@@ -177,7 +129,7 @@ export default function About() {
                 key={idx}
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.45, delay: 0.15 + idx * 0.08 }}
+                transition={{ duration: 0.4, delay: 0.12 + idx * 0.07 }}
                 className="flex items-start gap-4 rounded-xl p-5"
                 style={{
                   background: "#FFFFFF",
@@ -222,123 +174,163 @@ export default function About() {
           })}
         </motion.div>
 
-        {/* ── Teaching Philosophy ── */}
+        {/* ── Bio ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-16"
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mb-14"
         >
-          <div className="flex items-center gap-3 mb-8">
-            <Target size={22} style={{ color: "#C8860A" }} />
-            <h2
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "1.7rem",
-                color: "#1E2130",
-              }}
-            >
-              Teaching Philosophy
-            </h2>
-          </div>
-
-          <div className="space-y-5">
-            {TEACHING_PRINCIPLES.map((principle, idx) => (
-              <motion.div
-                key={principle.number}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.45, delay: 0.25 + idx * 0.1 }}
-                className="flex gap-5 rounded-xl p-6"
+          <div
+            className="rounded-2xl p-8 space-y-5"
+            style={{
+              background: "#FFFFFF",
+              border: "1px solid rgba(0,0,0,0.07)",
+              boxShadow: "0 2px 16px rgba(0,0,0,0.05)",
+            }}
+          >
+            {[
+              "There's a version of LSAT prep that's essentially sophisticated memorization — a different trick for every question type, a shortcut layered on top of a pattern layered on top of a rule. I don't teach that version.",
+              "What I teach is the architecture beneath the test: how arguments are constructed, where they're designed to mislead you, and how to engage with them systematically rather than by instinct or elimination. That distinction matters more than most students realize. A student who understands why the Negation Test works — not just how to execute it — can adapt when a question surfaces reasoning they've never encountered before. The student who memorized a procedure cannot.",
+              "I'm Devaney — a JD and Legal Education Specialist with a background in legal reasoning and a deep interest in how people actually learn difficult things. I've spent my career working at the intersection of law and pedagogy, tutoring students through the LSAT and the Bar Exam and thinking seriously about what separates genuine comprehension from the appearance of it. I tend to find the structural logic underneath a concept before I teach it, because I've found that students don't really learn from examples — they learn from principles, and then examples become obvious.",
+              "My students are usually the ones who have already done the practice problems and still can't identify where exactly their reasoning breaks down. If the score isn't moving despite the hours, that's almost always a signal that something structural is off — a gap in how the argument is being read, not how hard it's being studied. That's the problem I'm best at solving.",
+            ].map((para, idx) => (
+              <p
+                key={idx}
                 style={{
-                  background: "#FFFFFF",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                  fontFamily: "'Lora', serif",
+                  fontSize: "1.02rem",
+                  color: "rgba(30,33,48,0.72)",
+                  lineHeight: 1.9,
                 }}
               >
-                <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center font-bold"
-                    style={{
-                      background: `${principle.color}12`,
-                      border: `1px solid ${principle.color}28`,
-                      color: principle.color,
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    {principle.number}
-                  </div>
-                </div>
-                <div>
-                  <h3
-                    className="mb-2"
-                    style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontWeight: 700,
-                      fontSize: "1.05rem",
-                      color: principle.color,
-                    }}
-                  >
-                    {principle.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontFamily: "'Lora', serif",
-                      fontSize: "0.97rem",
-                      color: "rgba(30,33,48,0.65)",
-                      lineHeight: 1.85,
-                    }}
-                  >
-                    {principle.body}
-                  </p>
-                </div>
-              </motion.div>
+                {para}
+              </p>
             ))}
           </div>
         </motion.div>
 
-        {/* ── What to Expect ── */}
+        {/* ── Teaching Philosophy pull quote ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-16"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-14"
         >
-          <div className="flex items-center gap-3 mb-8">
-            <Users size={22} style={{ color: "#2E7D52" }} />
+          <blockquote
+            className="rounded-2xl p-8"
+            style={{
+              background: "linear-gradient(135deg, rgba(91,74,138,0.07) 0%, rgba(200,134,10,0.06) 100%)",
+              border: "1px solid rgba(91,74,138,0.15)",
+              borderLeft: "4px solid #5B4A8A",
+            }}
+          >
+            <p
+              style={{
+                fontFamily: "'Lora', serif",
+                fontStyle: "italic",
+                fontSize: "1.1rem",
+                color: "#1E2130",
+                lineHeight: 1.85,
+              }}
+            >
+              "I don't believe the LSAT is a test of raw intelligence. I believe it's a test of whether your
+              reasoning has been disciplined enough to operate under pressure — and that's something you can
+              deliberately develop. That's the only version of this work that interests me."
+            </p>
+            <p
+              className="mt-4"
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                color: "#5B4A8A",
+              }}
+            >
+              — Devaney M. Page
+            </p>
+          </blockquote>
+        </motion.div>
+
+        {/* ── Work With Me ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mb-14"
+        >
+          <div className="flex items-center gap-3 mb-7">
+            <Award size={22} style={{ color: "#C8860A" }} />
             <h2
               style={{
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 700,
-                fontSize: "1.7rem",
+                fontSize: "1.6rem",
                 color: "#1E2130",
               }}
             >
-              What to Expect in Sessions
+              Work With Me
             </h2>
           </div>
 
+          <p
+            className="mb-6"
+            style={{
+              fontFamily: "'Lora', serif",
+              fontSize: "1.02rem",
+              color: "rgba(30,33,48,0.7)",
+              lineHeight: 1.9,
+              maxWidth: "44rem",
+            }}
+          >
+            I offer one-on-one tutoring for the LSAT and the Bar Exam. Sessions are built around your
+            diagnostic needs, not a generic curriculum — we start by identifying exactly where your
+            reasoning breaks down and work backward from there.
+          </p>
+
+          <p
+            className="mb-6"
+            style={{
+              fontFamily: "'Lora', serif",
+              fontStyle: "italic",
+              fontSize: "0.97rem",
+              color: "rgba(30,33,48,0.55)",
+              lineHeight: 1.7,
+              maxWidth: "44rem",
+            }}
+          >
+            <strong style={{ fontStyle: "normal", color: "#1E2130" }}>Who I work best with:</strong>{" "}
+            Students who are serious, have already put in some foundational work, and want to understand
+            the test rather than outmaneuver it.
+          </p>
+
+          {/* What to expect */}
           <div
-            className="rounded-xl p-6"
+            className="rounded-xl p-6 mb-8"
             style={{
               background: "#FFFFFF",
               border: "1px solid rgba(0,0,0,0.07)",
               boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
             }}
           >
-            <div className="space-y-4">
+            <p
+              className="mb-4"
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.85rem",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(30,33,48,0.4)",
+              }}
+            >
+              What to expect
+            </p>
+            <div className="space-y-3">
               {WHAT_TO_EXPECT.map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.35, delay: 0.35 + idx * 0.07 }}
-                  className="flex items-start gap-3"
-                >
+                <div key={idx} className="flex items-start gap-3">
                   <CheckCircle2
-                    size={18}
+                    size={17}
                     className="flex-shrink-0 mt-0.5"
                     style={{ color: "#2E7D52" }}
                   />
@@ -352,130 +344,197 @@ export default function About() {
                   >
                     {item}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
-        </motion.div>
 
-        {/* ── Hire Me / Contact CTA ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="rounded-2xl p-8"
-          style={{
-            background: "linear-gradient(135deg, #1E2130 0%, #2D1B69 100%)",
-            boxShadow: "0 8px 32px rgba(30,33,48,0.18)",
-          }}
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <Award size={24} style={{ color: "#C8860A" }} />
-            <h2
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "1.6rem",
-                color: "#F7F4EF",
-              }}
-            >
-              Work With Me
-            </h2>
-          </div>
-
-          <p
-            className="mb-8"
+          {/* Rates */}
+          <div
+            className="rounded-xl p-6 mb-8"
             style={{
-              fontFamily: "'Lora', serif",
-              fontSize: "1rem",
-              color: "rgba(247,244,239,0.7)",
-              lineHeight: 1.85,
-              maxWidth: "38rem",
+              background: "#FFFFFF",
+              border: "1px solid rgba(0,0,0,0.07)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
             }}
           >
-            I take on a limited number of private tutoring clients each month to
-            ensure every student receives focused, personalized attention. If
-            you're serious about your LSAT score — whether you're aiming for a
-            10-point improvement or targeting a 170+ — I'd like to hear from
-            you.
-          </p>
+            <div className="flex items-center gap-2 mb-5">
+              <DollarSign size={18} style={{ color: "#C8860A" }} />
+              <p
+                style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "rgba(30,33,48,0.4)",
+                }}
+              >
+                Rates
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {[
+                { format: "In-Person", rate: "$85 / hour" },
+                { format: "Online", rate: "$75 / hour" },
+              ].map((row) => (
+                <div
+                  key={row.format}
+                  className="rounded-xl p-4 text-center"
+                  style={{
+                    background: "rgba(200,134,10,0.05)",
+                    border: "1px solid rgba(200,134,10,0.15)",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontWeight: 700,
+                      fontSize: "1.4rem",
+                      color: "#C8860A",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {row.rate}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Lora', serif",
+                      fontSize: "0.85rem",
+                      color: "rgba(30,33,48,0.5)",
+                      marginTop: "0.3rem",
+                    }}
+                  >
+                    {row.format}
+                  </p>
+                </div>
+              ))}
+            </div>
 
+            {/* Policies */}
+            <div className="space-y-3 pt-4" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+              <div className="flex items-start gap-3">
+                <Clock size={16} className="flex-shrink-0 mt-0.5" style={{ color: "#5B4A8A" }} />
+                <p
+                  style={{
+                    fontFamily: "'Lora', serif",
+                    fontSize: "0.9rem",
+                    color: "rgba(30,33,48,0.6)",
+                    lineHeight: 1.65,
+                  }}
+                >
+                  <strong style={{ color: "#1E2130" }}>Cancellation:</strong> Two hours' notice is
+                  required to cancel or reschedule. Late cancellations may be charged at the full
+                  session rate.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <ShieldCheck size={16} className="flex-shrink-0 mt-0.5" style={{ color: "#2E7D52" }} />
+                <p
+                  style={{
+                    fontFamily: "'Lora', serif",
+                    fontSize: "0.9rem",
+                    color: "rgba(30,33,48,0.6)",
+                    lineHeight: 1.65,
+                  }}
+                >
+                  <strong style={{ color: "#1E2130" }}>Good Fit Guarantee:</strong> Your first lesson
+                  is backed by a Good Fit Guarantee — if it isn't the right match, you won't be charged.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             <a
-              href="mailto:devaney@example.com"
+              href="https://calendly.com/thedevanagari"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200"
               style={{
                 background: "#C8860A",
                 color: "#FFFFFF",
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontSize: "0.95rem",
-                boxShadow: "0 2px 12px rgba(200,134,10,0.3)",
+                boxShadow: "0 2px 12px rgba(200,134,10,0.28)",
+                textDecoration: "none",
+              }}
+            >
+              <CalendarDays size={18} />
+              Book a Session
+            </a>
+
+            <a
+              href="mailto:thedevanagari@gmail.com"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200"
+              style={{
+                background: "rgba(30,33,48,0.06)",
+                color: "#1E2130",
+                border: "1px solid rgba(30,33,48,0.12)",
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "0.95rem",
                 textDecoration: "none",
               }}
             >
               <Mail size={18} />
-              Email Devaney
+              thedevanagari@gmail.com
             </a>
-
-            <button
-              onClick={() => navigate("/lessons")}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200"
-              style={{
-                background: "rgba(247,244,239,0.1)",
-                color: "#F7F4EF",
-                border: "1px solid rgba(247,244,239,0.2)",
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: "0.95rem",
-              }}
-            >
-              <BookOpen size={18} />
-              Explore Free Lessons
-              <ArrowRight size={16} />
-            </button>
           </div>
-
-          <p
-            className="mt-6"
-            style={{
-              fontFamily: "'Lora', serif",
-              fontStyle: "italic",
-              fontSize: "0.85rem",
-              color: "rgba(247,244,239,0.4)",
-            }}
-          >
-            Sessions available via Zoom · Hampton/Newport News area in-person by arrangement
-          </p>
         </motion.div>
 
-        {/* ── Message at bottom ── */}
+        {/* ── A Note on This Site ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-12 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-14"
         >
-          <p
+          <div
+            className="rounded-2xl p-7"
             style={{
-              fontFamily: "'Lora', serif",
-              fontStyle: "italic",
-              fontSize: "1rem",
-              color: "rgba(30,33,48,0.4)",
-              lineHeight: 1.8,
+              background: "rgba(46,125,82,0.05)",
+              border: "1px solid rgba(46,125,82,0.15)",
             }}
           >
-            "Charge it to my head, not my heart." — a framework for extending
-            grace, to yourself and to the exam.
-          </p>
-          <p
-            className="mt-1"
-            style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: "0.8rem",
-              color: "rgba(30,33,48,0.3)",
-            }}
-          >
-            — Devaney M. Page
-          </p>
+            <p
+              className="mb-1"
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.8rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "#2E7D52",
+              }}
+            >
+              A Note on This Site
+            </p>
+            <p
+              style={{
+                fontFamily: "'Lora', serif",
+                fontSize: "1rem",
+                color: "rgba(30,33,48,0.68)",
+                lineHeight: 1.9,
+              }}
+            >
+              The lessons here are free — a small attempt to make rigorous LSAT instruction more
+              accessible than the prep industry typically allows. If one of them helped you think about
+              something differently, or if you're ready to go deeper with individual instruction, I'd
+              love to hear from you.
+            </p>
+            <button
+              onClick={() => navigate("/lessons")}
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200"
+              style={{
+                color: "#2E7D52",
+                fontFamily: "'Space Grotesk', sans-serif",
+              }}
+            >
+              Explore free lessons
+              <ArrowRight size={15} />
+            </button>
+          </div>
         </motion.div>
 
       </div>
