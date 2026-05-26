@@ -508,3 +508,129 @@ export async function getQuestionsFilteredByTags(
     return { questions: [], total: 0 };
   }
 }
+
+// ─── Feature Flag Helpers ─────────────────────────────────────────────────────
+
+import { featureFlags, InsertFeatureFlag, FeatureFlag } from "../drizzle/schema";
+
+/** Default flags seeded on first access if the table is empty */
+const DEFAULT_FLAGS: InsertFeatureFlag[] = [
+  {
+    key: "lesson_progress_bar",
+    name: "Lesson Progress Bar",
+    description: "Show a 'X of 7 lessons completed' progress bar at the top of the /lessons hub.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "assumption_family_arc_cta",
+    name: "Assumption Family Arc CTA",
+    description: "Show a direct 'Next: Flaw in the Reasoning →' button at the end of the Sufficient Assumptions lesson recap.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "about_testimonials",
+    name: "About Page Testimonials",
+    description: "Show the student testimonials section on the About page. Disable to swap in new quotes without a full deploy.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "ai_lesson_plan_generator",
+    name: "AI Lesson Plan Generator",
+    description: "Show the AI Lesson Plan Generator link in the main navigation bar.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "question_bank",
+    name: "Question Bank",
+    description: "Show the Question Bank link in the main navigation bar.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+];
+
+/**
+ * Seed default flags if the table is empty, then return all flags.
+ */
+async function seedAndGetFlags(): Promise<FeatureFlag[]> {
+  const db = await getDb();
+  if (!db) return [];
+  try {
+    const existing = await db.select().from(featureFlags);
+    if (existing.length === 0) {
+      for (const flag of DEFAULT_FLAGS) {
+        try {
+          await db.insert(featureFlags).values(flag);
+        } catch {
+          // skip if already exists (race condition)
+        }
+      }
+      return db.select().from(featureFlags);
+    }
+    return existing;
+  } catch (error) {
+    console.error("[Database] Failed to seed/get flags:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all feature flags (seeds defaults on first call).
+ */
+export async function getAllFlags(): Promise<FeatureFlag[]> {
+  return seedAndGetFlags();
+}
+
+/**
+ * Get a single flag by key. Returns null if not found.
+ */
+export async function getFlagByKey(key: string): Promise<FeatureFlag | null> {
+  const db = await getDb();
+  if (!db) return null;
+  try {
+    const result = await db.select().from(featureFlags).where(eq(featureFlags.key, key)).limit(1);
+    return result.length > 0 ? result[0] : null;
+  } catch (error) {
+    console.error("[Database] Failed to get flag:", error);
+    return null;
+  }
+}
+
+/**
+ * Toggle a flag on or off. Returns the updated flag.
+ */
+export async function toggleFlag(key: string, enabled: boolean): Promise<FeatureFlag | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  try {
+    await db
+      .update(featureFlags)
+      .set({ enabled: enabled ? 1 : 0 })
+      .where(eq(featureFlags.key, key));
+    return getFlagByKey(key);
+  } catch (error) {
+    console.error("[Database] Failed to toggle flag:", error);
+    throw error;
+  }
+}
+
+/**
+ * Update rollout percentage for a flag (0–100).
+ */
+export async function setFlagRollout(key: string, rolloutPercentage: number): Promise<FeatureFlag | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  try {
+    await db
+      .update(featureFlags)
+      .set({ rolloutPercentage: Math.max(0, Math.min(100, rolloutPercentage)) })
+      .where(eq(featureFlags.key, key));
+    return getFlagByKey(key);
+  } catch (error) {
+    console.error("[Database] Failed to set flag rollout:", error);
+    throw error;
+  }
+}

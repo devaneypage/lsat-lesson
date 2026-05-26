@@ -21,6 +21,9 @@ import {
   bulkRemoveTagFromQuestions,
   getQuestionsWithTags,
   getQuestionsFilteredByTags,
+  getAllFlags,
+  toggleFlag,
+  setFlagRollout,
 } from "./db";
 import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
@@ -339,6 +342,47 @@ export const appRouter = router({
           input.search,
           input.category
         );
+      }),
+  }),
+
+  // ─── Feature Flags ───────────────────────────────────────────────────────────
+  flags: router({
+    /** Public: read all flags (frontend uses this to gate features) */
+    list: publicProcedure.query(async () => {
+      const flags = await getAllFlags();
+      // Return a simple key→enabled map for easy consumption
+      return flags.map((f) => ({
+        key: f.key,
+        name: f.name,
+        description: f.description ?? "",
+        enabled: f.enabled === 1,
+        rolloutPercentage: f.rolloutPercentage,
+        updatedAt: f.updatedAt,
+      }));
+    }),
+
+    /** Admin only: toggle a flag on or off */
+    toggle: protectedProcedure
+      .input(z.object({ key: z.string().min(1), enabled: z.boolean() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can toggle feature flags" });
+        }
+        const updated = await toggleFlag(input.key, input.enabled);
+        if (!updated) throw new TRPCError({ code: "NOT_FOUND", message: `Flag '${input.key}' not found` });
+        return { key: updated.key, enabled: updated.enabled === 1 };
+      }),
+
+    /** Admin only: set rollout percentage (0–100) */
+    setRollout: protectedProcedure
+      .input(z.object({ key: z.string().min(1), rolloutPercentage: z.number().min(0).max(100) }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can set rollout percentages" });
+        }
+        const updated = await setFlagRollout(input.key, input.rolloutPercentage);
+        if (!updated) throw new TRPCError({ code: "NOT_FOUND", message: `Flag '${input.key}' not found` });
+        return { key: updated.key, rolloutPercentage: updated.rolloutPercentage };
       }),
   }),
 

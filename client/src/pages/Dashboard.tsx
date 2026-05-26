@@ -8,8 +8,9 @@
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain, Layers, AlertTriangle } from "lucide-react";
+import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain, Layers, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { getLessonCompletion } from "@/hooks/useLessonCompletion";
+import { useFeatureFlag } from "@/lib/flags";
 
 const LESSONS = [
   {
@@ -101,6 +102,7 @@ const LESSONS = [
 export default function Dashboard() {
   const [, navigate] = useLocation();
   const [completedLessons, setCompletedLessons] = useState<Record<string, boolean>>({});
+  const { enabled: showProgressBar } = useFeatureFlag("lesson_progress_bar");
 
   // Read completion flags from localStorage on mount
   useEffect(() => {
@@ -110,6 +112,8 @@ export default function Dashboard() {
     });
     setCompletedLessons(flags);
   }, []);
+
+  const completedCount = Object.values(completedLessons).filter(Boolean).length;
 
   const handleLessonClick = (lessonId: string) => {
     navigate(`/lessons/${lessonId}`);
@@ -182,6 +186,47 @@ export default function Dashboard() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-10"
         >
+          {/* Lesson Progress Bar — feature flagged */}
+          {showProgressBar && (
+            <div
+              className="mb-8 rounded-xl p-4"
+              style={{
+                background: "rgba(0,102,255,0.05)",
+                border: "1.5px solid rgba(0,102,255,0.15)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={16} style={{ color: "var(--primary)" }} />
+                  <span
+                    className="text-sm font-semibold"
+                    style={{ color: "var(--foreground)", fontFamily: "'Inter', sans-serif" }}
+                  >
+                    {completedCount} of {LESSONS.length} lessons completed
+                  </span>
+                </div>
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: "var(--primary)", fontFamily: "'Poppins', sans-serif" }}
+                >
+                  {Math.round((completedCount / LESSONS.length) * 100)}%
+                </span>
+              </div>
+              <div
+                className="w-full rounded-full overflow-hidden"
+                style={{ height: "8px", background: "rgba(0,102,255,0.12)" }}
+              >
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(completedCount / LESSONS.length) * 100}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className="h-full rounded-full"
+                  style={{ background: "var(--primary)" }}
+                />
+              </div>
+            </div>
+          )}
+
           <h2
             style={{
               fontFamily: "'Poppins', sans-serif",

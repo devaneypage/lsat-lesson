@@ -29,6 +29,7 @@ import type { LessonStep } from "@/components/ProgressBar";
 import ProgressBar from "@/components/ProgressBar";
 import SessionPlanCTA from "@/components/SessionPlanCTA";
 import { useLessonCompletion } from "@/hooks/useLessonCompletion";
+import { useFeatureFlag } from "@/lib/flags";
 
 // ─── Step definitions ────────────────────────────────────────────────────────
 
@@ -1088,9 +1089,10 @@ function RecapStep() {
           }}
         >
           You've completed both halves of the Assumption Family. The natural
-          next step is <strong style={{ color: INK }}>Common Flaws</strong> —
-          where you'll learn to identify the structural weaknesses that
-          Strengthen/Weaken and Flaw questions exploit.{" "}
+          next step is{" "}
+          <strong style={{ color: INK }}>Flaw in the Reasoning</strong> —
+          where you'll learn to name the structural error the argument commits,
+          completing the three-lesson Assumption Family arc.{" "}
           <button
             onClick={() => navigate("/lessons")}
             style={{
@@ -1109,6 +1111,9 @@ function RecapStep() {
         </p>
       </div>
 
+      {/* Assumption Family Arc CTA — feature flagged */}
+      <ArcCTA navigate={navigate} />
+
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
@@ -1126,6 +1131,31 @@ function RecapStep() {
         Back to Lessons
       </motion.button>
     </SectionReveal>
+  );
+}
+
+/** Assumption Family Arc CTA — shown only when the feature flag is enabled */
+function ArcCTA({ navigate }: { navigate: (path: string) => void }) {
+  const { enabled } = useFeatureFlag("assumption_family_arc_cta");
+  if (!enabled) return null;
+  return (
+    <motion.button
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={() => navigate("/lessons/flaw-in-reasoning")}
+      className="flex items-center gap-2 px-7 py-3 rounded-xl font-semibold transition-all w-full justify-center"
+      style={{
+        background: `${AMBER}12`,
+        color: AMBER,
+        border: `1.5px solid ${AMBER}40`,
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: "1rem",
+        marginBottom: "0.75rem",
+      }}
+    >
+      Next: Flaw in the Reasoning
+      <ArrowRight size={18} />
+    </motion.button>
   );
 }
 

@@ -25,6 +25,7 @@ import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import TagManager from "./pages/TagManager";
 import MainNavigationBar from "./components/MainNavigationBar";
 import About from "@/pages/About";
+import FlagAdmin from "@/pages/FlagAdmin";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -58,6 +59,9 @@ function Router() {
         
         {/* About / Hire Me */}
         <Route path="/about" component={About} />
+
+        {/* Admin — owner-only */}
+        <Route path="/admin/flags" component={FlagAdmin} />
 
         {/* Error handling */}
         <Route path={"/404"} component={NotFound} />

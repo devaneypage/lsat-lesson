@@ -102,3 +102,26 @@ export const questionTags = mysqlTable("questionTags", {
 
 export type QuestionTag = typeof questionTags.$inferSelect;
 export type InsertQuestionTag = typeof questionTags.$inferInsert;
+
+/**
+ * Feature flags table — owner-controlled toggles for gradual rollouts,
+ * kill switches, and A/B testing without redeployment.
+ */
+export const featureFlags = mysqlTable("featureFlags", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Unique snake_case key used in code: e.g. 'lesson_progress_bar' */
+  key: varchar("key", { length: 128 }).notNull().unique(),
+  /** Human-readable name shown in the admin panel */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** What this flag controls */
+  description: text("description"),
+  /** Whether the flag is currently enabled */
+  enabled: int("enabled").default(0).notNull(), // 0=off, 1=on (MySQL has no boolean)
+  /** Optional: percentage rollout 0-100 (0 = off, 100 = full rollout) */
+  rolloutPercentage: int("rolloutPercentage").default(100).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FeatureFlag = typeof featureFlags.$inferSelect;
+export type InsertFeatureFlag = typeof featureFlags.$inferInsert;

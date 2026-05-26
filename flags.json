@@ -1,0 +1,14 @@
+{
+  "flags": [
+    {
+      "key": "new_feature",
+      "description": "Enable new feature",
+      "origin": "https://example.com"
+    },
+    {
+      "key": "beta_access",
+      "description": "Beta features",
+      "origin": "https://example.com"
+    }
+  ]
+}

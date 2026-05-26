@@ -22,6 +22,7 @@ import {
   Quote,
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { useFeatureFlag } from "@/lib/flags";
 
 const CREDENTIALS = [
   {
@@ -319,8 +320,11 @@ export default function About() {
           </blockquote>
         </motion.div>
 
-        {/* ── Testimonials ── */}
-        <motion.div
+        {/* ── Testimonials — feature flagged ── */}
+        <TestimonialsSection />
+
+        {/* __ placeholder to keep the JSX structure intact __ */}
+        {false && <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.22 }}
@@ -404,7 +408,7 @@ export default function About() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </motion.div>}
 
         {/* ── Work With Me ── */}
         <motion.div
@@ -693,5 +697,100 @@ export default function About() {
 
       </div>
     </div>
+  );
+}
+
+// ─── TestimonialsSection — feature flagged ────────────────────────────────────
+
+function TestimonialsSection() {
+  const { enabled } = useFeatureFlag("about_testimonials");
+  if (!enabled) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.22 }}
+      className="mb-14"
+    >
+      <div className="flex items-center gap-3 mb-7">
+        <Quote size={22} style={{ color: "#5B4A8A" }} />
+        <h2
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 700,
+            fontSize: "1.6rem",
+            color: "#1E2130",
+          }}
+        >
+          What Students Say
+        </h2>
+      </div>
+
+      <div className="space-y-5">
+        {TESTIMONIALS.map((t, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.27 + idx * 0.08 }}
+            className="rounded-xl p-6"
+            style={{
+              background: "#FFFFFF",
+              border: "1px solid rgba(0,0,0,0.07)",
+              borderLeft: `4px solid ${t.color}`,
+              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+            }}
+          >
+            <p
+              className="mb-4"
+              style={{
+                fontFamily: "'Lora', serif",
+                fontStyle: "italic",
+                fontSize: "1rem",
+                color: "rgba(30,33,48,0.72)",
+                lineHeight: 1.85,
+              }}
+            >
+              "{t.quote}"
+            </p>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                style={{
+                  background: `${t.color}18`,
+                  color: t.color,
+                  fontFamily: "'Space Grotesk', sans-serif",
+                }}
+              >
+                {t.name[0]}
+              </div>
+              <div>
+                <span
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "0.85rem",
+                    color: "#1E2130",
+                  }}
+                >
+                  {t.name}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'Lora', serif",
+                    fontSize: "0.8rem",
+                    color: "rgba(30,33,48,0.4)",
+                    marginLeft: "0.5rem",
+                  }}
+                >
+                  {t.detail}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
   );
 }
