@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
+import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 
 type FlawStep = "intro" | "flaws" | "practice" | "recap";
 const STEPS = ["intro", "flaws", "practice", "recap"] as const satisfies readonly FlawStep[];
@@ -93,6 +94,7 @@ export default function LessonCommonFlaws() {
   const [, navigate] = useLocation();
   const { currentStep, goTo, resetProgress, hasStarted } =
     useLessonStepProgress("common-flaws", STEPS);
+  const { markComplete } = useLessonCompletion("common-flaws");
 
   const [revealedFlawIndex, setRevealedFlawIndex] = useState<number>(-1);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -101,7 +103,10 @@ export default function LessonCommonFlaws() {
   const handleNext = () => {
     if (currentStep === "intro") goTo("flaws");
     else if (currentStep === "flaws") goTo("practice");
-    else if (currentStep === "practice") goTo("recap");
+    else if (currentStep === "practice") {
+      goTo("recap");
+      markComplete();
+    }
   };
 
   const toggleFlawReveal = (idx: number) => {

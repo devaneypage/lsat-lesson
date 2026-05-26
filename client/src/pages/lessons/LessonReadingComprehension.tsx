@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, BookMarked, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
+import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 
 type RCStep = "intro" | "framework" | "mapping" | "practice" | "recap";
 const STEPS = ["intro", "framework", "mapping", "practice", "recap"] as const satisfies readonly RCStep[];
@@ -78,6 +79,7 @@ export default function LessonReadingComprehension() {
   const [, navigate] = useLocation();
   const { currentStep, goTo, resetProgress, hasStarted } =
     useLessonStepProgress("reading-comprehension", STEPS);
+  const { markComplete } = useLessonCompletion("reading-comprehension");
   const [revealedTipIndex, setRevealedTipIndex] = useState<number>(-1);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
   const [showExplanations, setShowExplanations] = useState<{ [key: number]: boolean }>({});
@@ -86,7 +88,10 @@ export default function LessonReadingComprehension() {
     if (currentStep === "intro") goTo("framework");
     else if (currentStep === "framework") goTo("mapping");
     else if (currentStep === "mapping") goTo("practice");
-    else if (currentStep === "practice") goTo("recap");
+    else if (currentStep === "practice") {
+      goTo("recap");
+      markComplete();
+    }
   };
 
   const handleReset = () => {

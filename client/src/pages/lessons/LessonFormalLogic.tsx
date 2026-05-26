@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, Lightbulb, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
+import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 
 type FLStep = "intro" | "notation" | "conditionals" | "negation" | "quantifiers" | "practice" | "recap";
 const STEPS = ["intro", "notation", "conditionals", "negation", "quantifiers", "practice", "recap"] as const satisfies readonly FLStep[];
@@ -142,6 +143,7 @@ export default function LessonFormalLogic() {
   const [, navigate] = useLocation();
   const { currentStep, goTo, resetProgress, hasStarted } =
     useLessonStepProgress("formal-logic", STEPS);
+  const { markComplete } = useLessonCompletion("formal-logic");
   const [expandedNotation, setExpandedNotation] = useState<number>(-1);
   const [expandedRule, setExpandedRule] = useState<number>(-1);
   const [expandedQuantifier, setExpandedQuantifier] = useState<number>(-1);
@@ -154,7 +156,10 @@ export default function LessonFormalLogic() {
     else if (currentStep === "conditionals") goTo("negation");
     else if (currentStep === "negation") goTo("quantifiers");
     else if (currentStep === "quantifiers") goTo("practice");
-    else if (currentStep === "practice") goTo("recap");
+    else if (currentStep === "practice") {
+      goTo("recap");
+      markComplete();
+    }
   };
 
   const handleReset = () => {

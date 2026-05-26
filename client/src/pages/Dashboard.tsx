@@ -7,7 +7,9 @@
 
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain } from "lucide-react";
+import { useState, useEffect } from "react";
+import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain, Layers } from "lucide-react";
+import { getLessonCompletion } from "@/hooks/useLessonCompletion";
 
 const LESSONS = [
   {
@@ -70,10 +72,32 @@ const LESSONS = [
     difficulty: "Intermediate",
     status: "available",
   },
+  {
+    id: "sufficient-assumptions",
+    title: "Sufficient Assumptions",
+    description: "Master the Conditional Bridge Method to identify assumptions that guarantee an argument's conclusion.",
+    icon: Layers,
+    color: "#9b72cf",
+    bgColor: "rgba(155,114,207,0.08)",
+    borderColor: "rgba(155,114,207,0.25)",
+    duration: "~14 min",
+    difficulty: "Intermediate",
+    status: "available",
+  },
 ];
 
 export default function Dashboard() {
   const [, navigate] = useLocation();
+  const [completedLessons, setCompletedLessons] = useState<Record<string, boolean>>({});
+
+  // Read completion flags from localStorage on mount
+  useEffect(() => {
+    const flags: Record<string, boolean> = {};
+    LESSONS.forEach((lesson) => {
+      flags[lesson.id] = getLessonCompletion(lesson.id);
+    });
+    setCompletedLessons(flags);
+  }, []);
 
   const handleLessonClick = (lessonId: string) => {
     navigate(`/lessons/${lessonId}`);
@@ -173,7 +197,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {LESSONS.map((lesson, idx) => {
             const Icon = lesson.icon;
-            const isCompleted = lesson.status === "completed";
+            const isCompleted = completedLessons[lesson.id] ?? lesson.status === "completed";
 
             return (
               <motion.div

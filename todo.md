@@ -335,3 +335,17 @@
 - [x] Add About route to App.tsx
 - [x] Add About link to MainNavigationBar
 - [x] Fix all lesson back-nav buttons to point to /lessons instead of /
+
+## Lesson 6 + Completion Badges (May 26, 2026)
+
+- [x] Create useLessonCompletion hook (localStorage flag per lesson, getLessonCompletion helper)
+- [x] Build LessonSufficientAssumptions.tsx (6th lesson, Conditional Bridge Method, 5 answer choices)
+- [x] Add markComplete() to LessonNecessaryAssumptions (fires on reaching recap)
+- [x] Add markComplete() to LessonCommonFlaws
+- [x] Add markComplete() to LessonStrengthenWeaken
+- [x] Add markComplete() to LessonReadingComprehension
+- [x] Add markComplete() to LessonFormalLogic
+- [x] Update Dashboard.tsx to read completion flags and show dynamic green checkmarks
+- [x] Add Sufficient Assumptions card to Dashboard lesson grid (purple, Layers icon)
+- [x] Register /lessons/sufficient-assumptions route in App.tsx
+- [x] TypeScript check passes (0 errors)

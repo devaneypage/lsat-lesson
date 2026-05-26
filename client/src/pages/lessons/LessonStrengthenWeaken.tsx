@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
 import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
+import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 
 type StepType = "intro" | "strengthen" | "weaken" | "practice" | "recap";
 const STEPS = ["intro", "strengthen", "weaken", "practice", "recap"] as const satisfies readonly StepType[];
@@ -91,6 +92,7 @@ export default function LessonStrengthenWeaken() {
   const [, navigate] = useLocation();
   const { currentStep, goTo, resetProgress, hasStarted } =
     useLessonStepProgress("strengthen-weaken", STEPS);
+  const { markComplete } = useLessonCompletion("strengthen-weaken");
   const [revealedStrengthIndex, setRevealedStrengthIndex] = useState<number>(-1);
   const [revealedWeakenIndex, setRevealedWeakenIndex] = useState<number>(-1);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -100,7 +102,10 @@ export default function LessonStrengthenWeaken() {
     if (currentStep === "intro") goTo("strengthen");
     else if (currentStep === "strengthen") goTo("weaken");
     else if (currentStep === "weaken") goTo("practice");
-    else if (currentStep === "practice") goTo("recap");
+    else if (currentStep === "practice") {
+      goTo("recap");
+      markComplete();
+    }
   };
 
   const handleAnswer = (letter: string) => {

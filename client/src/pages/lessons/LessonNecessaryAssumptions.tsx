@@ -18,6 +18,7 @@ import RecapSection from "@/components/RecapSection";
 import FooterSection from "@/components/FooterSection";
 import SessionPlanCTA from "@/components/SessionPlanCTA";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
+import { useLessonCompletion } from "@/hooks/useLessonCompletion";
 import type { LessonStep } from "@/components/ProgressBar";
 
 const STEPS: LessonStep[] = ["hero", "bridge", "negation", "protip", "practice", "recap"];
@@ -26,6 +27,7 @@ export default function LessonNecessaryAssumptions() {
   const [, navigate] = useLocation();
   const { currentStep, setCurrentStep, resetProgress, hasStarted } =
     useLessonProgress("necessary-assumptions");
+  const { markComplete } = useLessonCompletion("necessary-assumptions");
 
   const handleStart = () => {
     setCurrentStep(1);
@@ -33,8 +35,13 @@ export default function LessonNecessaryAssumptions() {
   };
 
   const handleStepComplete = () => {
-    if (currentStep < STEPS.length - 1) {
-      setCurrentStep((s) => s + 1);
+    const nextStep = currentStep + 1;
+    if (nextStep < STEPS.length) {
+      setCurrentStep(nextStep);
+      // Mark complete when reaching recap (last step)
+      if (nextStep >= STEPS.length - 1) {
+        markComplete();
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
