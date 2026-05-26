@@ -106,9 +106,21 @@ export default function PathSelector() {
           <h1 className="text-4xl font-bold text-[#2D3561] mb-4">
             Choose Your Learning Path
           </h1>
-          <p className="text-lg text-[#4A5578] max-w-2xl mx-auto">
+          <p className="text-lg text-[#4A5578] max-w-2xl mx-auto mb-4">
             Select the area where you want to focus your LSAT preparation. You can change your path anytime.
           </p>
+          <button
+            onClick={() => navigate("/about")}
+            className="inline-flex items-center gap-2 text-sm transition-all duration-200 hover:opacity-80"
+            style={{
+              fontFamily: "'Lora', serif",
+              fontStyle: "italic",
+              color: "rgba(91,74,138,0.75)",
+            }}
+          >
+            <User size={14} style={{ color: "#5B4A8A" }} />
+            Taught by Devaney M. Page, JD
+          </button>
         </div>
 
         {/* Path Options Grid */}
