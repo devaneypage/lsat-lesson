@@ -1,0 +1,9 @@
+{
+  "query": "\nINSERT INTO featureFlags (`key`, name, description, enabled, rolloutPercentage)\nVALUES\n  ('lesson_progress_bar',       'Lesson Progress Bar',         'Shows a progress bar on the /lessons hub indicating how many lessons a student has completed', 1, 100),\n  ('assumption_family_arc_cta', 'Assumption Family Arc CTA',   'Shows a direct CTA button at the end of the Sufficient Assumptions lesson linking to Flaw in the Reasoning', 1, 100),\n  ('about_testimonials',        'About Page Testimonials',     'Shows the What Students Say testimonials section on the About page', 1, 100)\nON DUPLICATE KEY UPDATE\n  enabled           = VALUES(enabled),\n  rolloutPercentage = VALUES(rolloutPercentage),\n  updatedAt         = NOW();\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3ecwSL7MSEz9ShF.f33f9cfed73a --database 4kXdUkpMX9ujMWJCTbKx2q --execute \nINSERT INTO featureFlags (`key`, name, description, enabled, rolloutPercentage)\nVALUES\n  ('lesson_progress_bar',       'Lesson Progress Bar',         'Shows a progress bar on the /lessons hub indicating how many lessons a student has completed', 1, 100),\n  ('assumption_family_arc_cta', 'Assumption Family Arc CTA',   'Shows a direct CTA button at the end of the Sufficient Assumptions lesson linking to Flaw in the Reasoning', 1, 100),\n  ('about_testimonials',        'About Page Testimonials',     'Shows the What Students Say testimonials section on the About page', 1, 100)\nON DUPLICATE KEY UPDATE\n  enabled           = VALUES(enabled),\n  rolloutPercentage = VALUES(rolloutPercentage),\n  updatedAt         = NOW();\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 271
+}

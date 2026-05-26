@@ -106,6 +106,9 @@ export default function PathSelector() {
           <h1 className="text-4xl font-bold text-[#2D3561] mb-4">
             Choose Your Learning Path
           </h1>
+          <h2 className="text-base font-semibold text-[#5B4A8A] mb-3 tracking-wide uppercase" style={{ letterSpacing: "0.08em", fontSize: "0.8rem" }}>
+            Free LSAT Lessons &mdash; Logical Reasoning &amp; Reading Comprehension
+          </h2>
           <p className="text-lg text-[#4A5578] max-w-2xl mx-auto mb-4">
             Select the area where you want to focus your LSAT preparation. You can change your path anytime.
           </p>

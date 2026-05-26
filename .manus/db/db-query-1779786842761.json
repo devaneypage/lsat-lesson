@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, `key`, name, enabled, rolloutPercentage FROM featureFlags;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3ecwSL7MSEz9ShF.f33f9cfed73a --database 4kXdUkpMX9ujMWJCTbKx2q --execute SELECT id, `key`, name, enabled, rolloutPercentage FROM featureFlags;",
+  "rows": [
+    {
+      "id": "1",
+      "key": "lesson_progress_bar",
+      "name": "Lesson Progress Bar",
+      "enabled": "1",
+      "rolloutPercentage": "100"
+    },
+    {
+      "id": "2",
+      "key": "assumption_family_arc_cta",
+      "name": "Assumption Family Arc CTA",
+      "enabled": "1",
+      "rolloutPercentage": "100"
+    },
+    {
+      "id": "3",
+      "key": "about_testimonials",
+      "name": "About Page Testimonials",
+      "enabled": "1",
+      "rolloutPercentage": "100"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tkey\tname\tenabled\trolloutPercentage\n1\tlesson_progress_bar\tLesson Progress Bar\t1\t100\n2\tassumption_family_arc_cta\tAssumption Family Arc CTA\t1\t100\n3\tabout_testimonials\tAbout Page Testimonials\t1\t100\n",
+  "stderr": "",
+  "execution_time_ms": 266
+}
