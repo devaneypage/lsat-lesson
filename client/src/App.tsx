@@ -15,6 +15,7 @@ import LessonStrengthenWeaken from "@/pages/lessons/LessonStrengthenWeaken";
 import LessonReadingComprehension from "@/pages/lessons/LessonReadingComprehension";
 import LessonFormalLogic from "@/pages/lessons/LessonFormalLogic";
 import LessonSufficientAssumptions from "@/pages/lessons/LessonSufficientAssumptions";
+import LessonFlawInReasoning from "@/pages/lessons/LessonFlawInReasoning";
 import Resources from "./pages/Resources";
 import QuestionBank from "./pages/QuestionBank";
 import CurriculumGuide from "./pages/CurriculumGuide";
@@ -43,7 +44,8 @@ function Router() {
         <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
         <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
         <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
-        <Route path={"/lessons/sufficient-assumptions"} component={LessonSufficientAssumptions} />
+        <Route path={'/lessons/sufficient-assumptions'} component={LessonSufficientAssumptions} />
+        <Route path={'/lessons/flaw-in-reasoning'} component={LessonFlawInReasoning} />
         
         {/* Main Features */}
         <Route path="/resources" component={Resources} />

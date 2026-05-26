@@ -349,3 +349,15 @@
 - [x] Add Sufficient Assumptions card to Dashboard lesson grid (purple, Layers icon)
 - [x] Register /lessons/sufficient-assumptions route in App.tsx
 - [x] TypeScript check passes (0 errors)
+
+## Lesson 7 — Flaw in the Reasoning
+
+- [x] Create LessonFlawInReasoning.tsx (6 steps: Hero, Concept, Taxonomy, Flaw Spotter, Pro Tip, Practice, Recap)
+- [x] Signature visual: interactive Flaw Spotter (3 scenarios, 6 flaw type buttons, instant feedback)
+- [x] 5-choice practice question with full explanations
+- [x] localStorage progress persistence + Reset Progress button
+- [x] markComplete() wired to useLessonCompletion hook
+- [x] Assumption Family arc complete callout in Recap
+- [x] Route added to App.tsx (/lessons/flaw-in-reasoning)
+- [x] Lesson card added to Dashboard.tsx (red accent, AlertTriangle icon)
+- [x] TypeScript clean (0 errors)

@@ -8,7 +8,7 @@
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain, Layers } from "lucide-react";
+import { BookOpen, ChevronRight, Zap, Target, BarChart3, BookMarked, Brain, Layers, AlertTriangle } from "lucide-react";
 import { getLessonCompletion } from "@/hooks/useLessonCompletion";
 
 const LESSONS = [
@@ -81,6 +81,18 @@ const LESSONS = [
     bgColor: "rgba(155,114,207,0.08)",
     borderColor: "rgba(155,114,207,0.25)",
     duration: "~14 min",
+    difficulty: "Intermediate",
+    status: "available",
+  },
+  {
+    id: "flaw-in-reasoning",
+    title: "Flaw in the Reasoning",
+    description: "Name the structural error. Master the six core LSAT flaw types and the Two-Step Flaw Method with the interactive Flaw Spotter.",
+    icon: AlertTriangle,
+    color: "#B84030",
+    bgColor: "rgba(184,64,48,0.08)",
+    borderColor: "rgba(184,64,48,0.25)",
+    duration: "~16 min",
     difficulty: "Intermediate",
     status: "available",
   },
