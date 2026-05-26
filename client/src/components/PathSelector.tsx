@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StudentPathType } from "@/types/unified";
 import { usePath } from "@/contexts/PathContext";
-import { BookOpen, Brain, Zap, Target } from "lucide-react";
+import { BookOpen, Brain, Zap, Target, User, ArrowRight } from "lucide-react";
 
 interface PathOption {
   type: StudentPathType;
@@ -200,6 +200,41 @@ export default function PathSelector() {
             Start Comprehensive Path
           </Button>
         </div>
+
+        {/* Meet Your Instructor */}
+        <div className="mt-10 flex justify-center">
+          <button
+            onClick={() => navigate("/about")}
+            className="group inline-flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-200"
+            style={{
+              background: "rgba(91,74,138,0.07)",
+              border: "1px solid rgba(91,74,138,0.18)",
+            }}
+          >
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(91,74,138,0.15)" }}
+            >
+              <User size={16} style={{ color: "#5B4A8A" }} />
+            </div>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.9rem",
+                fontWeight: 500,
+                color: "#5B4A8A",
+              }}
+            >
+              Meet your instructor
+            </span>
+            <ArrowRight
+              size={15}
+              style={{ color: "#5B4A8A" }}
+              className="transition-transform duration-200 group-hover:translate-x-1"
+            />
+          </button>
+        </div>
+
       </div>
     </div>
   );
