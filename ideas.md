@@ -47,6 +47,20 @@
 
 ---
 
-## Selected Approach: **Approach 2 — Academic Chalkboard Deconstructed**
+## Selected Approach: **Academic Light — Warm Parchment** *(revised from original Approach 2 selection)*
 
-This approach best reflects Devaney's teaching persona: warm, intellectually rigorous, and personal. The dark chalkboard aesthetic creates an immersive "tutoring session" feel that is distinctive and memorable — far from a generic test-prep website. The hand-drawn diagram style for the Bridge Analogy will be a signature visual moment, and the progressive disclosure interaction mirrors the lesson script's step-by-step pedagogy.
+**Design Decision Log:** The initial selection was Approach 2 (Academic Chalkboard Deconstructed — dark charcoal `#1C1F26`). During implementation, the design was pivoted to a warm parchment light theme for the following reasons:
+
+1. **Commercial viability** — Light backgrounds perform better for sustained reading sessions and are more accessible across device types and ambient lighting conditions.
+2. **LSAT audience** — Students studying for high-stakes exams tend to prefer clean, distraction-free reading environments. The warm parchment (`#F7F4EF → #EDE8DF → #E4DDD0`) achieves the same warmth and academic feel without the cognitive load of dark mode.
+3. **Typography legibility** — Lora italic for stimulus text reads more naturally on light backgrounds, which is critical when students are parsing dense logical arguments.
+
+**Retained from Approach 2:** Space Grotesk + Lora typography system, progressive disclosure interaction model, amber/green/terracotta feedback color palette.
+
+**Actual implementation palette:**
+- Background: Warm parchment gradient `#F7F4EF → #EDE8DF → #E4DDD0`
+- Primary text: Deep navy `#1E2130`
+- Accent / highlights: Amber `#C8860A`
+- Correct feedback: Sage green `#2E7D52`
+- Incorrect feedback: Terracotta `#B84030`
+- Secondary accent: Deep violet `#5B4A8A`

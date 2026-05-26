@@ -20,6 +20,7 @@ import {
   Zap,
   Sparkles,
   Tag,
+  User,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
 
@@ -72,6 +73,12 @@ const NAV_ITEMS: NavItem[] = [
     route: "/tag-manager",
     icon: <Tag size={18} />,
     description: "Organize questions",
+  },
+  {
+    label: "About",
+    route: "/about",
+    icon: <User size={18} />,
+    description: "Hire Devaney",
   },
 ];
 

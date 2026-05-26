@@ -8,9 +8,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, BookMarked, CheckCircle2, AlertCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookMarked, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
+import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 
 type RCStep = "intro" | "framework" | "mapping" | "practice" | "recap";
+const STEPS = ["intro", "framework", "mapping", "practice", "recap"] as const satisfies readonly RCStep[];
 
 const PASSAGE = `The development of artificial intelligence has raised important questions about the nature of human cognition. Some researchers argue that AI systems, particularly those using deep learning, operate fundamentally differently from human brains. However, recent studies suggest that both artificial and biological neural networks rely on similar mathematical principles.
 
@@ -53,6 +55,7 @@ const PRACTICE_QUESTIONS = [
       { letter: "B", text: "Compare and contrast AI and human brains, noting similarities and key differences", isCorrect: true },
       { letter: "C", text: "Explain why AI systems lack consciousness", isCorrect: false },
       { letter: "D", text: "Criticize the use of AI in healthcare and criminal justice", isCorrect: false },
+      { letter: "E", text: "Propose a new theory of consciousness based on neural network research", isCorrect: false },
     ],
     explanation:
       "The passage presents a balanced comparison of AI and human cognition, highlighting both similarities (mathematical principles) and differences (neuroplasticity, consciousness). This is the main structure of the passage.",
@@ -64,6 +67,7 @@ const PRACTICE_QUESTIONS = [
       { letter: "B", text: "It allows humans to learn and recover in ways current AI cannot", isCorrect: true },
       { letter: "C", text: "It is less important than processing speed", isCorrect: false },
       { letter: "D", text: "It prevents humans from learning new skills", isCorrect: false },
+      { letter: "E", text: "It is a mathematical principle shared by both AI and human brains", isCorrect: false },
     ],
     explanation:
       "The passage explicitly states: 'Human brains continuously reorganize themselves throughout life, a process known as neuroplasticity. This allows humans to learn new skills and recover from injuries in ways that current AI systems cannot.'",
@@ -72,16 +76,25 @@ const PRACTICE_QUESTIONS = [
 
 export default function LessonReadingComprehension() {
   const [, navigate] = useLocation();
-  const [currentStep, setCurrentStep] = useState<RCStep>("intro");
+  const { currentStep, goTo, resetProgress, hasStarted } =
+    useLessonStepProgress("reading-comprehension", STEPS);
   const [revealedTipIndex, setRevealedTipIndex] = useState<number>(-1);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
   const [showExplanations, setShowExplanations] = useState<{ [key: number]: boolean }>({});
 
   const handleNext = () => {
-    if (currentStep === "intro") setCurrentStep("framework");
-    else if (currentStep === "framework") setCurrentStep("mapping");
-    else if (currentStep === "mapping") setCurrentStep("practice");
-    else if (currentStep === "practice") setCurrentStep("recap");
+    if (currentStep === "intro") goTo("framework");
+    else if (currentStep === "framework") goTo("mapping");
+    else if (currentStep === "mapping") goTo("practice");
+    else if (currentStep === "practice") goTo("recap");
+  };
+
+  const handleReset = () => {
+    resetProgress();
+    setRevealedTipIndex(-1);
+    setSelectedAnswers({});
+    setShowExplanations({});
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAnswer = (questionIdx: number, letter: string) => {
@@ -101,16 +114,39 @@ export default function LessonReadingComprehension() {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         whileHover={{ x: -4 }}
-        onClick={() => navigate("/")}
-        className="fixed top-6 left-6 z-40 p-2 rounded-lg transition-all duration-200"
+        onClick={() => navigate("/lessons")}
+        className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
         style={{
           background: "rgba(255,255,255,0.9)",
           border: "1px solid rgba(0,0,0,0.1)",
           backdropFilter: "blur(12px)",
         }}
+        title="Back to Lessons"
       >
         <ChevronLeft size={20} style={{ color: "#1E2130" }} />
       </motion.button>
+
+      {/* Reset Progress button */}
+      {hasStarted && (
+        <motion.button
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={handleReset}
+          className="fixed top-20 right-4 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+          style={{
+            background: "rgba(255,255,255,0.9)",
+            border: "1px solid rgba(0,0,0,0.1)",
+            backdropFilter: "blur(12px)",
+            color: "rgba(30,33,48,0.5)",
+            fontFamily: "'Space Grotesk', sans-serif",
+          }}
+          title="Reset lesson progress"
+        >
+          <RotateCcw size={14} />
+          Reset Progress
+        </motion.button>
+      )}
 
       <div className="container py-12">
         {/* Intro */}

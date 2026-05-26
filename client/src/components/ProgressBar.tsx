@@ -4,7 +4,7 @@
  */
 
 import { motion } from "framer-motion";
-import type { LessonStep } from "@/pages/Home";
+export type LessonStep = "hero" | "bridge" | "negation" | "protip" | "practice" | "recap";
 
 const STEP_LABELS: Record<LessonStep, string> = {
   hero: "Intro",

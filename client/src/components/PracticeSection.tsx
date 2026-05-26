@@ -36,6 +36,22 @@ const ANSWERS = [
       "If basic skills ARE sufficient, then the program could actually succeed — completely destroying the author's conclusion. The entire argument depends on this assumption being true. This is the Necessary Assumption.",
     isCorrect: true,
   },
+  {
+    letter: "D",
+    text: "The steelworkers who enroll in the program are highly motivated to change careers.",
+    negation: "The steelworkers who enroll in the program are not highly motivated to change careers.",
+    negationExplain:
+      "Even if workers are entirely unmotivated, the argument's conclusion (that the program will succeed) is still undermined by the mismatch between basic training and advanced job requirements. Worker motivation is irrelevant to whether the training is sufficient. This is not a necessary assumption.",
+    isCorrect: false,
+  },
+  {
+    letter: "E",
+    text: "The government has allocated sufficient funding to run the retraining program for at least five years.",
+    negation: "The government has not allocated sufficient funding to run the retraining program for at least five years.",
+    negationExplain:
+      "Funding duration is a practical concern but not what the argument hinges on. The argument's flaw is about the quality of training versus job requirements, not about how long the program runs. Negating this does not destroy the conclusion. This is not a necessary assumption.",
+    isCorrect: false,
+  },
 ];
 
 interface Props {

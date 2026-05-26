@@ -301,3 +301,37 @@
 - [x] Assign taxonomy tags to 139 Inference questions (5 new tags, 695 assignments)
 - [x] Re-classify 32 flaw fallback questions using LLM (19 re-classified, 13 confirmed Overlooked Possibilities)
 - [x] Deduplication: 0 duplicates found — database clean at 406 questions
+
+## Audit Fixes (Phase 1–3)
+
+- [ ] Phase 1: Resolve Home.tsx vs LessonNecessaryAssumptions.tsx duplication — keep step-by-step (LessonNA), redirect Home.tsx to /lessons/necessary-assumptions
+- [ ] Phase 2: Add localStorage progress persistence to all lesson pages (currentStep keyed by lesson ID, Reset Progress button)
+- [ ] Phase 3: Expand PracticeSection to 5 answer choices (A–E) matching real LSAT format
+- [ ] Phase 3: Expand LessonCommonFlaws practice question to 5 answer choices (A–E)
+- [ ] Phase 4: Update ideas.md to reflect actual light "Academic Warm Parchment" theme
+- [ ] Phase 4: Fix RecapSection "What's Next" — remove or qualify Sufficient Assumptions cross-reference since it's not a Dashboard lesson
+- [ ] Phase 5: Build /about page — bio, credentials, teaching approach, contact/booking CTA
+- [ ] Phase 5: Add "About" nav link to MainNavigationBar
+- [ ] Phase 5: Register /about route in App.tsx
+
+## Audit Fixes — Phase 1–5 (May 2026)
+
+- [x] Delete orphaned Home.tsx (duplicate lesson architecture resolved)
+- [x] Add useLessonProgress hook for numeric-step lessons (LessonNecessaryAssumptions)
+- [x] Add useLessonStepProgress hook for string-step lessons
+- [x] Add localStorage persistence + Reset Progress button to LessonNecessaryAssumptions
+- [x] Add localStorage persistence + Reset Progress button to LessonCommonFlaws
+- [x] Add localStorage persistence + Reset Progress button to LessonStrengthenWeaken
+- [x] Add localStorage persistence + Reset Progress button to LessonReadingComprehension
+- [x] Add localStorage persistence + Reset Progress button to LessonFormalLogic
+- [x] Expand PracticeSection (NA lesson) from 3 to 5 answer choices (D: motivation distractor, E: funding distractor)
+- [x] Expand LessonCommonFlaws practice from 4 to 5 answer choices
+- [x] Expand LessonStrengthenWeaken practice from 4 to 5 answer choices
+- [x] Expand LessonReadingComprehension practice questions to 5 answer choices each
+- [x] Expand LessonFormalLogic practice questions to 5 answer choices each
+- [x] Update ideas.md to document actual Warm Parchment light theme (with design decision log)
+- [x] Fix RecapSection What's Next — add "Explore all lessons" link to /lessons hub
+- [x] Build About/Hire Me page (bio, credentials, teaching philosophy, booking CTA)
+- [x] Add About route to App.tsx
+- [x] Add About link to MainNavigationBar
+- [x] Fix all lesson back-nav buttons to point to /lessons instead of /

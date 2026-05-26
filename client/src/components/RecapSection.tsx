@@ -4,7 +4,8 @@
  */
 
 import { motion } from "framer-motion";
-import { GitBranch, Zap, FlaskConical } from "lucide-react";
+import { GitBranch, Zap, FlaskConical, ArrowRight } from "lucide-react";
+import { useLocation } from "wouter";
 
 const TAKEAWAYS = [
   {
@@ -31,6 +32,7 @@ const TAKEAWAYS = [
 ];
 
 export default function RecapSection() {
+  const [, navigate] = useLocation();
   return (
     <motion.section
       initial={{ opacity: 0, y: 40 }}
@@ -179,6 +181,7 @@ export default function RecapSection() {
               fontSize: "1rem",
               color: "rgba(30,33,48,0.65)",
               lineHeight: 1.8,
+              marginBottom: "1rem",
             }}
           >
             Necessary Assumptions are just one piece of the puzzle — but they
@@ -191,6 +194,17 @@ export default function RecapSection() {
             <strong style={{ color: "#1E2130" }}>Flaw in the Reasoning</strong>.
             The logic is the same — only the task changes.
           </p>
+          <button
+            onClick={() => navigate("/lessons")}
+            className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200"
+            style={{
+              color: "#C8860A",
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}
+          >
+            Explore all lessons
+            <ArrowRight size={15} />
+          </button>
         </motion.div>
       </div>
     </motion.section>

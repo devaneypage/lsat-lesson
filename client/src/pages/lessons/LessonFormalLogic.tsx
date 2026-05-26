@@ -8,9 +8,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, Lightbulb, CheckCircle2, AlertCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lightbulb, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
+import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 
 type FLStep = "intro" | "notation" | "conditionals" | "negation" | "quantifiers" | "practice" | "recap";
+const STEPS = ["intro", "notation", "conditionals", "negation", "quantifiers", "practice", "recap"] as const satisfies readonly FLStep[];
 
 const NOTATION_CONCEPTS = [
   {
@@ -105,6 +107,7 @@ const PRACTICE_QUESTIONS = [
       { letter: "B", text: "If someone doesn't study hard, they're not a student", isCorrect: false },
       { letter: "C", text: "No students study hard", isCorrect: false },
       { letter: "D", text: "If someone is not a student, they don't study hard", isCorrect: false },
+      { letter: "E", text: "All students who study hard will succeed", isCorrect: false },
     ],
     explanation:
       "If ALL students study hard, then it's definitely true that SOME students study hard. The contrapositive of 'Student → Studies Hard' is 'Doesn't Study Hard → Not a Student,' but that's not one of the options. Option A is the correct logical consequence.",
@@ -116,6 +119,7 @@ const PRACTICE_QUESTIONS = [
       { letter: "B", text: "If the defendant is not guilty, then the evidence is not conclusive", isCorrect: false },
       { letter: "C", text: "If the evidence is conclusive, then the defendant is guilty", isCorrect: false },
       { letter: "D", text: "The defendant is guilty if and only if the evidence is conclusive", isCorrect: false },
+      { letter: "E", text: "The evidence is conclusive only if the defendant is guilty", isCorrect: false },
     ],
     explanation:
       "The contrapositive of 'P → Q' is '¬Q → ¬P'. So the contrapositive of 'Guilty → Conclusive Evidence' is 'Not Conclusive Evidence → Not Guilty.' This is logically equivalent to the original statement.",
@@ -127,6 +131,7 @@ const PRACTICE_QUESTIONS = [
       { letter: "B", text: "There exists at least one person who is not honest", isCorrect: true },
       { letter: "C", text: "No people are honest", isCorrect: false },
       { letter: "D", text: "Most people are not honest", isCorrect: false },
+      { letter: "E", text: "It is possible that all people are honest", isCorrect: false },
     ],
     explanation:
       "'Some people are not honest' means 'There exists at least one person who is not honest.' This is different from 'All people are not honest' (which would mean no one is honest) or 'No people are honest' (which means the same thing as all people being dishonest).",
@@ -135,7 +140,8 @@ const PRACTICE_QUESTIONS = [
 
 export default function LessonFormalLogic() {
   const [, navigate] = useLocation();
-  const [currentStep, setCurrentStep] = useState<FLStep>("intro");
+  const { currentStep, goTo, resetProgress, hasStarted } =
+    useLessonStepProgress("formal-logic", STEPS);
   const [expandedNotation, setExpandedNotation] = useState<number>(-1);
   const [expandedRule, setExpandedRule] = useState<number>(-1);
   const [expandedQuantifier, setExpandedQuantifier] = useState<number>(-1);
@@ -143,12 +149,22 @@ export default function LessonFormalLogic() {
   const [showExplanations, setShowExplanations] = useState<{ [key: number]: boolean }>({});
 
   const handleNext = () => {
-    if (currentStep === "intro") setCurrentStep("notation");
-    else if (currentStep === "notation") setCurrentStep("conditionals");
-    else if (currentStep === "conditionals") setCurrentStep("negation");
-    else if (currentStep === "negation") setCurrentStep("quantifiers");
-    else if (currentStep === "quantifiers") setCurrentStep("practice");
-    else if (currentStep === "practice") setCurrentStep("recap");
+    if (currentStep === "intro") goTo("notation");
+    else if (currentStep === "notation") goTo("conditionals");
+    else if (currentStep === "conditionals") goTo("negation");
+    else if (currentStep === "negation") goTo("quantifiers");
+    else if (currentStep === "quantifiers") goTo("practice");
+    else if (currentStep === "practice") goTo("recap");
+  };
+
+  const handleReset = () => {
+    resetProgress();
+    setExpandedNotation(-1);
+    setExpandedRule(-1);
+    setExpandedQuantifier(-1);
+    setSelectedAnswers({});
+    setShowExplanations({});
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAnswer = (questionIdx: number, letter: string) => {
@@ -168,16 +184,39 @@ export default function LessonFormalLogic() {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         whileHover={{ x: -4 }}
-        onClick={() => navigate("/")}
-        className="fixed top-6 left-6 z-40 p-2 rounded-lg transition-all duration-200"
+        onClick={() => navigate("/lessons")}
+        className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
         style={{
           background: "rgba(255,255,255,0.9)",
           border: "1px solid rgba(0,0,0,0.1)",
           backdropFilter: "blur(12px)",
         }}
+        title="Back to Lessons"
       >
         <ChevronLeft size={20} style={{ color: "#1E2130" }} />
       </motion.button>
+
+      {/* Reset Progress button */}
+      {hasStarted && (
+        <motion.button
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={handleReset}
+          className="fixed top-20 right-4 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+          style={{
+            background: "rgba(255,255,255,0.9)",
+            border: "1px solid rgba(0,0,0,0.1)",
+            backdropFilter: "blur(12px)",
+            color: "rgba(30,33,48,0.5)",
+            fontFamily: "'Space Grotesk', sans-serif",
+          }}
+          title="Reset lesson progress"
+        >
+          <RotateCcw size={14} />
+          Reset Progress
+        </motion.button>
+      )}
 
       <div className="container py-12">
         {/* Intro */}

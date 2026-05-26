@@ -22,6 +22,7 @@ import StudyGuide from "./pages/StudyGuide";
 import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import TagManager from "./pages/TagManager";
 import MainNavigationBar from "./components/MainNavigationBar";
+import About from "@/pages/About";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -51,6 +52,9 @@ function Router() {
         <Route path={'/lesson-plan-generator'} component={LessonPlanGenerator} />
         <Route path={'/tag-manager'} component={TagManager} />
         
+        {/* About / Hire Me */}
+        <Route path="/about" component={About} />
+
         {/* Error handling */}
         <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />

@@ -8,9 +8,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CheckCircle2, AlertCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CheckCircle2, AlertCircle, RotateCcw } from "lucide-react";
+import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 
 type StepType = "intro" | "strengthen" | "weaken" | "practice" | "recap";
+const STEPS = ["intro", "strengthen", "weaken", "practice", "recap"] as const satisfies readonly StepType[];
 
 const STRENGTHEN_EXAMPLES = [
   {
@@ -74,22 +76,31 @@ const PRACTICE_QUESTION = {
       explanation:
         "This would weaken the argument by showing green tea doesn't always prevent heart disease.",
     },
+    {
+      letter: "E",
+      text: "Researchers who conducted the study have received funding from green tea manufacturers.",
+      type: "strengthen",
+      isCorrect: false,
+      explanation:
+        "This actually raises concerns about researcher bias and would weaken, not strengthen, the argument's credibility. Funding conflicts are a reason to doubt, not accept, the conclusion.",
+    },
   ],
 };
 
 export default function LessonStrengthenWeaken() {
   const [, navigate] = useLocation();
-  const [currentStep, setCurrentStep] = useState<StepType>("intro");
+  const { currentStep, goTo, resetProgress, hasStarted } =
+    useLessonStepProgress("strengthen-weaken", STEPS);
   const [revealedStrengthIndex, setRevealedStrengthIndex] = useState<number>(-1);
   const [revealedWeakenIndex, setRevealedWeakenIndex] = useState<number>(-1);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
   const handleNext = () => {
-    if (currentStep === "intro") setCurrentStep("strengthen");
-    else if (currentStep === "strengthen") setCurrentStep("weaken");
-    else if (currentStep === "weaken") setCurrentStep("practice");
-    else if (currentStep === "practice") setCurrentStep("recap");
+    if (currentStep === "intro") goTo("strengthen");
+    else if (currentStep === "strengthen") goTo("weaken");
+    else if (currentStep === "weaken") goTo("practice");
+    else if (currentStep === "practice") goTo("recap");
   };
 
   const handleAnswer = (letter: string) => {
@@ -97,6 +108,15 @@ export default function LessonStrengthenWeaken() {
       setSelectedAnswer(letter);
       setShowExplanation(true);
     }
+  };
+
+  const handleReset = () => {
+    resetProgress();
+    setRevealedStrengthIndex(-1);
+    setRevealedWeakenIndex(-1);
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const isCorrect = selectedAnswer === "B";
@@ -111,16 +131,39 @@ export default function LessonStrengthenWeaken() {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         whileHover={{ x: -4 }}
-        onClick={() => navigate("/")}
-        className="fixed top-6 left-6 z-40 p-2 rounded-lg transition-all duration-200"
+        onClick={() => navigate("/lessons")}
+        className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
         style={{
           background: "rgba(255,255,255,0.9)",
           border: "1px solid rgba(0,0,0,0.1)",
           backdropFilter: "blur(12px)",
         }}
+        title="Back to Lessons"
       >
         <ChevronLeft size={20} style={{ color: "#1E2130" }} />
       </motion.button>
+
+      {/* Reset Progress button */}
+      {hasStarted && (
+        <motion.button
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={handleReset}
+          className="fixed top-20 right-4 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+          style={{
+            background: "rgba(255,255,255,0.9)",
+            border: "1px solid rgba(0,0,0,0.1)",
+            backdropFilter: "blur(12px)",
+            color: "rgba(30,33,48,0.5)",
+            fontFamily: "'Space Grotesk', sans-serif",
+          }}
+          title="Reset lesson progress"
+        >
+          <RotateCcw size={14} />
+          Reset Progress
+        </motion.button>
+      )}
 
       <div className="container py-12">
         {/* Intro */}
@@ -865,7 +908,7 @@ export default function LessonStrengthenWeaken() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/lessons")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
               style={{
                 background: "#1E2130",
@@ -874,7 +917,7 @@ export default function LessonStrengthenWeaken() {
                 boxShadow: "0 2px 12px rgba(30,33,48,0.15)",
               }}
             >
-              Back to Dashboard
+              Back to Lessons
               <ChevronRight size={18} />
             </motion.button>
           </motion.div>

@@ -1,16 +1,18 @@
 /**
  * DESIGN: Academic Light — Warm Parchment
  * Lesson: Common Flaws in LSAT Arguments (19 key logical fallacies)
- * 
- * Teaches the most tested logical errors and how to identify them.
+ *
+ * Progress persisted to localStorage. Practice question has 5 answer choices (A–E).
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
+import { useLessonStepProgress } from "@/hooks/useLessonStepProgress";
 
 type FlawStep = "intro" | "flaws" | "practice" | "recap";
+const STEPS = ["intro", "flaws", "practice", "recap"] as const satisfies readonly FlawStep[];
 
 const FLAWS = [
   {
@@ -54,43 +56,52 @@ const PRACTICE_QUESTION = {
       text: "The argument confuses correlation with causation.",
       isCorrect: true,
       explanation:
-        "The study shows that coffee drinkers live longer, but this doesn't prove coffee causes longevity. Coffee drinkers might exercise more, eat healthier, or have other habits that contribute to longevity.",
+        "The study shows that coffee drinkers live longer, but this doesn't prove coffee causes longevity. Coffee drinkers might exercise more, eat healthier, or have other habits that contribute to longevity. Correlation does not establish causation.",
     },
     {
       letter: "B",
       text: "The argument relies on a sample that is too small.",
       isCorrect: false,
       explanation:
-        "500 participants over 10 years is actually a reasonable sample size. The problem isn't the size; it's the assumption of causation.",
+        "500 participants over 10 years is actually a reasonable sample size for this type of study. The problem isn't the size; it's the assumption of causation from a correlational finding.",
     },
     {
       letter: "C",
-      text: "The argument attacks the credibility of the study.",
+      text: "The argument attacks the credibility of the researchers.",
       isCorrect: false,
       explanation:
-        "The argument doesn't attack the study's credibility; it accepts the findings and draws a conclusion from them. The flaw is in how it interprets those findings.",
+        "The argument doesn't attack the study's credibility; it accepts the findings and draws a conclusion from them. The flaw is in how it interprets those findings, not in questioning who conducted the study.",
     },
     {
       letter: "D",
       text: "The argument uses circular reasoning.",
       isCorrect: false,
       explanation:
-        "Circular reasoning would be proving the same thing with itself. Here, the argument is making a causal leap from correlation.",
+        "Circular reasoning would be proving the same thing with itself (e.g., 'coffee is healthy because it's good for you'). Here, the argument is making a causal leap from a correlation — a different type of error.",
+    },
+    {
+      letter: "E",
+      text: "The argument assumes that all participants consumed the same amount of coffee.",
+      isCorrect: false,
+      explanation:
+        "While dosage variation is a legitimate methodological concern, it doesn't identify the core logical flaw. The argument's primary error is inferring causation from correlation, not failing to control for quantity.",
     },
   ],
 };
 
 export default function LessonCommonFlaws() {
   const [, navigate] = useLocation();
-  const [currentStep, setCurrentStep] = useState<FlawStep>("intro");
+  const { currentStep, goTo, resetProgress, hasStarted } =
+    useLessonStepProgress("common-flaws", STEPS);
+
   const [revealedFlawIndex, setRevealedFlawIndex] = useState<number>(-1);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
   const handleNext = () => {
-    if (currentStep === "intro") setCurrentStep("flaws");
-    else if (currentStep === "flaws") setCurrentStep("practice");
-    else if (currentStep === "practice") setCurrentStep("recap");
+    if (currentStep === "intro") goTo("flaws");
+    else if (currentStep === "flaws") goTo("practice");
+    else if (currentStep === "practice") goTo("recap");
   };
 
   const toggleFlawReveal = (idx: number) => {
@@ -102,6 +113,14 @@ export default function LessonCommonFlaws() {
       setSelectedAnswer(letter);
       setShowExplanation(true);
     }
+  };
+
+  const handleReset = () => {
+    resetProgress();
+    setRevealedFlawIndex(-1);
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const isCorrect = selectedAnswer === "A";
@@ -116,16 +135,39 @@ export default function LessonCommonFlaws() {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         whileHover={{ x: -4 }}
-        onClick={() => navigate("/")}
-        className="fixed top-6 left-6 z-40 p-2 rounded-lg transition-all duration-200"
+        onClick={() => navigate("/lessons")}
+        className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
         style={{
           background: "rgba(255,255,255,0.9)",
           border: "1px solid rgba(0,0,0,0.1)",
           backdropFilter: "blur(12px)",
         }}
+        title="Back to Lessons"
       >
         <ChevronLeft size={20} style={{ color: "#1E2130" }} />
       </motion.button>
+
+      {/* Reset Progress button */}
+      {hasStarted && (
+        <motion.button
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={handleReset}
+          className="fixed top-20 right-4 z-40 flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+          style={{
+            background: "rgba(255,255,255,0.9)",
+            border: "1px solid rgba(0,0,0,0.1)",
+            backdropFilter: "blur(12px)",
+            color: "rgba(30,33,48,0.5)",
+            fontFamily: "'Space Grotesk', sans-serif",
+          }}
+          title="Reset lesson progress"
+        >
+          <RotateCcw size={14} />
+          Reset Progress
+        </motion.button>
+      )}
 
       <div className="container py-12">
         {/* Intro section */}
@@ -273,6 +315,8 @@ export default function LessonCommonFlaws() {
                           transform:
                             revealedFlawIndex === idx ? "rotate(90deg)" : "rotate(0deg)",
                           transition: "transform 0.3s",
+                          flexShrink: 0,
+                          marginLeft: "1rem",
                         }}
                       />
                     </div>
@@ -288,7 +332,7 @@ export default function LessonCommonFlaws() {
                         className="px-5 pb-5 border-t"
                         style={{ borderColor: "rgba(0,0,0,0.07)" }}
                       >
-                        <div className="mb-3">
+                        <div className="mb-3 pt-4">
                           <p
                             style={{
                               color: "rgba(30,33,48,0.4)",
@@ -443,7 +487,7 @@ export default function LessonCommonFlaws() {
               </p>
             </div>
 
-            {/* Answers */}
+            {/* Answers — 5 choices */}
             <div className="space-y-3 mb-8">
               {PRACTICE_QUESTION.answers.map((answer) => {
                 const isSelected = selectedAnswer === answer.letter;
@@ -461,14 +505,18 @@ export default function LessonCommonFlaws() {
                           ? "rgba(46,125,82,0.08)"
                           : isSelected && !isThisCorrect
                           ? "rgba(184,64,48,0.08)"
+                          : !isSelected && selectedAnswer && isThisCorrect
+                          ? "rgba(46,125,82,0.04)"
                           : "#FFFFFF",
                       border:
                         isSelected && isThisCorrect
                           ? "1px solid rgba(46,125,82,0.3)"
                           : isSelected && !isThisCorrect
                           ? "1px solid rgba(184,64,48,0.3)"
+                          : !isSelected && selectedAnswer && isThisCorrect
+                          ? "1px solid rgba(46,125,82,0.2)"
                           : "1px solid rgba(0,0,0,0.08)",
-                      opacity: selectedAnswer && !isSelected ? 0.5 : 1,
+                      opacity: selectedAnswer && !isSelected && !isThisCorrect ? 0.45 : 1,
                       cursor: selectedAnswer ? "default" : "pointer",
                     }}
                   >
@@ -481,9 +529,11 @@ export default function LessonCommonFlaws() {
                               ? "#2E7D52"
                               : isSelected && !isThisCorrect
                               ? "#B84030"
+                              : !isSelected && selectedAnswer && isThisCorrect
+                              ? "#2E7D52"
                               : "rgba(30,33,48,0.1)",
                           color:
-                            isSelected
+                            isSelected || (!isSelected && selectedAnswer && isThisCorrect)
                               ? "#FFFFFF"
                               : "rgba(30,33,48,0.4)",
                           fontFamily: "'Space Grotesk', sans-serif",
@@ -493,6 +543,8 @@ export default function LessonCommonFlaws() {
                           ? "✓"
                           : isSelected && !isThisCorrect
                           ? "✗"
+                          : !isSelected && selectedAnswer && isThisCorrect
+                          ? "✓"
                           : answer.letter}
                       </div>
                       <p
@@ -542,7 +594,7 @@ export default function LessonCommonFlaws() {
                           marginBottom: "0.5rem",
                         }}
                       >
-                        {isCorrect ? "✓ Correct!" : "Not quite."}
+                        {isCorrect ? "✓ Correct!" : "Not quite — here's why:"}
                       </p>
                       <p
                         style={{
@@ -554,6 +606,20 @@ export default function LessonCommonFlaws() {
                       >
                         {PRACTICE_QUESTION.answers.find((a) => a.letter === selectedAnswer)?.explanation}
                       </p>
+                      {!isCorrect && (
+                        <p
+                          className="mt-3"
+                          style={{
+                            fontFamily: "'Lora', serif",
+                            fontSize: "0.9rem",
+                            color: "rgba(46,125,82,0.8)",
+                            lineHeight: 1.7,
+                          }}
+                        >
+                          <strong style={{ color: "#2E7D52" }}>Correct answer (A):</strong>{" "}
+                          {PRACTICE_QUESTION.answers.find((a) => a.isCorrect)?.explanation}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -636,7 +702,7 @@ export default function LessonCommonFlaws() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/lessons")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
               style={{
                 background: "#1E2130",
@@ -645,7 +711,7 @@ export default function LessonCommonFlaws() {
                 boxShadow: "0 2px 12px rgba(30,33,48,0.15)",
               }}
             >
-              Back to Dashboard
+              Back to Lessons
               <ChevronRight size={18} />
             </motion.button>
           </motion.div>
