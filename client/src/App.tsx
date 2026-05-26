@@ -21,6 +21,7 @@ import QuestionBank from "./pages/QuestionBank";
 import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
 import StudyGuide from "./pages/StudyGuide";
+import Dashboard from "@/pages/Dashboard";
 import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import TagManager from "./pages/TagManager";
 import MainNavigationBar from "./components/MainNavigationBar";
@@ -38,8 +39,8 @@ function Router() {
         <Route path={"/progress"} component={ProgressTracker} />
         <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
         
-        {/* Lessons — /lessons is the hub (Study Guide), sub-routes are specific lessons */}
-        <Route path={"/lessons"} component={StudyGuide} />
+        {/* Lessons — /lessons is the interactive lesson hub (7 cards + progress bar) */}
+        <Route path={"/lessons"} component={Dashboard} />
         <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
         <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
         <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
