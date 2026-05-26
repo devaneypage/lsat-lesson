@@ -53,24 +53,66 @@ const CREDENTIALS = [
 const TESTIMONIALS = [
   {
     quote:
-      "I'd been scoring in the 155–157 range for months and couldn't figure out why. One session with Devaney and I understood what I'd been doing wrong on Necessary Assumption questions — I was picking answers that could be true instead of answers that had to be true. That distinction alone moved my score.",
-    name: "T.W.",
-    detail: "Improved 8 points · Logical Reasoning",
+      "DeVaney is great!",
+    name: "Barang",
+    detail: "5 stars · Varsity Tutors",
     color: "#5B4A8A",
   },
   {
     quote:
-      "Devaney doesn't let you get away with vague answers. She'll ask you to explain exactly why you eliminated a choice, and if you can't, that's where the work is. It's uncomfortable in the best way — I left every session knowing more precisely where my reasoning was breaking down.",
-    name: "M.R.",
-    detail: "Bar Exam · Essay Strategy",
+      "Wonderful session. High energy, good information. Great prep.",
+    name: "Lloyd",
+    detail: "5 stars · Varsity Tutors",
     color: "#C8860A",
   },
   {
     quote:
-      "I appreciated that she treated me like someone capable of understanding the material, not someone who needed to be managed through it. The lessons on this site reflect that same approach — they explain the logic, not just the steps.",
-    name: "A.P.",
-    detail: "LSAT · Reading Comprehension",
+      "DeVaney is fantastic: clearly knowledgable about the material she's teaching, very personable, and committed to providing high quality tutoring. I'm looking forward to continuing our work together.",
+    name: "Anonymous",
+    detail: "5 stars · Varsity Tutors",
     color: "#2E7D52",
+  },
+  {
+    quote:
+      "DeVaney is casual in a way that makes you feel comfortable expressing and working through uncertainty, while still maintaining a sense of professionalism. I look forward to working with her.",
+    name: "Anonymous",
+    detail: "5 stars · Varsity Tutors",
+    color: "#1a7dff",
+  },
+  {
+    quote:
+      "Very personable and helpful! I liked how she used different examples to explain everything. The way she explained the material made it all make sense.",
+    name: "Anonymous",
+    detail: "5 stars · Varsity Tutors",
+    color: "#B84030",
+  },
+  {
+    quote:
+      "DeVaney is very helpful and informative.",
+    name: "Barang",
+    detail: "5 stars · Varsity Tutors",
+    color: "#5B4A8A",
+  },
+  {
+    quote:
+      "DeVaney is very funny and keeps me engaged in the lesson. Even though I have some knowledge about the LSAT from last year, I like how she teaches me everything as if I've never learned it before so that I can learn new strategies.",
+    name: "Carmen",
+    detail: "5 stars · Varsity Tutors",
+    color: "#C8860A",
+  },
+  {
+    quote:
+      "Fantastic tutor! DeVaney explained everything thoroughly and in a way that allowed me to clearly understand the materials. I would highly recommend her to anyone that is interested in taking the LSAT.",
+    name: "Peter",
+    detail: "5 stars · Varsity Tutors",
+    color: "#2E7D52",
+  },
+  {
+    quote:
+      "DeVaney was very resourceful and patient while also challenging me to keep pushing through the problems. She had a very positive attitude that made each session enjoyable and productive. I would highly recommend DeVaney to anyone who needs LSAT help!",
+    name: "Sara",
+    detail: "5 stars · Varsity Tutors",
+    color: "#1a7dff",
   },
 ];
 
