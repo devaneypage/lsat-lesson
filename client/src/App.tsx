@@ -28,6 +28,7 @@ import MainNavigationBar from "./components/MainNavigationBar";
 import About from "@/pages/About";
 import Booking from "@/pages/Booking";
 import FlagAdmin from "@/pages/FlagAdmin";
+import NexusApp from "@/pages/nexus/NexusApp";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -50,6 +51,10 @@ function Router() {
         <Route path={'/lessons/sufficient-assumptions'} component={LessonSufficientAssumptions} />
         <Route path={'/lessons/flaw-in-reasoning'} component={LessonFlawInReasoning} />
         
+        {/* LSAT Nexus — interactive reference app */}
+        <Route path="/nexus" component={NexusApp} />
+        <Route path="/nexus/:section" component={NexusApp} />
+
         {/* Main Features */}
         <Route path="/resources" component={Resources} />
         <Route path={"/question-bank"} component={QuestionBank} />

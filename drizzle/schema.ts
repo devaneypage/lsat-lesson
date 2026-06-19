@@ -125,3 +125,33 @@ export const featureFlags = mysqlTable("featureFlags", {
 
 export type FeatureFlag = typeof featureFlags.$inferSelect;
 export type InsertFeatureFlag = typeof featureFlags.$inferInsert;
+
+/**
+ * Error-log entries for the LSAT Nexus "Review & Analytics" section.
+ * Each row is a single logged mistake belonging to one user, used to power
+ * the error log table, mastery score, and trend analytics.
+ */
+export const errorLogEntries = mysqlTable("errorLogEntries", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Owning user (users.id). */
+  userId: int("userId").notNull(),
+  /** Top-level section, e.g. "Logical Reasoning". */
+  category: varchar("category", { length: 64 }).notNull(),
+  /** Question type, e.g. "Weaken" or "Main Point". */
+  questionType: varchar("questionType", { length: 64 }).notNull(),
+  /** Why it was missed, e.g. the answer-trap or flaw that fooled you. */
+  errorReason: varchar("errorReason", { length: 128 }),
+  /** Free-form notes / takeaway in the student's own words. */
+  notes: text("notes"),
+  /** Optional source reference, e.g. "PT 73 · S2 · Q14". */
+  source: varchar("source", { length: 255 }),
+  /** Confidence the student now has on this concept, 1–5. */
+  confidence: int("confidence").notNull().default(1),
+  /** 1 once the student has re-reviewed and resolved the error, else 0. */
+  resolved: int("resolved").notNull().default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ErrorLogEntry = typeof errorLogEntries.$inferSelect;
+export type InsertErrorLogEntry = typeof errorLogEntries.$inferInsert;

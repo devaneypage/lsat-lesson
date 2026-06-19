@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
@@ -10,6 +10,9 @@ import {
   InsertTag,
   tags,
   questionTags,
+  errorLogEntries,
+  InsertErrorLogEntry,
+  ErrorLogEntry,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -631,6 +634,85 @@ export async function setFlagRollout(key: string, rolloutPercentage: number): Pr
     return getFlagByKey(key);
   } catch (error) {
     console.error("[Database] Failed to set flag rollout:", error);
+    throw error;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* LSAT Nexus — Error Log                                              */
+/* ------------------------------------------------------------------ */
+
+/** List a user's error-log entries, newest first. */
+export async function getErrorLogEntries(userId: number): Promise<ErrorLogEntry[]> {
+  const db = await getDb();
+  if (!db) return [];
+  try {
+    return await db
+      .select()
+      .from(errorLogEntries)
+      .where(eq(errorLogEntries.userId, userId))
+      .orderBy(desc(errorLogEntries.createdAt));
+  } catch (error) {
+    console.error("[Database] Failed to get error log entries:", error);
+    return [];
+  }
+}
+
+/** Create a new error-log entry and return the persisted row. */
+export async function createErrorLogEntry(
+  entry: InsertErrorLogEntry,
+): Promise<ErrorLogEntry | null> {
+  const db = await getDb();
+  if (!db) return null;
+  try {
+    const [{ insertId }] = await db.insert(errorLogEntries).values(entry);
+    const rows = await db
+      .select()
+      .from(errorLogEntries)
+      .where(eq(errorLogEntries.id, Number(insertId)))
+      .limit(1);
+    return rows[0] ?? null;
+  } catch (error) {
+    console.error("[Database] Failed to create error log entry:", error);
+    throw error;
+  }
+}
+
+/** Update an entry the caller owns. Returns the updated row, or null. */
+export async function updateErrorLogEntry(
+  userId: number,
+  id: number,
+  updates: Partial<InsertErrorLogEntry>,
+): Promise<ErrorLogEntry | null> {
+  const db = await getDb();
+  if (!db) return null;
+  try {
+    await db
+      .update(errorLogEntries)
+      .set(updates)
+      .where(and(eq(errorLogEntries.id, id), eq(errorLogEntries.userId, userId)));
+    const rows = await db
+      .select()
+      .from(errorLogEntries)
+      .where(and(eq(errorLogEntries.id, id), eq(errorLogEntries.userId, userId)))
+      .limit(1);
+    return rows[0] ?? null;
+  } catch (error) {
+    console.error("[Database] Failed to update error log entry:", error);
+    throw error;
+  }
+}
+
+/** Delete an entry the caller owns. */
+export async function deleteErrorLogEntry(userId: number, id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  try {
+    await db
+      .delete(errorLogEntries)
+      .where(and(eq(errorLogEntries.id, id), eq(errorLogEntries.userId, userId)));
+  } catch (error) {
+    console.error("[Database] Failed to delete error log entry:", error);
     throw error;
   }
 }
