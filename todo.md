@@ -13,6 +13,29 @@
 - [x] Task 9: Animations & Transitions (75 min)
 - [x] Task 10: Accessibility & Testing (60 min)
 
+## UX Overhaul - Balanced & Refined Aesthetic
+
+### Task 1: Design System Foundation
+- [ ] Step 1.1: Define Color Palette and CSS Variables
+- [ ] Step 1.2: Define Typography and Load Fonts
+- [ ] Step 1.3: Configure Tailwind for Design System
+
+### Task 2: Rebuild Main Navigation
+- [ ] Step 2.1: Update Navigation Bar Structure and Styling
+
+### Task 3: Redesign Homepage as Nexus Dashboard
+- [ ] Step 3.1: Create NexusDashboardLayout Component
+- [ ] Step 3.2: Implement ScoreCard, MasteryOverview, and QuickNavigation Components
+- [ ] Step 3.3: Rebuild Homepage (Home.tsx) using NexusDashboardLayout
+
+### Task 4: Integrate Lessons as Reference Modules
+- [ ] Step 4.1: Update Lesson Page Styling
+- [ ] Step 4.2: Implement Dashboard-to-Lesson Navigation
+
+### Task 5: Update Core UI Components
+- [ ] Step 5.1: Refine shadcn/ui Components
+- [ ] Step 5.2: Update Custom Components
+
 ## Final Verification
 
 - [x] All tasks marked complete
