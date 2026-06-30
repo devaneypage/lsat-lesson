@@ -43,54 +43,62 @@
 }
 
 :root {
-  /* LSAT Mastery Design System */
+  /* LSAT Nexus: Balanced & Refined Design System */
   
   /* Primary Colors */
-  --background: #F9F8F6;
-  --foreground: #2D1B69;
+  --background: #F4EDE0;
+  --foreground: #111111;
   
   /* Accent Colors */
-  --primary: #0066FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #FFB81C;
-  --secondary-foreground: #2D1B69;
-  --accent: #FF6B35;
-  --accent-foreground: #FFFFFF;
+  --primary: #1AABBC;
+  --primary-foreground: #FFFDF8;
+  --secondary: #EFA01C;
+  --secondary-foreground: #111111;
+  --accent: #D0452A;
+  --accent-foreground: #FFFDF8;
   
   /* Semantic Colors */
-  --destructive: #DC2626;
-  --destructive-foreground: #FFFFFF;
+  --destructive: #D0452A;
+  --destructive-foreground: #FFFDF8;
   
   /* Neutral Colors */
-  --card: #FFFFFF;
-  --card-foreground: #2D1B69;
-  --popover: #FFFFFF;
-  --popover-foreground: #2D1B69;
-  --muted: rgba(45, 27, 105, 0.1);
-  --muted-foreground: rgba(45, 27, 105, 0.7);
-  --border: rgba(45, 27, 105, 0.15);
-  --input: #FFFFFF;
-  --ring: #0066FF;
+  --card: #FFFDF8;
+  --card-foreground: #111111;
+  --popover: #FFFDF8;
+  --popover-foreground: #111111;
+  --muted: rgba(17, 17, 17, 0.1);
+  --muted-foreground: rgba(17, 17, 17, 0.7);
+  --border: #111111;
+  --input: #111111;
+  --ring: #1AABBC;
   
   /* Sidebar */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #2D1B69;
-  --sidebar-primary: #0066FF;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FFB81C;
-  --sidebar-accent-foreground: #2D1B69;
-  --sidebar-border: rgba(45, 27, 105, 0.15);
-  --sidebar-ring: #0066FF;
+  --sidebar: #FFFDF8;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #1AABBC;
+  --sidebar-primary-foreground: #FFFDF8;
+  --sidebar-accent: #EFA01C;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: #111111;
+  --sidebar-ring: #1AABBC;
   
   /* Chart Colors */
-  --chart-1: #0066FF;
-  --chart-2: #FFB81C;
-  --chart-3: #FF6B35;
-  --chart-4: #2D1B69;
-  --chart-5: rgba(45, 27, 105, 0.5);
+  --chart-1: #1AABBC;
+  --chart-2: #EFA01C;
+  --chart-3: #D0452A;
+  --chart-4: #2A6B58;
+  --chart-5: #79C53E;
+  
+  /* Nexus Colors */
+  --nexus-terra: #D0452A;
+  --nexus-teal: #1AABBC;
+  --nexus-forest: #2A6B58;
+  --nexus-amber: #EFA01C;
+  --nexus-lime: #79C53E;
+  --nexus-sky: #4BB8D8;
   
   /* Spacing & Radius */
-  --radius: 0.5rem;
+  --radius: 0.25rem;
 }
 
 @layer base {
@@ -100,16 +108,20 @@
   
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
+    font-family: 'Archivo Black', sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.02em;
   }
   
   code, pre {
     font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
   }
   
   button:not(:disabled),
@@ -141,77 +153,90 @@
 
   /* Button Styles */
   .btn-primary {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: var(--primary);
     color: var(--primary-foreground);
-    box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+    border: 1.5px solid var(--primary);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .btn-primary:hover {
-    background-color: #0052CC;
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+    background-color: #158a99;
+    border-color: #158a99;
+    box-shadow: 0 2px 6px rgba(26, 171, 188, 0.2);
   }
   
   .btn-secondary {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: var(--secondary);
     color: var(--secondary-foreground);
-    box-shadow: 0 2px 8px rgba(255, 184, 28, 0.2);
+    border: 1.5px solid var(--secondary);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .btn-secondary:hover {
-    background-color: #E6A500;
-    box-shadow: 0 4px 12px rgba(255, 184, 28, 0.3);
+    background-color: #d98a0b;
+    border-color: #d98a0b;
+    box-shadow: 0 2px 6px rgba(239, 160, 28, 0.2);
   }
   
   .btn-accent {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: var(--accent);
     color: var(--accent-foreground);
-    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .btn-accent:hover {
-    background-color: #E55A24;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    background-color: #b83820;
+    border-color: #b83820;
+    box-shadow: 0 2px 6px rgba(208, 69, 42, 0.2);
   }
   
   .btn-outline {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: transparent;
     color: var(--foreground);
-    border: 2px solid var(--foreground);
+    border: 1.5px solid var(--foreground);
+    border-radius: var(--radius);
   }
   
   .btn-outline:hover {
-    background-color: rgba(45, 27, 105, 0.05);
+    background-color: rgba(17, 17, 17, 0.05);
+    border-color: var(--foreground);
   }
   
   /* Card Styles */
   .card {
-    @apply rounded-lg p-6 transition-all duration-200;
+    @apply p-6 transition-all duration-200;
     background-color: var(--card);
     color: var(--card-foreground);
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(45, 27, 105, 0.12);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
   
   .card:hover {
-    box-shadow: 0 4px 16px rgba(45, 27, 105, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
   
   /* Input Styles */
   input, textarea, select {
-    @apply px-3 py-2 rounded-lg transition-all duration-200;
+    @apply px-3 py-2 transition-all duration-200;
     background-color: var(--input);
     color: var(--foreground);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
   }
   
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(26, 171, 188, 0.1);
   }
 
   @media (min-width: 640px) {
