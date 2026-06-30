@@ -1,14 +1,54 @@
 {
   "flags": [
     {
-      "key": "new_feature",
-      "description": "Enable new feature",
-      "origin": "https://example.com"
+      "key": "lesson_progress_bar",
+      "description": "Show a 'X of 7 lessons completed' progress bar at the top of the /lessons hub.",
+      "origin": "https://devasophy.blog"
     },
     {
-      "key": "beta_access",
-      "description": "Beta features",
-      "origin": "https://example.com"
+      "key": "assumption_family_arc_cta",
+      "description": "Show 'Next: Flaw in the Reasoning →' button at the end of the Sufficient Assumptions lesson recap.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "about_testimonials",
+      "description": "Show the student testimonials section on the About page.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "ai_lesson_plan_generator",
+      "description": "Show the AI Lesson Plan Generator link in the main navigation bar.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "question_bank",
+      "description": "Show the Question Bank link in the main navigation bar.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "nexus_dashboard",
+      "description": "Enable the Nexus command-center dashboard. Disable to revert to the legacy PathSelector landing page.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "booking_cta",
+      "description": "Show the 'Book a Session' CTA button in the navigation bar and lesson recap sections.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "lesson_grid",
+      "description": "Show the Nexus-style lesson grid on the /lessons page. Disable to revert to the legacy lesson card list.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "concept_map",
+      "description": "Show the interactive concept map on the dashboard. Disable to show a simple lesson list instead.",
+      "origin": "https://devasophy.blog"
+    },
+    {
+      "key": "score_card",
+      "description": "Show the score card widget (current score + percentile) in the dashboard sidebar.",
+      "origin": "https://devasophy.blog"
     }
   ]
 }

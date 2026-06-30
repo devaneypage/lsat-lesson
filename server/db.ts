@@ -550,6 +550,42 @@ const DEFAULT_FLAGS: InsertFeatureFlag[] = [
     enabled: 1,
     rolloutPercentage: 100,
   },
+  // ── Nexus UX Flags ──────────────────────────────────────────────────────────
+  {
+    key: "nexus_dashboard",
+    name: "Nexus Dashboard",
+    description: "Enable the Nexus command-center dashboard (two-column layout with ScoreCard, MasteryOverview, ConceptMap). Disable to revert to the legacy PathSelector landing page.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "booking_cta",
+    name: "Booking CTA",
+    description: "Show the 'Book a Session' CTA button in the navigation bar and lesson recap sections.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "lesson_grid",
+    name: "Lesson Grid",
+    description: "Show the Nexus-style lesson grid on the /lessons page. Disable to revert to the legacy lesson card list.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "concept_map",
+    name: "Concept Map",
+    description: "Show the interactive concept map on the dashboard. Disable to show a simple lesson list instead.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "score_card",
+    name: "Score Card",
+    description: "Show the score card widget (current score + percentile) in the dashboard sidebar.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
 ];
 
 /**

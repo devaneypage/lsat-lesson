@@ -6,26 +6,43 @@
  * from the /admin/flags panel without redeployment.
  *
  * Usage:
- *   const { enabled, loading } = useFeatureFlag('lesson_progress_bar')
- *   if (enabled) return <ProgressBar />
+ *   const { enabled, loading } = useFeatureFlag('nexus_dashboard')
+ *   if (enabled) return <NexusDashboard />
+ *   return <LegacyDashboard />
  *
  * Available flag keys (defined in server/db.ts DEFAULT_FLAGS):
- *   - lesson_progress_bar
- *   - assumption_family_arc_cta
- *   - about_testimonials
- *   - ai_lesson_plan_generator
- *   - question_bank
+ *
+ * ── Legacy Flags ──────────────────────────────────────────────────
+ *   lesson_progress_bar       Show progress bar on /lessons hub
+ *   assumption_family_arc_cta Show "Next: Flaw in Reasoning →" CTA
+ *   about_testimonials        Show testimonials on About page
+ *   ai_lesson_plan_generator  Show AI Plan link in nav
+ *   question_bank             Show Question Bank link in nav
+ *
+ * ── Nexus UX Flags ────────────────────────────────────────────────
+ *   nexus_dashboard           Enable Nexus two-column dashboard
+ *   booking_cta               Show "Book a Session" in nav + recaps
+ *   lesson_grid               Show Nexus lesson grid on /lessons
+ *   concept_map               Show concept map on dashboard
+ *   score_card                Show score card in dashboard sidebar
  */
 
 import { trpc } from "@/lib/trpc";
 import { useMemo } from "react";
 
 export type FlagKey =
+  // Legacy flags
   | "lesson_progress_bar"
   | "assumption_family_arc_cta"
   | "about_testimonials"
   | "ai_lesson_plan_generator"
-  | "question_bank";
+  | "question_bank"
+  // Nexus UX flags
+  | "nexus_dashboard"
+  | "booking_cta"
+  | "lesson_grid"
+  | "concept_map"
+  | "score_card";
 
 /**
  * Read a single feature flag.

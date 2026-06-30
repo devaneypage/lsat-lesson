@@ -24,6 +24,7 @@ import {
   Calendar,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
+import { useFeatureFlag } from "@/lib/flags";
 
 interface NavItem {
   label: string;
@@ -87,6 +88,7 @@ export default function MainNavigationBar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const { enabled: showBookingCta } = useFeatureFlag("booking_cta");
 
   const isActive = (route: string) => {
     return location.startsWith(route.split("/").slice(0, 2).join("/"));
@@ -187,8 +189,8 @@ export default function MainNavigationBar() {
 
         {/* Right side actions */}
         <div className="flex items-center gap-3">
-          {/* Book a Session CTA */}
-          <Link
+          {/* Book a Session CTA — gated by booking_cta feature flag */}
+          {showBookingCta && (<Link
             href="/booking"
             className="px-4 py-2 flex items-center gap-2 transition-all duration-200 font-semibold"
             style={{
@@ -215,7 +217,7 @@ export default function MainNavigationBar() {
           >
             <Calendar size={16} />
             Book
-          </Link>
+          </Link>)}
           <button
             onClick={() => setIsImportModalOpen(true)}
             className="px-3 py-2 flex items-center gap-2 transition-all duration-200"

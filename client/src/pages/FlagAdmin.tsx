@@ -16,11 +16,18 @@ import { toast } from "sonner";
 // ─── Colour helpers ───────────────────────────────────────────────────────────
 
 const FLAG_COLORS: Record<string, { accent: string; bg: string; border: string }> = {
+  // Legacy flags
   lesson_progress_bar:        { accent: "#2563eb", bg: "rgba(37,99,235,0.07)",  border: "rgba(37,99,235,0.2)" },
   assumption_family_arc_cta:  { accent: "#7c3aed", bg: "rgba(124,58,237,0.07)", border: "rgba(124,58,237,0.2)" },
   about_testimonials:         { accent: "#059669", bg: "rgba(5,150,105,0.07)",  border: "rgba(5,150,105,0.2)" },
   ai_lesson_plan_generator:   { accent: "#d97706", bg: "rgba(217,119,6,0.07)",  border: "rgba(217,119,6,0.2)" },
   question_bank:              { accent: "#dc2626", bg: "rgba(220,38,38,0.07)",  border: "rgba(220,38,38,0.2)" },
+  // Nexus UX flags
+  nexus_dashboard:            { accent: "#1AABBC", bg: "rgba(26,171,188,0.07)", border: "rgba(26,171,188,0.2)" },
+  booking_cta:                { accent: "#EFA01C", bg: "rgba(239,160,28,0.07)", border: "rgba(239,160,28,0.2)" },
+  lesson_grid:                { accent: "#1AABBC", bg: "rgba(26,171,188,0.07)", border: "rgba(26,171,188,0.2)" },
+  concept_map:                { accent: "#2D6A4F", bg: "rgba(45,106,79,0.07)",  border: "rgba(45,106,79,0.2)" },
+  score_card:                 { accent: "#D0452A", bg: "rgba(208,69,42,0.07)",  border: "rgba(208,69,42,0.2)" },
 };
 
 const DEFAULT_COLOR = { accent: "#6b7280", bg: "rgba(107,114,128,0.07)", border: "rgba(107,114,128,0.2)" };

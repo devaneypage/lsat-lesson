@@ -410,3 +410,19 @@
 - [x] Add BookingCTA to LessonFlawInReasoning recap section
 - [x] Add /booking to sitemap.xml
 - [x] TypeScript: 0 errors
+
+## Feature Flag System (/feature-flag-system skill)
+
+- [x] Audit existing flag infrastructure (flags.json, flags.ts, FlagAdmin, server/db.ts)
+- [x] Expand flags.json with 5 new Nexus UX flags (nexus_dashboard, booking_cta, lesson_grid, concept_map, score_card)
+- [x] Extend FlagKey type in client/src/lib/flags.ts to include all 10 flags
+- [x] Add 5 new DEFAULT_FLAGS entries to server/db.ts
+- [x] Update FlagAdmin color map with Nexus palette colors for new flags
+- [x] Wire nexus_dashboard flag to Dashboard.tsx (kill switch → PathSelector fallback)
+- [x] Wire concept_map flag to Dashboard.tsx (fallback → LessonGrid)
+- [x] Wire score_card flag to Dashboard.tsx (conditional sidebar widget)
+- [x] Wire lesson_grid flag to Lessons.tsx (kill switch → PathSelector fallback)
+- [x] Wire booking_cta flag to MainNavigationBar.tsx (conditional Book button)
+- [x] Wire booking_cta flag to BookingCTA.tsx (returns null if disabled)
+- [x] Write Vitest tests for feature flag system (14 tests, all passing)
+- [x] TypeScript check passed (0 errors)
