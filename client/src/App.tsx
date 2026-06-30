@@ -24,6 +24,7 @@ import StudyGuide from "./pages/StudyGuide";
 import Dashboard from "@/pages/Dashboard";
 import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import TagManager from "./pages/TagManager";
+import Knowledgebase from "./pages/Knowledgebase";
 import MainNavigationBar from "./components/MainNavigationBar";
 import About from "@/pages/About";
 import Booking from "@/pages/Booking";
@@ -58,6 +59,7 @@ function Router() {
         <Route path={'/study-guide'} component={StudyGuide} />
         <Route path={'/lesson-plan-generator'} component={LessonPlanGenerator} />
         <Route path={'/tag-manager'} component={TagManager} />
+        <Route path={'/knowledgebase'} component={Knowledgebase} />
         
         {/* About / Hire Me */}
         <Route path="/about" component={About} />

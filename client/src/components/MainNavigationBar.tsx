@@ -22,6 +22,7 @@ import {
   Tag,
   User,
   Calendar,
+  Library,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
 
@@ -68,6 +69,12 @@ const NAV_ITEMS: NavItem[] = [
     route: "/import",
     icon: <Upload size={18} />,
     description: "CSV upload",
+  },
+  {
+    label: "Knowledgebase",
+    route: "/knowledgebase",
+    icon: <Library size={18} />,
+    description: "LSAT concept reference",
   },
   {
     label: "Tags",
