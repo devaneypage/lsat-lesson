@@ -1,8 +1,19 @@
+/**
+ * AI Lesson Plan Generator — /lesson-plan-generator
+ *
+ * Design: Balanced & Refined light scheme — matches site palette.
+ * - Background: var(--background) cream #F4EDE0
+ * - Cards: var(--card) #FFFDF8 with 1.5px border
+ * - Accent: nexus-amber #EFA01C for active states
+ * - Typography: Archivo Black / Archivo
+ *
+ * Test Date: pre-populated with official LSAC 2026-2027 dates
+ * Source: https://www.lsac.org/LSATdates (retrieved 2026-07-03)
+ */
+
 import { useState, useRef } from "react";
 import { trpc } from "@/lib/trpc";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
@@ -18,7 +29,25 @@ import {
   Loader2,
   CheckCircle2,
   RotateCcw,
+  ChevronDown,
 } from "lucide-react";
+
+// ─── Official LSAC 2026-2027 test dates ──────────────────────────────────────
+// Source: https://www.lsac.org/LSATdates
+// Only future dates (after 2026-07-03) are included.
+
+const LSAT_DATES = [
+  { label: "August 2026 — Aug 5–8, 2026",      value: "2026-08-05", regDeadline: "Jun 25, 2026", scoreRelease: "Aug 26, 2026" },
+  { label: "September 2026 — Sep 9–12, 2026",   value: "2026-09-09", regDeadline: "Jul 28, 2026", scoreRelease: "Sep 30, 2026" },
+  { label: "October 2026 — Oct 7–10, 2026",     value: "2026-10-07", regDeadline: "Aug 27, 2026", scoreRelease: "Oct 28, 2026" },
+  { label: "November 2026 — Nov 11–14, 2026",   value: "2026-11-11", regDeadline: "Oct 1, 2026",  scoreRelease: "Dec 2, 2026" },
+  { label: "January 2027 — Jan 13–16, 2027",    value: "2027-01-13", regDeadline: "Dec 1, 2026",  scoreRelease: "Feb 3, 2027" },
+  { label: "February 2027 — Feb 12–13, 2027",   value: "2027-02-12", regDeadline: "Dec 29, 2026", scoreRelease: "Mar 3, 2027" },
+  { label: "April 2027 — Apr 8–10, 2027",       value: "2027-04-08", regDeadline: "Feb 25, 2027", scoreRelease: "Apr 28, 2027" },
+  { label: "June 2027 — Jun 9–12, 2027",        value: "2027-06-09", regDeadline: "Apr 29, 2027", scoreRelease: "Jun 30, 2027" },
+] as const;
+
+type LsatDateValue = (typeof LSAT_DATES)[number]["value"] | "custom";
 
 const WEAK_AREAS = [
   "Main Point",
@@ -38,22 +67,47 @@ type WeakArea = (typeof WEAK_AREAS)[number];
 type HoursPerWeek = "4" | "8" | "12" | "16+";
 
 const HOURS_OPTIONS: { value: HoursPerWeek; label: string; description: string }[] = [
-  { value: "4", label: "4 hrs/wk", description: "Light — 2 sessions" },
-  { value: "8", label: "8 hrs/wk", description: "Moderate — 4 sessions" },
-  { value: "12", label: "12 hrs/wk", description: "Intensive — 6 sessions" },
-  { value: "16+", label: "16+ hrs/wk", description: "Full-time prep" },
+  { value: "4",   label: "4 hrs/wk",  description: "Light — 2 sessions" },
+  { value: "8",   label: "8 hrs/wk",  description: "Moderate — 4 sessions" },
+  { value: "12",  label: "12 hrs/wk", description: "Intensive — 6 sessions" },
+  { value: "16+", label: "16+ hrs/wk",description: "Full-time prep" },
 ];
+
+// ─── Shared style tokens ──────────────────────────────────────────────────────
+
+const cardStyle: React.CSSProperties = {
+  background: "var(--card)",
+  border: "1.5px solid var(--border)",
+  borderRadius: "0.25rem",
+  boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+};
+
+const sectionLabelStyle: React.CSSProperties = {
+  fontFamily: "'Archivo Black', sans-serif",
+  fontWeight: 900,
+  fontSize: "0.85rem",
+  color: "var(--foreground)",
+  letterSpacing: "0.04em",
+  textTransform: "uppercase",
+  marginBottom: "0.25rem",
+};
+
+const mutedStyle: React.CSSProperties = {
+  fontFamily: "'Archivo', sans-serif",
+  fontSize: "0.82rem",
+  color: "rgba(17,17,17,0.55)",
+  lineHeight: 1.5,
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function LessonPlanGenerator() {
   const [currentScore, setCurrentScore] = useState<number | "untested">(152);
   const [hasScore, setHasScore] = useState(true);
-  const [targetScore, setTargetScore] = useState(165);
-  const [testDate, setTestDate] = useState(() => {
-    const d = new Date();
-    d.setMonth(d.getMonth() + 3);
-    return d.toISOString().split("T")[0];
-  });
+  const [selectedLsatDate, setSelectedLsatDate] = useState<LsatDateValue>("2026-10-07");
+  const [customDate, setCustomDate] = useState("");
   const [hoursPerWeek, setHoursPerWeek] = useState<HoursPerWeek>("8");
+  const [targetScore, setTargetScore] = useState(165);
   const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
   const [generatedPlan, setGeneratedPlan] = useState<string | null>(null);
   const [planMeta, setPlanMeta] = useState<{ weeksUntilTest: number; scoreGap: string } | null>(null);
@@ -77,19 +131,22 @@ export default function LessonPlanGenerator() {
     );
   };
 
+  // Resolve the actual date string to pass to the API
+  const resolvedTestDate = selectedLsatDate === "custom" ? customDate : selectedLsatDate;
+
   const handleGenerate = () => {
     if (weakAreas.length === 0) {
       toast.error("Please select at least one weak area.");
       return;
     }
-    if (!testDate) {
+    if (!resolvedTestDate) {
       toast.error("Please select your test date.");
       return;
     }
     generateMutation.mutate({
       currentScore: hasScore ? (currentScore as number) : "untested",
       targetScore,
-      testDate,
+      testDate: resolvedTestDate,
       hoursPerWeek,
       weakAreas,
     });
@@ -101,9 +158,7 @@ export default function LessonPlanGenerator() {
     toast.success("Plan copied to clipboard!");
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   const handleReset = () => {
     setGeneratedPlan(null);
@@ -111,303 +166,508 @@ export default function LessonPlanGenerator() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const isValid = weakAreas.length > 0 && testDate;
-  const minDate = new Date().toISOString().split("T")[0];
+  const isValid = weakAreas.length > 0 && resolvedTestDate;
+
+  // Find the selected date metadata for the info panel
+  const selectedDateMeta = LSAT_DATES.find((d) => d.value === selectedLsatDate);
 
   return (
-    <div className="min-h-screen bg-[#1C1F26] text-white">
-      {/* Header */}
-      <div className="border-b border-white/10 bg-[#1C1F26]/95 backdrop-blur sticky top-0 z-10 print:hidden">
+    <div className="min-h-screen" style={{ background: "var(--background)" }}>
+
+      {/* ── Page Header ──────────────────────────────────────────────────────── */}
+      <div
+        className="border-b sticky top-0 z-10 print:hidden"
+        style={{
+          background: "rgba(249,248,246,0.97)",
+          backdropFilter: "blur(12px)",
+          borderColor: "var(--border)",
+        }}
+      >
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-amber-500/20 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+          <div
+            className="w-9 h-9 flex items-center justify-center"
+            style={{
+              background: "rgba(239,160,28,0.12)",
+              border: "1.5px solid rgba(239,160,28,0.35)",
+              borderRadius: "0.25rem",
+            }}
+          >
+            <Sparkles className="w-5 h-5" style={{ color: "var(--nexus-amber)" }} />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white font-['Space_Grotesk']">
+            <h1
+              style={{
+                fontFamily: "'Archivo Black', sans-serif",
+                fontWeight: 900,
+                fontSize: "1.1rem",
+                color: "var(--foreground)",
+                letterSpacing: "0.01em",
+                margin: 0,
+              }}
+            >
               AI Lesson Plan Generator
             </h1>
-            <p className="text-xs text-white/50">Personalized LSAT study plan in seconds</p>
+            <p style={{ ...mutedStyle, margin: 0 }}>
+              Personalized LSAT study plan in seconds
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
-        {/* Intake Form */}
+      {/* ── Form ─────────────────────────────────────────────────────────────── */}
+      <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
         {!generatedPlan && (
-          <div className="space-y-8">
-            {/* Score Section */}
-            <Card className="bg-white/5 border-white/10 text-white">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base flex items-center gap-2 font-['Space_Grotesk']">
-                  <Target className="w-4 h-4 text-amber-400" />
-                  Score Goals
-                </CardTitle>
-                <CardDescription className="text-white/50 text-sm">
-                  Set your starting point and target score
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Has diagnostic? */}
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setHasScore(true)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      hasScore
-                        ? "bg-amber-500 text-black"
-                        : "bg-white/10 text-white/70 hover:bg-white/15"
-                    }`}
-                  >
-                    I have a diagnostic score
-                  </button>
-                  <button
-                    onClick={() => { setHasScore(false); setCurrentScore("untested"); }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      !hasScore
-                        ? "bg-amber-500 text-black"
-                        : "bg-white/10 text-white/70 hover:bg-white/15"
-                    }`}
-                  >
-                    No diagnostic yet
-                  </button>
-                </div>
+          <div className="space-y-6">
 
-                {hasScore && (
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm text-white/70">Current Score</label>
-                      <span className="text-2xl font-bold text-amber-400 font-['Space_Grotesk']">
-                        {currentScore}
-                      </span>
-                    </div>
-                    <Slider
-                      min={120}
-                      max={180}
-                      step={1}
-                      value={[currentScore as number]}
-                      onValueChange={([v]) => setCurrentScore(v)}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-white/30">
-                      <span>120</span>
-                      <span>150</span>
-                      <span>180</span>
-                    </div>
-                  </div>
-                )}
+            {/* ── Score Goals ────────────────────────────────────────────────── */}
+            <div style={cardStyle} className="p-6">
+              <div className="flex items-center gap-2 mb-1">
+                <Target size={16} style={{ color: "var(--nexus-amber)" }} />
+                <p style={sectionLabelStyle}>Score Goals</p>
+              </div>
+              <p style={{ ...mutedStyle, marginBottom: "1.25rem" }}>
+                Set your starting point and target score
+              </p>
 
-                <div className="space-y-3">
+              {/* Diagnostic toggle */}
+              <div className="flex items-center gap-2 mb-5">
+                {[
+                  { label: "I have a diagnostic score", val: true },
+                  { label: "No diagnostic yet", val: false },
+                ].map(({ label, val }) => (
+                  <button
+                    key={label}
+                    onClick={() => { setHasScore(val); if (!val) setCurrentScore("untested"); }}
+                    className="px-4 py-2 text-sm font-semibold transition-all duration-150"
+                    style={{
+                      fontFamily: "'Archivo', sans-serif",
+                      borderRadius: "0.25rem",
+                      border: hasScore === val
+                        ? "1.5px solid var(--nexus-amber)"
+                        : "1.5px solid var(--border)",
+                      background: hasScore === val
+                        ? "rgba(239,160,28,0.1)"
+                        : "transparent",
+                      color: hasScore === val ? "var(--nexus-amber)" : "rgba(17,17,17,0.55)",
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {hasScore && (
+                <div className="space-y-2 mb-5">
                   <div className="flex justify-between items-center">
-                    <label className="text-sm text-white/70">Target Score</label>
-                    <span className="text-2xl font-bold text-emerald-400 font-['Space_Grotesk']">
-                      {targetScore}
+                    <label style={mutedStyle}>Current Score</label>
+                    <span
+                      style={{
+                        fontFamily: "'Archivo Black', sans-serif",
+                        fontSize: "1.5rem",
+                        color: "var(--nexus-amber)",
+                      }}
+                    >
+                      {currentScore}
                     </span>
                   </div>
                   <Slider
-                    min={120}
-                    max={180}
-                    step={1}
-                    value={[targetScore]}
-                    onValueChange={([v]) => setTargetScore(v)}
+                    min={120} max={180} step={1}
+                    value={[currentScore as number]}
+                    onValueChange={([v]) => setCurrentScore(v)}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-white/30">
-                    <span>120</span>
-                    <span>150</span>
-                    <span>180</span>
+                  <div className="flex justify-between" style={mutedStyle}>
+                    <span>120</span><span>150</span><span>180</span>
                   </div>
                 </div>
+              )}
 
-                {hasScore && typeof currentScore === "number" && targetScore > currentScore && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-sm text-emerald-300">
-                    Score gap: <strong>{targetScore - currentScore} points</strong> — that's achievable with focused preparation.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label style={mutedStyle}>Target Score</label>
+                  <span
+                    style={{
+                      fontFamily: "'Archivo Black', sans-serif",
+                      fontSize: "1.5rem",
+                      color: "#2D6A4F",
+                    }}
+                  >
+                    {targetScore}
+                  </span>
+                </div>
+                <Slider
+                  min={120} max={180} step={1}
+                  value={[targetScore]}
+                  onValueChange={([v]) => setTargetScore(v)}
+                  className="w-full"
+                />
+                <div className="flex justify-between" style={mutedStyle}>
+                  <span>120</span><span>150</span><span>180</span>
+                </div>
+              </div>
 
-            {/* Schedule Section */}
-            <Card className="bg-white/5 border-white/10 text-white">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base flex items-center gap-2 font-['Space_Grotesk']">
-                  <Calendar className="w-4 h-4 text-amber-400" />
-                  Schedule
-                </CardTitle>
-                <CardDescription className="text-white/50 text-sm">
-                  When is your test and how much time can you commit?
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm text-white/70">Test Date</label>
-                  <input
-                    type="date"
-                    min={minDate}
-                    value={testDate}
-                    onChange={(e) => setTestDate(e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400 transition-colors"
+              {hasScore && typeof currentScore === "number" && targetScore > currentScore && (
+                <div
+                  className="mt-4 px-4 py-3 text-sm"
+                  style={{
+                    background: "rgba(45,106,79,0.07)",
+                    border: "1px solid rgba(45,106,79,0.25)",
+                    borderRadius: "0.25rem",
+                    color: "#2D6A4F",
+                    fontFamily: "'Archivo', sans-serif",
+                  }}
+                >
+                  Score gap: <strong>{targetScore - currentScore} points</strong> — that's achievable with focused preparation.
+                </div>
+              )}
+            </div>
+
+            {/* ── Schedule ───────────────────────────────────────────────────── */}
+            <div style={cardStyle} className="p-6">
+              <div className="flex items-center gap-2 mb-1">
+                <Calendar size={16} style={{ color: "var(--nexus-amber)" }} />
+                <p style={sectionLabelStyle}>Schedule</p>
+              </div>
+              <p style={{ ...mutedStyle, marginBottom: "1.25rem" }}>
+                When is your test and how much time can you commit?
+              </p>
+
+              {/* LSAT Date Selector */}
+              <div className="mb-5">
+                <label
+                  style={{ ...mutedStyle, display: "block", marginBottom: "0.5rem", fontWeight: 600 }}
+                >
+                  Test Date
+                  <span
+                    style={{
+                      marginLeft: "0.5rem",
+                      fontSize: "0.7rem",
+                      color: "var(--nexus-teal)",
+                      fontWeight: 500,
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Official LSAC 2026–2027 Dates
+                  </span>
+                </label>
+
+                {/* Dropdown */}
+                <div className="relative">
+                  <select
+                    value={selectedLsatDate}
+                    onChange={(e) => setSelectedLsatDate(e.target.value as LsatDateValue)}
+                    className="w-full appearance-none pr-10 pl-4 py-2.5 text-sm transition-colors"
+                    style={{
+                      background: "var(--card)",
+                      border: "1.5px solid var(--border)",
+                      borderRadius: "0.25rem",
+                      color: "var(--foreground)",
+                      fontFamily: "'Archivo', sans-serif",
+                      outline: "none",
+                      cursor: "pointer",
+                    }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--nexus-amber)"; }}
+                    onBlur={(e)  => { e.currentTarget.style.borderColor = "var(--border)"; }}
+                  >
+                    {LSAT_DATES.map((d) => (
+                      <option key={d.value} value={d.value}>
+                        {d.label}
+                      </option>
+                    ))}
+                    <option value="custom">Custom date…</option>
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    style={{ color: "rgba(17,17,17,0.45)" }}
                   />
                 </div>
 
-                <div className="space-y-3">
-                  <label className="text-sm text-white/70">Study Hours Per Week</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {HOURS_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => setHoursPerWeek(opt.value)}
-                        className={`p-3 rounded-lg border text-left transition-colors ${
-                          hoursPerWeek === opt.value
-                            ? "border-amber-400 bg-amber-400/10 text-amber-300"
-                            : "border-white/15 bg-white/5 text-white/70 hover:border-white/30"
-                        }`}
-                      >
-                        <div className="font-semibold text-sm">{opt.label}</div>
-                        <div className="text-xs opacity-60 mt-0.5">{opt.description}</div>
-                      </button>
-                    ))}
+                {/* Date metadata panel */}
+                {selectedDateMeta && (
+                  <div
+                    className="mt-2 px-4 py-2.5 flex flex-wrap gap-x-6 gap-y-1 text-xs"
+                    style={{
+                      background: "rgba(239,160,28,0.06)",
+                      border: "1px solid rgba(239,160,28,0.2)",
+                      borderRadius: "0.25rem",
+                      fontFamily: "'Archivo', sans-serif",
+                    }}
+                  >
+                    <span style={{ color: "rgba(17,17,17,0.55)" }}>
+                      Reg. deadline: <strong style={{ color: "var(--foreground)" }}>{selectedDateMeta.regDeadline}</strong>
+                    </span>
+                    <span style={{ color: "rgba(17,17,17,0.55)" }}>
+                      Score release: <strong style={{ color: "var(--foreground)" }}>{selectedDateMeta.scoreRelease}</strong>
+                    </span>
+                    <a
+                      href="https://www.lsac.org/LSATdates"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "var(--nexus-teal)", textDecoration: "underline" }}
+                    >
+                      View on LSAC.org ↗
+                    </a>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                )}
 
-            {/* Weak Areas Section */}
-            <Card className="bg-white/5 border-white/10 text-white">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base flex items-center gap-2 font-['Space_Grotesk']">
-                  <Brain className="w-4 h-4 text-amber-400" />
+                {/* Custom date input */}
+                {selectedLsatDate === "custom" && (
+                  <input
+                    type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    value={customDate}
+                    onChange={(e) => setCustomDate(e.target.value)}
+                    className="mt-2 w-full px-4 py-2.5 text-sm transition-colors"
+                    style={{
+                      background: "var(--card)",
+                      border: "1.5px solid var(--border)",
+                      borderRadius: "0.25rem",
+                      color: "var(--foreground)",
+                      fontFamily: "'Archivo', sans-serif",
+                      outline: "none",
+                    }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--nexus-amber)"; }}
+                    onBlur={(e)  => { e.currentTarget.style.borderColor = "var(--border)"; }}
+                  />
+                )}
+              </div>
+
+              {/* Hours per week */}
+              <div>
+                <label style={{ ...mutedStyle, display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Study Hours Per Week
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {HOURS_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setHoursPerWeek(opt.value)}
+                      className="p-3 text-left transition-all duration-150"
+                      style={{
+                        border: hoursPerWeek === opt.value
+                          ? "1.5px solid var(--nexus-amber)"
+                          : "1.5px solid var(--border)",
+                        background: hoursPerWeek === opt.value
+                          ? "rgba(239,160,28,0.08)"
+                          : "var(--card)",
+                        borderRadius: "0.25rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontFamily: "'Archivo Black', sans-serif",
+                          fontSize: "0.85rem",
+                          color: hoursPerWeek === opt.value ? "var(--nexus-amber)" : "var(--foreground)",
+                        }}
+                      >
+                        {opt.label}
+                      </div>
+                      <div style={{ ...mutedStyle, marginTop: "0.2rem" }}>{opt.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Weak Areas ─────────────────────────────────────────────────── */}
+            <div style={cardStyle} className="p-6">
+              <div className="flex items-center gap-2 mb-1">
+                <Brain size={16} style={{ color: "var(--nexus-amber)" }} />
+                <p style={sectionLabelStyle}>
                   Weak Areas
                   {weakAreas.length > 0 && (
-                    <Badge className="ml-2 bg-amber-500/20 text-amber-300 border-amber-500/30 text-xs">
+                    <span
+                      className="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold"
+                      style={{
+                        background: "rgba(239,160,28,0.12)",
+                        color: "var(--nexus-amber)",
+                        border: "1px solid rgba(239,160,28,0.3)",
+                        fontFamily: "'Archivo', sans-serif",
+                        textTransform: "none",
+                        letterSpacing: 0,
+                      }}
+                    >
                       {weakAreas.length} selected
-                    </Badge>
+                    </span>
                   )}
-                </CardTitle>
-                <CardDescription className="text-white/50 text-sm">
-                  Select all question types and topics where you struggle (select at least one)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {WEAK_AREAS.map((area) => {
-                    const selected = weakAreas.includes(area);
-                    return (
-                      <button
-                        key={area}
-                        onClick={() => toggleWeakArea(area)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                          selected
-                            ? "bg-amber-500/20 border-amber-400/60 text-amber-300"
-                            : "bg-white/5 border-white/15 text-white/60 hover:border-white/30 hover:text-white/80"
-                        }`}
-                      >
-                        {selected && <CheckCircle2 className="w-3.5 h-3.5" />}
-                        {area}
-                      </button>
-                    );
-                  })}
-                </div>
-                {weakAreas.length === 0 && (
-                  <p className="text-xs text-red-400/70 mt-3">
-                    Please select at least one weak area to generate your plan.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+                </p>
+              </div>
+              <p style={{ ...mutedStyle, marginBottom: "1.25rem" }}>
+                Select all question types and topics where you struggle (select at least one)
+              </p>
 
-            {/* Generate Button */}
+              <div className="flex flex-wrap gap-2">
+                {WEAK_AREAS.map((area) => {
+                  const selected = weakAreas.includes(area);
+                  return (
+                    <button
+                      key={area}
+                      onClick={() => toggleWeakArea(area)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-all duration-150"
+                      style={{
+                        borderRadius: "0.25rem",
+                        border: selected
+                          ? "1.5px solid var(--nexus-amber)"
+                          : "1.5px solid var(--border)",
+                        background: selected ? "rgba(239,160,28,0.1)" : "transparent",
+                        color: selected ? "var(--nexus-amber)" : "rgba(17,17,17,0.65)",
+                        fontFamily: "'Archivo', sans-serif",
+                      }}
+                    >
+                      {selected && <CheckCircle2 size={13} />}
+                      {area}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {weakAreas.length === 0 && (
+                <p className="text-xs mt-3" style={{ color: "var(--nexus-terra)", fontFamily: "'Archivo', sans-serif" }}>
+                  Please select at least one weak area to generate your plan.
+                </p>
+              )}
+            </div>
+
+            {/* ── Generate Button ─────────────────────────────────────────────── */}
             <div className="flex justify-center pt-2">
-              <Button
+              <button
                 onClick={handleGenerate}
                 disabled={!isValid || generateMutation.isPending}
-                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-8 py-3 text-base rounded-xl disabled:opacity-40 transition-all"
-                size="lg"
+                className="flex items-center gap-2 px-8 py-3.5 font-semibold transition-all duration-150 disabled:opacity-40"
+                style={{
+                  background: "var(--nexus-amber)",
+                  color: "#111111",
+                  fontFamily: "'Archivo Black', sans-serif",
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.03em",
+                  textTransform: "uppercase",
+                  border: "1.5px solid var(--nexus-amber)",
+                  borderRadius: "0.25rem",
+                  boxShadow: "0 2px 8px rgba(239,160,28,0.2)",
+                }}
+                onMouseEnter={(e) => { if (!generateMutation.isPending) e.currentTarget.style.background = "#d98a0b"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--nexus-amber)"; }}
               >
                 {generateMutation.isPending ? (
                   <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                     Generating your plan…
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5 mr-2" />
+                    <Sparkles size={18} />
                     Generate My Lesson Plan
-                    <ChevronRight className="w-5 h-5 ml-1" />
+                    <ChevronRight size={18} />
                   </>
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         )}
 
-        {/* Generated Plan Output */}
+        {/* ── Generated Plan Output ──────────────────────────────────────────── */}
         {generatedPlan && (
-          <div ref={planRef} className="space-y-6 print:space-y-4">
-            {/* Plan Meta */}
+          <div ref={planRef} className="space-y-5 print:space-y-4">
+
+            {/* Meta badges */}
             {planMeta && (
-              <div className="flex flex-wrap gap-3 print:hidden">
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 px-3 py-1.5 text-sm">
-                  <Clock className="w-3.5 h-3.5 mr-1.5" />
-                  {planMeta.weeksUntilTest} weeks until test
-                </Badge>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-3 py-1.5 text-sm">
-                  <Target className="w-3.5 h-3.5 mr-1.5" />
-                  Score gap: {planMeta.scoreGap}
-                </Badge>
-                <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 px-3 py-1.5 text-sm">
-                  <Brain className="w-3.5 h-3.5 mr-1.5" />
-                  {weakAreas.length} focus areas
-                </Badge>
+              <div className="flex flex-wrap gap-2 print:hidden">
+                {[
+                  { icon: <Clock size={13} />, label: `${planMeta.weeksUntilTest} weeks until test`, color: "var(--nexus-amber)", bg: "rgba(239,160,28,0.1)", border: "rgba(239,160,28,0.3)" },
+                  { icon: <Target size={13} />, label: `Score gap: ${planMeta.scoreGap}`, color: "#2D6A4F", bg: "rgba(45,106,79,0.08)", border: "rgba(45,106,79,0.25)" },
+                  { icon: <Brain size={13} />, label: `${weakAreas.length} focus areas`, color: "var(--nexus-teal)", bg: "rgba(26,171,188,0.08)", border: "rgba(26,171,188,0.25)" },
+                ].map(({ icon, label, color, bg, border }) => (
+                  <span
+                    key={label}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
+                    style={{
+                      background: bg,
+                      border: `1px solid ${border}`,
+                      borderRadius: "0.25rem",
+                      color,
+                      fontFamily: "'Archivo', sans-serif",
+                    }}
+                  >
+                    {icon}{label}
+                  </span>
+                ))}
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 print:hidden">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopy}
-                className="border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy to Clipboard
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePrint}
-                className="border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
-              >
-                <Printer className="w-4 h-4 mr-2" />
-                Print / Save PDF
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
+            {/* Action buttons */}
+            <div className="flex gap-2 flex-wrap print:hidden">
+              {[
+                { icon: <Copy size={14} />, label: "Copy to Clipboard", onClick: handleCopy },
+                { icon: <Printer size={14} />, label: "Print / Save PDF", onClick: handlePrint },
+              ].map(({ icon, label, onClick }) => (
+                <button
+                  key={label}
+                  onClick={onClick}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-150"
+                  style={{
+                    background: "transparent",
+                    border: "1.5px solid var(--border)",
+                    borderRadius: "0.25rem",
+                    color: "rgba(17,17,17,0.65)",
+                    fontFamily: "'Archivo', sans-serif",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--nexus-teal)"; e.currentTarget.style.color = "var(--nexus-teal)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "rgba(17,17,17,0.65)"; }}
+                >
+                  {icon}{label}
+                </button>
+              ))}
+              <button
                 onClick={handleReset}
-                className="border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent ml-auto"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-150 ml-auto"
+                style={{
+                  background: "transparent",
+                  border: "1.5px solid var(--border)",
+                  borderRadius: "0.25rem",
+                  color: "rgba(17,17,17,0.65)",
+                  fontFamily: "'Archivo', sans-serif",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--nexus-terra)"; e.currentTarget.style.color = "var(--nexus-terra)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "rgba(17,17,17,0.65)"; }}
               >
-                <RotateCcw className="w-4 h-4 mr-2" />
+                <RotateCcw size={14} />
                 Generate New Plan
-              </Button>
+              </button>
             </div>
 
-            {/* Plan Content */}
-            <Card className="bg-white/5 border-white/10 text-white print:bg-white print:text-black print:border-gray-200">
-              <CardContent className="pt-6 prose prose-invert max-w-none prose-headings:font-['Space_Grotesk'] prose-headings:text-amber-300 prose-strong:text-white prose-li:text-white/85 prose-p:text-white/85 print:prose-headings:text-gray-900 print:prose-p:text-gray-800 print:prose-li:text-gray-800 print:prose-strong:text-gray-900">
+            {/* Plan content */}
+            <div
+              style={{
+                ...cardStyle,
+                padding: "2rem",
+              }}
+              className="print:bg-white print:border-gray-200"
+            >
+              <div className="prose prose-sm max-w-none prose-headings:font-['Archivo_Black'] prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[rgba(17,17,17,0.8)] prose-p:text-[rgba(17,17,17,0.8)] print:prose-headings:text-gray-900 print:prose-p:text-gray-800">
                 <Streamdown>{generatedPlan}</Streamdown>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Bottom action */}
-            <div className="flex justify-center pt-4 print:hidden">
-              <Button
-                variant="outline"
+            {/* Bottom reset */}
+            <div className="flex justify-center pt-2 print:hidden">
+              <button
                 onClick={handleReset}
-                className="border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium transition-all duration-150"
+                style={{
+                  background: "transparent",
+                  border: "1.5px solid var(--border)",
+                  borderRadius: "0.25rem",
+                  color: "rgba(17,17,17,0.65)",
+                  fontFamily: "'Archivo', sans-serif",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--nexus-amber)"; e.currentTarget.style.color = "var(--nexus-amber)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "rgba(17,17,17,0.65)"; }}
               >
-                <RotateCcw className="w-4 h-4 mr-2" />
+                <RotateCcw size={14} />
                 Generate a Different Plan
-              </Button>
+              </button>
             </div>
           </div>
         )}

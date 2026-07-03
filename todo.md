@@ -426,3 +426,10 @@
 - [x] Wire booking_cta flag to BookingCTA.tsx (returns null if disabled)
 - [x] Write Vitest tests for feature flag system (14 tests, all passing)
 - [x] TypeScript check passed (0 errors)
+
+## Visual Editor Fixes (2026-07-03)
+
+- [x] Nav bar: reduce link font size to 0.72rem, tighten padding so all 8 links fit cleanly on one line
+- [x] Nav bar: replace amber diamond submark with distinctive N-mark SVG (amber square + N letterform)
+- [x] LessonPlanGenerator: convert from dark scheme (#1C1F26) to light scheme matching site palette
+- [x] LessonPlanGenerator: replace plain date input with official LSAC 2026-2027 date dropdown (9 dates with reg deadline + score release metadata)

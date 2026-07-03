@@ -105,23 +105,36 @@ export default function MainNavigationBar() {
           borderWidth: "1.5px",
         }}
       >
-        {/* Logo/Brand with Geometric Mark */}
-        <div className="flex items-center gap-3">
-          {/* Geometric Amber Diamond */}
-          <div
-            className="w-8 h-8 flex items-center justify-center"
-            style={{
-              background: "var(--nexus-amber)",
-              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-            }}
-          />
+        {/* Logo/Brand — N-mark submark */}
+        <div className="flex items-center gap-2.5">
+          {/* Distinctive N-mark: two vertical bars connected by a diagonal — monogram submark */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="LSAT Nexus logo mark"
+          >
+            {/* Outer square border */}
+            <rect x="1" y="1" width="26" height="26" rx="2" fill="#EFA01C" />
+            {/* N letterform: left vertical, diagonal, right vertical — white on amber */}
+            <path
+              d="M7 21V7L21 21V7"
+              stroke="#111111"
+              strokeWidth="2.8"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              fill="none"
+            />
+          </svg>
           <span
             style={{
               fontFamily: "'Archivo Black', sans-serif",
               fontWeight: 900,
-              fontSize: "0.95rem",
+              fontSize: "0.9rem",
               color: "var(--nexus-amber)",
-              letterSpacing: "0.05em",
+              letterSpacing: "0.06em",
               textTransform: "uppercase",
             }}
           >
@@ -130,22 +143,22 @@ export default function MainNavigationBar() {
         </div>
 
         {/* Desktop Navigation Links */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-0">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.route);
             return (
               <Link
                 key={item.route}
                 href={item.route}
-                className="px-3 py-2 flex items-center gap-2 transition-all duration-200 relative group"
+                className="px-2.5 py-2 flex items-center gap-1.5 transition-all duration-200 relative group whitespace-nowrap"
                 style={{
                   color: active ? "var(--nexus-amber)" : "#CCCCCC",
-                  fontSize: "0.8rem",
+                  fontSize: "0.72rem",
                   fontFamily: "'Archivo', sans-serif",
-                  fontWeight: active ? 600 : 500,
-                  letterSpacing: "0.02em",
+                  fontWeight: active ? 700 : 500,
+                  letterSpacing: "0.03em",
                   textTransform: "uppercase",
-                  borderBottom: active ? "3px solid var(--nexus-amber)" : "3px solid transparent",
+                  borderBottom: active ? "2.5px solid var(--nexus-amber)" : "2.5px solid transparent",
                   cursor: "pointer",
                 }}
                 onMouseEnter={(e) => {
@@ -159,8 +172,8 @@ export default function MainNavigationBar() {
                   }
                 }}
               >
-                <span style={{ color: "inherit" }}>
-                  {item.icon}
+                <span style={{ color: "inherit", display: "flex", alignItems: "center" }}>
+                  {item.icon && <span style={{ transform: "scale(0.85)", display: "inline-flex" }}>{item.icon}</span>}
                 </span>
                 <span>{item.label}</span>
 
@@ -260,13 +273,24 @@ export default function MainNavigationBar() {
         }}
       >
         <div className="flex items-center gap-2">
-          <div
-            className="w-6 h-6 flex items-center justify-center"
-            style={{
-              background: "var(--nexus-amber)",
-              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-            }}
-          />
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 28 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="LSAT Nexus logo mark"
+          >
+            <rect x="1" y="1" width="26" height="26" rx="2" fill="#EFA01C" />
+            <path
+              d="M7 21V7L21 21V7"
+              stroke="#111111"
+              strokeWidth="2.8"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              fill="none"
+            />
+          </svg>
           <span
             style={{
               fontFamily: "'Archivo Black', sans-serif",
@@ -277,7 +301,7 @@ export default function MainNavigationBar() {
               textTransform: "uppercase",
             }}
           >
-            LSAT
+            LSAT Nexus
           </span>
         </div>
 
