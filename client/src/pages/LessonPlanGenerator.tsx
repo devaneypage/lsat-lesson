@@ -30,21 +30,42 @@ import {
   CheckCircle2,
   RotateCcw,
   ChevronDown,
+  Timer,
 } from "lucide-react";
 
 // ─── Official LSAC 2026-2027 test dates ──────────────────────────────────────
 // Source: https://www.lsac.org/LSATdates
 // Only future dates (after 2026-07-03) are included.
 
+// ─── Countdown helpers ───────────────────────────────────────────────────────
+
+/** Returns days remaining from today until the given ISO date string (inclusive). */
+function daysUntil(isoDate: string): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(isoDate + "T00:00:00");
+  const diff = target.getTime() - today.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+/** Returns a color and urgency label based on days remaining. */
+function urgencyStyle(days: number): { color: string; bg: string; border: string; label: string } {
+  if (days < 0)  return { color: "#888",            bg: "rgba(0,0,0,0.04)",          border: "rgba(0,0,0,0.1)",          label: "Closed" };
+  if (days === 0) return { color: "#D0452A",         bg: "rgba(208,69,42,0.08)",      border: "rgba(208,69,42,0.3)",      label: "Today!" };
+  if (days <= 7)  return { color: "#D0452A",         bg: "rgba(208,69,42,0.08)",      border: "rgba(208,69,42,0.3)",      label: "Urgent" };
+  if (days <= 30) return { color: "#EFA01C",         bg: "rgba(239,160,28,0.08)",     border: "rgba(239,160,28,0.3)",     label: "Soon" };
+  return           { color: "#1AABBC",               bg: "rgba(26,171,188,0.07)",     border: "rgba(26,171,188,0.25)",    label: "Open" };
+}
+
 const LSAT_DATES = [
-  { label: "August 2026 — Aug 5–8, 2026",      value: "2026-08-05", regDeadline: "Jun 25, 2026", scoreRelease: "Aug 26, 2026" },
-  { label: "September 2026 — Sep 9–12, 2026",   value: "2026-09-09", regDeadline: "Jul 28, 2026", scoreRelease: "Sep 30, 2026" },
-  { label: "October 2026 — Oct 7–10, 2026",     value: "2026-10-07", regDeadline: "Aug 27, 2026", scoreRelease: "Oct 28, 2026" },
-  { label: "November 2026 — Nov 11–14, 2026",   value: "2026-11-11", regDeadline: "Oct 1, 2026",  scoreRelease: "Dec 2, 2026" },
-  { label: "January 2027 — Jan 13–16, 2027",    value: "2027-01-13", regDeadline: "Dec 1, 2026",  scoreRelease: "Feb 3, 2027" },
-  { label: "February 2027 — Feb 12–13, 2027",   value: "2027-02-12", regDeadline: "Dec 29, 2026", scoreRelease: "Mar 3, 2027" },
-  { label: "April 2027 — Apr 8–10, 2027",       value: "2027-04-08", regDeadline: "Feb 25, 2027", scoreRelease: "Apr 28, 2027" },
-  { label: "June 2027 — Jun 9–12, 2027",        value: "2027-06-09", regDeadline: "Apr 29, 2027", scoreRelease: "Jun 30, 2027" },
+  { label: "August 2026 — Aug 5–8, 2026",      value: "2026-08-05", regDeadline: "Jun 25, 2026", regDeadlineIso: "2026-06-25", scoreRelease: "Aug 26, 2026" },
+  { label: "September 2026 — Sep 9–12, 2026",   value: "2026-09-09", regDeadline: "Jul 28, 2026", regDeadlineIso: "2026-07-28", scoreRelease: "Sep 30, 2026" },
+  { label: "October 2026 — Oct 7–10, 2026",     value: "2026-10-07", regDeadline: "Aug 27, 2026", regDeadlineIso: "2026-08-27", scoreRelease: "Oct 28, 2026" },
+  { label: "November 2026 — Nov 11–14, 2026",   value: "2026-11-11", regDeadline: "Oct 1, 2026",  regDeadlineIso: "2026-10-01", scoreRelease: "Dec 2, 2026" },
+  { label: "January 2027 — Jan 13–16, 2027",    value: "2027-01-13", regDeadline: "Dec 1, 2026",  regDeadlineIso: "2026-12-01", scoreRelease: "Feb 3, 2027" },
+  { label: "February 2027 — Feb 12–13, 2027",   value: "2027-02-12", regDeadline: "Dec 29, 2026", regDeadlineIso: "2026-12-29", scoreRelease: "Mar 3, 2027" },
+  { label: "April 2027 — Apr 8–10, 2027",       value: "2027-04-08", regDeadline: "Feb 25, 2027", regDeadlineIso: "2027-02-25", scoreRelease: "Apr 28, 2027" },
+  { label: "June 2027 — Jun 9–12, 2027",        value: "2027-06-09", regDeadline: "Apr 29, 2027", regDeadlineIso: "2027-04-29", scoreRelease: "Jun 30, 2027" },
 ] as const;
 
 type LsatDateValue = (typeof LSAT_DATES)[number]["value"] | "custom";
@@ -384,33 +405,74 @@ export default function LessonPlanGenerator() {
                   />
                 </div>
 
-                {/* Date metadata panel */}
-                {selectedDateMeta && (
-                  <div
-                    className="mt-2 px-4 py-2.5 flex flex-wrap gap-x-6 gap-y-1 text-xs"
-                    style={{
-                      background: "rgba(239,160,28,0.06)",
-                      border: "1px solid rgba(239,160,28,0.2)",
-                      borderRadius: "0.25rem",
-                      fontFamily: "'Archivo', sans-serif",
-                    }}
-                  >
-                    <span style={{ color: "rgba(17,17,17,0.55)" }}>
-                      Reg. deadline: <strong style={{ color: "var(--foreground)" }}>{selectedDateMeta.regDeadline}</strong>
-                    </span>
-                    <span style={{ color: "rgba(17,17,17,0.55)" }}>
-                      Score release: <strong style={{ color: "var(--foreground)" }}>{selectedDateMeta.scoreRelease}</strong>
-                    </span>
-                    <a
-                      href="https://www.lsac.org/LSATdates"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "var(--nexus-teal)", textDecoration: "underline" }}
+                {/* Date metadata panel with countdown timer */}
+                {selectedDateMeta && (() => {
+                  const days = daysUntil(selectedDateMeta.regDeadlineIso);
+                  const u = urgencyStyle(days);
+                  return (
+                    <div
+                      className="mt-2 px-4 py-3"
+                      style={{
+                        background: "rgba(239,160,28,0.04)",
+                        border: "1px solid rgba(239,160,28,0.18)",
+                        borderRadius: "0.25rem",
+                        fontFamily: "'Archivo', sans-serif",
+                      }}
                     >
-                      View on LSAC.org ↗
-                    </a>
-                  </div>
-                )}
+                      {/* Countdown row */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div
+                          className="flex items-center gap-2 px-3 py-1.5"
+                          style={{
+                            background: u.bg,
+                            border: `1.5px solid ${u.border}`,
+                            borderRadius: "0.25rem",
+                          }}
+                        >
+                          <Clock size={14} style={{ color: u.color }} />
+                          <span
+                            style={{
+                              fontFamily: "'Archivo Black', sans-serif",
+                              fontSize: "1.15rem",
+                              fontWeight: 900,
+                              color: u.color,
+                              lineHeight: 1,
+                            }}
+                          >
+                            {days < 0 ? "—" : days}
+                          </span>
+                          <span style={{ fontSize: "0.75rem", color: u.color, fontWeight: 600 }}>
+                            {days < 0 ? "Registration closed" : days === 1 ? "day until reg. deadline" : "days until reg. deadline"}
+                          </span>
+                          <span
+                            className="px-1.5 py-0.5 rounded text-xs font-bold"
+                            style={{ background: u.color, color: "#fff", fontSize: "0.65rem", letterSpacing: "0.05em" }}
+                          >
+                            {u.label.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Metadata row */}
+                      <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs" style={{ color: "rgba(17,17,17,0.55)" }}>
+                        <span>
+                          Reg. deadline: <strong style={{ color: "var(--foreground)" }}>{selectedDateMeta.regDeadline}</strong>
+                        </span>
+                        <span>
+                          Score release: <strong style={{ color: "var(--foreground)" }}>{selectedDateMeta.scoreRelease}</strong>
+                        </span>
+                        <a
+                          href="https://www.lsac.org/LSATdates"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "var(--nexus-teal)", textDecoration: "underline" }}
+                        >
+                          View on LSAC.org ↗
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Custom date input */}
                 {selectedLsatDate === "custom" && (
