@@ -439,3 +439,13 @@
 - [x] P1: Add dashboard page header (title, date, horizontal rule)
 - [x] P2: Make ConceptMap nodes interactive (hover + click-through)
 - [x] P3: Darken --nexus-lime to pass WCAG AA contrast
+
+## UX Critique Fixes (P4–P11)
+- [x] P4: Reorder sidebar — QuickNavigation first, then ScoreCard, then MasteryOverview
+- [x] P5: Add Lessons Hub page header (title + subtitle + rule) to Lessons.tsx
+- [x] P6: Add sequence numbers / "Start Here" badge to lesson cards in LessonGrid
+- [x] P7: Reorganize ConceptMap into LR/RC semantic clusters with grouping zones
+- [x] P8: Rename "Review Mistakes" → "Analyze Errors" in QuickNavigation + reassign terra → amber
+- [x] P9: Replace rgba(17,17,17,0.6/0.7) with var(--muted-foreground) across dashboard components
+- [x] P10: Consolidate lesson card colors to 3–4 semantic groups (LR/RC/Logic/terra)
+- [x] P11: Increase dashboard gap to gap-6 and outer padding to p-6 md:p-8

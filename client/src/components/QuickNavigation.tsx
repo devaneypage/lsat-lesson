@@ -29,16 +29,16 @@ const QUICK_ACTIONS: QuickAction[] = [
     color: "var(--nexus-teal)",
   },
   {
-    label: "Review Mistakes",
+    label: "Analyze Errors",
     route: "/question-bank",
     icon: <AlertCircle size={18} />,
-    color: "var(--nexus-terra)",
+    color: "var(--nexus-amber)",  // P8: reassigned from terra (destructive) to amber (attention)
   },
   {
     label: "Study Plan",
     route: "/lesson-plan-generator",
     icon: <BookOpen size={18} />,
-    color: "var(--nexus-amber)",
+    color: "var(--nexus-forest)",
   },
   {
     label: "View Progress",
@@ -66,7 +66,7 @@ const QuickNavigation: React.FC = () => {
           fontWeight: 600,
           letterSpacing: "0.05em",
           textTransform: "uppercase",
-          color: "rgba(17, 17, 17, 0.6)",
+          color: "var(--muted-foreground)",  // P9: replaced hardcoded rgba
           marginBottom: "1rem",
         }}
       >

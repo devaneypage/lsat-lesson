@@ -39,7 +39,7 @@ export default function Dashboard() {
           style={{
             fontFamily: "'Archivo', sans-serif",
             fontSize: "0.9rem",
-            color: "rgba(17, 17, 17, 0.5)",
+            color: "var(--muted-foreground)",
             letterSpacing: "0.05em",
             textTransform: "uppercase",
           }}
@@ -58,14 +58,14 @@ export default function Dashboard() {
   // Main content: concept map (default) or lesson grid (fallback)
   const mainContent = flags.concept_map ? <ConceptMap /> : <LessonGrid />;
 
-  // Sidebar: conditionally include score card
+  // Sidebar: actions first (P4 fix), then data widgets
   const sidebarContent = (
     <>
+      <QuickNavigation />
       {flags.score_card && (
         <ScoreCard currentScore={157} percentile={63} targetScore={170} />
       )}
       <MasteryOverview />
-      <QuickNavigation />
     </>
   );
 

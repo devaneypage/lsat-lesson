@@ -20,8 +20,8 @@ interface MasteryOverviewProps {
 
 const DEFAULT_SKILLS: SkillMastery[] = [
   { name: "Logical Reasoning", percentage: 72, color: "var(--nexus-teal)" },
-  { name: "Reading Comprehension", percentage: 61, color: "var(--nexus-forest)" },
-  { name: "Analytical Reasoning", percentage: 58, color: "var(--nexus-amber)" },
+  { name: "Reading Comprehension", percentage: 61, color: "var(--nexus-blue)" },
+  { name: "Formal Logic", percentage: 58, color: "var(--nexus-purple)" },
 ];
 
 const MasteryOverview: React.FC<MasteryOverviewProps> = ({
@@ -44,7 +44,7 @@ const MasteryOverview: React.FC<MasteryOverviewProps> = ({
           fontWeight: 600,
           letterSpacing: "0.05em",
           textTransform: "uppercase",
-          color: "rgba(17, 17, 17, 0.6)",
+          color: "var(--muted-foreground)",
           marginBottom: "1.5rem",
         }}
       >
@@ -86,10 +86,10 @@ const MasteryOverview: React.FC<MasteryOverviewProps> = ({
               style={{
                 width: "100%",
                 height: "6px",
-                background: "rgba(17, 17, 17, 0.1)",
+                background: "var(--muted)",
                 borderRadius: "0.25rem",
                 overflow: "hidden",
-                border: "1px solid rgba(17, 17, 17, 0.15)",
+                border: "1px solid var(--border)",
               }}
             >
               <div

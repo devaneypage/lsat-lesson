@@ -32,7 +32,7 @@ const NexusDashboardLayout: React.FC<NexusDashboardLayoutProps> = ({
       style={{
         background: "var(--background)",
         minHeight: "100vh",
-        padding: "1.5rem 1.5rem 2rem",
+        padding: "1.5rem 2rem 3rem",  // P11: increased outer padding
       }}
     >
       {/* Page Header — orientation anchor */}
@@ -90,7 +90,7 @@ const NexusDashboardLayout: React.FC<NexusDashboardLayoutProps> = ({
       {/* Two-column grid */}
       <div
         className="grid grid-cols-1 lg:grid-cols-[1fr_320px]"
-        style={{ gap: "1.5rem" }}
+        style={{ gap: "2rem" }}  // P11: increased gap
       >
         {/* Main Content Area */}
         <div className="main-content">{mainContent}</div>

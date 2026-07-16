@@ -36,7 +36,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
           fontWeight: 600,
           letterSpacing: "0.05em",
           textTransform: "uppercase",
-          color: "rgba(17, 17, 17, 0.6)",
+          color: "var(--muted-foreground)",
           marginBottom: "1rem",
         }}
       >
@@ -60,7 +60,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
         style={{
           fontFamily: "'Archivo', sans-serif",
           fontSize: "0.8rem",
-          color: "rgba(17, 17, 17, 0.7)",
+          color: "var(--muted-foreground)",
           marginBottom: "1.5rem",
         }}
       >
@@ -80,7 +80,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
             fontWeight: 600,
             letterSpacing: "0.05em",
             textTransform: "uppercase",
-            color: "rgba(17, 17, 17, 0.6)",
+            color: "var(--muted-foreground)",
             marginBottom: "0.5rem",
           }}
         >
