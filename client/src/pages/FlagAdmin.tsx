@@ -162,23 +162,25 @@ function CategoryBadge({ flagKey }: { flagKey: string }) {
 export default function FlagAdmin() {
   const { user, loading: authLoading } = useAuth();
   const [, navigate] = useLocation();
+  const utils = trpc.useUtils();
 
-  const { data: flags, isLoading, refetch } = trpc.flags.list.useQuery(undefined, {
+  const { data: flags, isLoading, refetch } = trpc.flags.adminList.useQuery(undefined, {
+    enabled: !authLoading && user?.role === "admin",
     refetchOnWindowFocus: false,
   });
 
   const toggleMutation = trpc.flags.toggle.useMutation({
-    onSuccess: (updated) => {
+    onSuccess: async (updated) => {
       toast.success(`Flag "${updated.key}" ${updated.enabled ? "enabled" : "disabled"}`);
-      refetch();
+      await Promise.all([refetch(), utils.flags.evaluate.invalidate()]);
     },
     onError: (err) => toast.error(err.message),
   });
 
   const rolloutMutation = trpc.flags.setRollout.useMutation({
-    onSuccess: (updated) => {
+    onSuccess: async (updated) => {
       toast.success(`Rollout for "${updated.key}" set to ${updated.rolloutPercentage}%`);
-      refetch();
+      await Promise.all([refetch(), utils.flags.evaluate.invalidate()]);
     },
     onError: (err) => toast.error(err.message),
   });
@@ -336,7 +338,7 @@ export default function FlagAdmin() {
           <p style={{ fontSize: "0.85rem", color: "var(--foreground)", lineHeight: 1.6, margin: 0 }}>
             Changes take effect immediately — no redeploy needed. The frontend caches flags for 60 seconds,
             so toggled features will appear for all visitors within one minute of a change.
-            Rollout percentage controls what fraction of users see the feature (100% = everyone).
+            Rollout percentage controls what fraction of visitors see the feature (100% = everyone). Each visitor is assigned deterministically, so their experience remains stable as they return.
           </p>
         </div>
 

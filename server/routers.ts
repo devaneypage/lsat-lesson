@@ -26,6 +26,7 @@ import {
   setFlagRollout,
 } from "./db";
 import { TRPCError } from "@trpc/server";
+import { evaluateFeatureFlags } from "../shared/featureFlags";
 import { invokeLLM } from "./_core/llm";
 
 export const appRouter = router({
@@ -347,17 +348,35 @@ export const appRouter = router({
 
   // ─── Feature Flags ───────────────────────────────────────────────────────────
   flags: router({
-    /** Public: read all flags (frontend uses this to gate features) */
-    list: publicProcedure.query(async () => {
+    /** Public: return evaluated decisions only, without operational metadata. */
+    evaluate: publicProcedure
+      .input(z.object({ visitorId: z.string().trim().min(1).max(128) }))
+      .query(async ({ ctx, input }) => {
+        const flags = await getAllFlags();
+        const subjectId = ctx.user
+          ? `user:${ctx.user.openId}`
+          : `visitor:${input.visitorId}`;
+
+        return evaluateFeatureFlags(flags, subjectId);
+      }),
+
+    /** Admin only: return flag metadata and current rollout controls. */
+    adminList: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only admins can view feature-flag controls",
+        });
+      }
+
       const flags = await getAllFlags();
-      // Return a simple key→enabled map for easy consumption
-      return flags.map((f) => ({
-        key: f.key,
-        name: f.name,
-        description: f.description ?? "",
-        enabled: f.enabled === 1,
-        rolloutPercentage: f.rolloutPercentage,
-        updatedAt: f.updatedAt,
+      return flags.map((flag) => ({
+        key: flag.key,
+        name: flag.name,
+        description: flag.description ?? "",
+        enabled: flag.enabled === 1,
+        rolloutPercentage: flag.rolloutPercentage,
+        updatedAt: flag.updatedAt,
       }));
     }),
 
