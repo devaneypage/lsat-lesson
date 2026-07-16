@@ -1,10 +1,13 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { productEvents, questionAttempts, questions } from "../../drizzle/schema";
 import { sanitizeProductEventMetadata, type ConfidenceLevel } from "../../shared/learnerDomain";
 import {
+  PRACTICE_DISCOVERY_BATCH_MAX,
   evaluatePracticeSubmission,
+  summarizePracticeAttempts,
   type AnswerLetter,
   type PracticeContext,
+  type PracticeSummary,
 } from "../../shared/practiceEvidence";
 import { getDb } from "../db";
 
@@ -50,6 +53,75 @@ export async function recordQuestionStarted(input: {
     expiresAt: eventExpiry(now),
   });
   return true;
+}
+
+export async function recordQuestionsDiscovered(input: {
+  userId: number;
+  questionIds: number[];
+  route?: string;
+  surface?: string;
+  now?: Date;
+}) {
+  const db = await requireDb();
+  const now = input.now ?? new Date();
+  const uniqueIds = [...new Set(input.questionIds)].slice(0, PRACTICE_DISCOVERY_BATCH_MAX);
+  if (uniqueIds.length === 0) return 0;
+
+  const existing = await db
+    .select({ id: questions.id })
+    .from(questions)
+    .where(inArray(questions.id, uniqueIds));
+  const existingIds = new Set(existing.map((row) => row.id));
+
+  const route = input.route?.slice(0, 255) ?? "/question-bank";
+  const expiresAt = eventExpiry(now);
+  const values = uniqueIds
+    .filter((id) => existingIds.has(id))
+    .map((id) => ({
+      userId: input.userId,
+      eventName: "question_discovered" as const,
+      route,
+      metadata: sanitizeProductEventMetadata({
+        surface: input.surface ?? "question_bank",
+        route,
+        contentType: "question",
+        contentId: String(id),
+      }),
+      occurredAt: now,
+      expiresAt,
+    }));
+
+  if (values.length === 0) return 0;
+  await db.insert(productEvents).values(values);
+  return values.length;
+}
+
+/**
+ * Returns one learner's aggregate calibration and timing evidence. Selects
+ * only attempt columns so no question text, explanations, or private learner
+ * notes ever leave the database for this read model.
+ */
+export async function getPracticeSummary(userId: number, now: Date = new Date()): Promise<PracticeSummary> {
+  const db = await requireDb();
+  const rows = await db
+    .select({
+      isCorrect: questionAttempts.isCorrect,
+      confidence: questionAttempts.confidence,
+      activeTimeMs: questionAttempts.activeTimeMs,
+      submittedAt: questionAttempts.submittedAt,
+    })
+    .from(questionAttempts)
+    .where(eq(questionAttempts.userId, userId));
+
+  return summarizePracticeAttempts(
+    rows.map((row) => ({
+      isCorrect: row.isCorrect === 1,
+      confidence: row.confidence,
+      activeTimeMs: row.activeTimeMs,
+      submittedAt: row.submittedAt,
+    })),
+    now,
+  );
 }
 
 export async function submitPracticeAttempt(input: {
@@ -182,5 +254,7 @@ export async function submitPracticeAttempt(input: {
 
 export const practiceRepository = {
   recordQuestionStarted,
+  recordQuestionsDiscovered,
+  getPracticeSummary,
   submitPracticeAttempt,
 };

@@ -46,6 +46,26 @@ import type { ConfidenceLevel } from "../../../shared/learnerDomain";
 import type { AnswerLetter } from "../../../shared/practiceEvidence";
 
 const QUESTIONS_PER_PAGE = 200;
+const DISCOVERY_BATCH_MAX = 50;
+const DISCOVERY_DEBOUNCE_MS = 1_500;
+
+const CALIBRATION_LABELS = [
+  { state: "well_calibrated", label: "Well calibrated", description: "Confident and correct" },
+  { state: "underconfident", label: "Underconfident", description: "Correct despite doubt" },
+  { state: "overconfident", label: "Overconfident", description: "Confident but incorrect" },
+  { state: "appropriately_uncertain", label: "Appropriately uncertain", description: "Doubt matched to a miss" },
+] as const;
+
+const CONFIDENCE_ROWS = [
+  { value: "certain", label: "Certain" },
+  { value: "unsure", label: "Unsure" },
+  { value: "guessed", label: "Guessed" },
+] as const;
+
+function formatActiveTime(ms: number | null) {
+  if (ms === null) return "—";
+  return `${Math.max(1, Math.round(ms / 1000))}s`;
+}
 
 export default function QuestionBank() {
   // Get URL parameters for module filtering and direct command-search links.
@@ -87,6 +107,8 @@ export default function QuestionBank() {
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const startMutation = trpc.practice.start.useMutation();
   const submitMutation = trpc.practice.submit.useMutation();
+  const discoveredMutation = trpc.practice.discovered.useMutation();
+  const lastDiscoveryKeyRef = useRef<string | null>(null);
   const submissionResult = submitMutation.data;
 
   // Fetch tags for the filter dropdown
@@ -101,6 +123,10 @@ export default function QuestionBank() {
     () => new Set((taggedQuestionData || []).map((q: { id: number }) => q.id)),
     [taggedQuestionData]
   );
+
+  const practiceSummaryQuery = trpc.practice.summary.useQuery(undefined, {
+    enabled: isAuthenticated && confidenceTrackingEnabled && viewMode === "stats",
+  });
 
   // Filter and search logic
   const filteredQuestions = useMemo(() => {
@@ -211,6 +237,26 @@ export default function QuestionBank() {
       }
     };
   }, [isAuthenticated, selectedQuestion?.id, viewMode]);
+
+  // Record privacy-safe discovery for the visible page, debounced and
+  // deduplicated per filter/page combination.
+  useEffect(() => {
+    if (!isAuthenticated || viewMode !== "grid") return;
+    const ids = filteredQuestions.slice(0, DISCOVERY_BATCH_MAX).map((q) => q.id);
+    if (ids.length === 0) return;
+    const discoveryKey = ids.join(",");
+    if (lastDiscoveryKeyRef.current === discoveryKey) return;
+
+    const timer = window.setTimeout(() => {
+      lastDiscoveryKeyRef.current = discoveryKey;
+      discoveredMutation.mutate({
+        questionIds: ids,
+        route: "/question-bank",
+        surface: "question_bank",
+      });
+    }, DISCOVERY_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [isAuthenticated, viewMode, filteredQuestions]);
 
   const handleSubmitAnswer = async () => {
     const effectiveConfidence = confidenceTrackingEnabled ? confidence : "unsure";
@@ -424,6 +470,8 @@ export default function QuestionBank() {
 
   // Stats View
   if (viewMode === "stats") {
+    const practiceSummary = practiceSummaryQuery.data;
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#F5F3F0] to-[#FFFBF8] py-8 px-4">
         <div className="max-w-6xl mx-auto">
@@ -470,6 +518,121 @@ export default function QuestionBank() {
               <p className="text-3xl font-bold text-[#2D3561]">{sources.length}</p>
             </Card>
           </div>
+
+          {confidenceTrackingEnabled && (
+            <section className="mt-10" aria-labelledby="practice-evidence-heading">
+              <h2
+                id="practice-evidence-heading"
+                className="text-xl font-bold text-[#2D3561] mb-4"
+              >
+                Your practice evidence
+              </h2>
+
+              {!isAuthenticated ? (
+                <Card className="p-6 bg-white">
+                  <p className="text-[#4A5578] mb-3">
+                    Sign in to see calibration and timing from your recorded attempts.
+                  </p>
+                  <Button onClick={() => window.location.assign(getLoginUrl())}>Sign in</Button>
+                </Card>
+              ) : practiceSummaryQuery.isLoading ? (
+                <Card className="p-6 bg-white" role="status">
+                  <p className="text-[#4A5578]">Loading your practice evidence…</p>
+                </Card>
+              ) : practiceSummaryQuery.isError ? (
+                <Card className="p-6 bg-white" role="alert">
+                  <p className="text-[#4A5578] mb-3">
+                    Your practice evidence could not be loaded.
+                  </p>
+                  <Button variant="outline" onClick={() => practiceSummaryQuery.refetch()}>
+                    Try again
+                  </Button>
+                </Card>
+              ) : !practiceSummary || practiceSummary.totalAttempts === 0 ? (
+                <Card className="p-6 bg-white">
+                  <p className="text-[#4A5578]">
+                    No attempts recorded yet. Answer any question with a confidence
+                    choice and your calibration evidence will appear here.
+                  </p>
+                </Card>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <Card className="p-6 bg-white">
+                      <p className="text-[#4A5578] text-sm mb-2">Attempts</p>
+                      <p className="text-3xl font-bold text-[#2D3561]">
+                        {practiceSummary.totalAttempts}
+                      </p>
+                    </Card>
+                    <Card className="p-6 bg-white">
+                      <p className="text-[#4A5578] text-sm mb-2">Accuracy</p>
+                      <p className="text-3xl font-bold text-[#2D3561]">
+                        {practiceSummary.accuracyPercent ?? 0}%
+                      </p>
+                    </Card>
+                    <Card className="p-6 bg-white">
+                      <p className="text-[#4A5578] text-sm mb-2">Active time (avg / median)</p>
+                      <p className="text-3xl font-bold text-[#2D3561]">
+                        {formatActiveTime(practiceSummary.averageActiveTimeMs)} / {formatActiveTime(practiceSummary.medianActiveTimeMs)}
+                      </p>
+                    </Card>
+                    <Card className="p-6 bg-white">
+                      <p className="text-[#4A5578] text-sm mb-2">Attempts last 7 days</p>
+                      <p className="text-3xl font-bold text-[#2D3561]">
+                        {practiceSummary.recentAttemptCount}
+                      </p>
+                    </Card>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    <Card className="p-6 bg-white">
+                      <h3 className="font-bold text-[#2D3561] mb-4">Calibration</h3>
+                      <ul className="space-y-2">
+                        {CALIBRATION_LABELS.map(({ state, label, description }) => (
+                          <li key={state} className="flex items-center justify-between gap-4">
+                            <span className="text-sm text-[#4A5578]" title={description}>
+                              {label}
+                            </span>
+                            <span className="font-bold text-[#2D3561]">
+                              {practiceSummary.calibration[state]}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Card>
+                    <Card className="p-6 bg-white">
+                      <h3 className="font-bold text-[#2D3561] mb-4">Accuracy by confidence</h3>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-[#4A5578]">
+                            <th className="pb-2 font-medium">Confidence</th>
+                            <th className="pb-2 font-medium">Attempts</th>
+                            <th className="pb-2 font-medium">Correct</th>
+                            <th className="pb-2 font-medium">Accuracy</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {CONFIDENCE_ROWS.map(({ value, label }) => {
+                            const row = practiceSummary.byConfidence[value];
+                            return (
+                              <tr key={value} className="border-t border-[#E8E6E1]">
+                                <td className="py-2 text-[#2D3561]">{label}</td>
+                                <td className="py-2">{row.attempts}</td>
+                                <td className="py-2">{row.correct}</td>
+                                <td className="py-2">
+                                  {row.accuracyPercent === null ? "—" : `${row.accuracyPercent}%`}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </Card>
+                  </div>
+                </>
+              )}
+            </section>
+          )}
         </div>
       </div>
     );

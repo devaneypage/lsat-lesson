@@ -5,6 +5,7 @@ import {
   ANSWER_LETTERS,
   MAX_ACTIVE_TIME_MS,
   PRACTICE_CONTEXTS,
+  PRACTICE_DISCOVERY_BATCH_MAX,
 } from "../../shared/practiceEvidence";
 import { protectedProcedure, router } from "../_core/trpc";
 import { practiceRepository } from "../repositories/practice";
@@ -25,6 +26,20 @@ export const practiceRouter = router({
         ...input,
       }),
     })),
+
+  discovered: protectedProcedure
+    .input(routeContextSchema.extend({
+      questionIds: z.array(z.number().int().positive()).min(1).max(PRACTICE_DISCOVERY_BATCH_MAX),
+    }))
+    .mutation(async ({ ctx, input }) => ({
+      recorded: await practiceRepository.recordQuestionsDiscovered({
+        userId: ctx.user.id,
+        ...input,
+      }),
+    })),
+
+  summary: protectedProcedure.query(({ ctx }) =>
+    practiceRepository.getPracticeSummary(ctx.user.id)),
 
   submit: protectedProcedure
     .input(routeContextSchema.extend({
