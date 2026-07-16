@@ -596,17 +596,18 @@ async function seedAndGetFlags(): Promise<FeatureFlag[]> {
   if (!db) return [];
   try {
     const existing = await db.select().from(featureFlags);
-    if (existing.length === 0) {
-      for (const flag of DEFAULT_FLAGS) {
+    const existingKeys = new Set(existing.map((f) => f.key));
+    // Insert any DEFAULT_FLAGS that are missing from the table (handles new flags added after initial seed)
+    for (const flag of DEFAULT_FLAGS) {
+      if (!existingKeys.has(flag.key)) {
         try {
           await db.insert(featureFlags).values(flag);
         } catch {
           // skip if already exists (race condition)
         }
       }
-      return db.select().from(featureFlags);
     }
-    return existing;
+    return db.select().from(featureFlags);
   } catch (error) {
     console.error("[Database] Failed to seed/get flags:", error);
     return [];

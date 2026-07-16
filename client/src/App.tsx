@@ -22,6 +22,7 @@ import CurriculumGuide from "./pages/CurriculumGuide";
 import CSVImportManager from "./pages/CSVImportManager";
 import StudyGuide from "./pages/StudyGuide";
 import Dashboard from "@/pages/Dashboard";
+import Lessons from "@/pages/Lessons";
 import LessonPlanGenerator from "./pages/LessonPlanGenerator";
 import TagManager from "./pages/TagManager";
 import MainNavigationBar from "./components/MainNavigationBar";
@@ -36,12 +37,12 @@ function Router() {
       <MainNavigationBar />
       <Switch>
         <Route path={"/"} component={PathSelector} />
-        <Route path={"/dashboard"} component={UnifiedDashboard} />
+        <Route path={"/dashboard"} component={Dashboard} />
         <Route path={"/progress"} component={ProgressTracker} />
         <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
         
-        {/* Lessons — /lessons is the interactive lesson hub (7 cards + progress bar) */}
-        <Route path={"/lessons"} component={Dashboard} />
+        {/* Lessons — /lessons is the Nexus lesson grid hub */}
+        <Route path={"/lessons"} component={Lessons} />
         <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
         <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
         <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
