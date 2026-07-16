@@ -58,3 +58,19 @@
 - [ ] Document target metrics, guardrails, observation windows, rollback conditions, and data-retention policy for each rollout.
 - [ ] Complete full automated tests, type checking, production build, migration verification, runtime-log review, keyboard and screen-reader checks, and desktop/mobile visual verification.
 - [ ] Review the entire session tracker, complete final documentation, save the final checkpoint, and confirm the published version.
+
+# Broad Audit and Incremental Rebuild
+
+- [x] Establish and document the live baseline: checkpoint, routes, roles, flags, migrations, tests, build, runtime logs, responsive screenshots, and representative data counts.
+- [x] Reconcile partially implemented learner-experience components against the tracker, flags, tests, and release state; classify each as retain, refactor, or discard.
+- [ ] Produce the product workflow, content integrity, curriculum mapping, and learner-evidence audits with a prioritized issue register.
+- [ ] Implement a central route registry, canonical route aliases, a learner application shell, and a separately authorized admin application shell.
+- [ ] Consolidate the Academic Light design tokens, typography, semantic states, shared page primitives, and global accessibility behavior.
+- [ ] Decompose legacy question, taxonomy, flag, administration, and study-plan procedures into focused routers and repositories with hardened authorization and input contracts.
+- [ ] Complete and verify the coherent daily learner release: Today, orientation, command search, accessibility, and non-fabricated states.
+- [ ] Complete and verify server-authoritative practice attempts, confidence calibration, active timing, answer protection, and practice analytics.
+- [ ] Complete and verify deterministic adaptive review plus the private structured mistake journal.
+- [ ] Complete and verify explainable mastery, curriculum mapping coverage, and server-derived progress.
+- [ ] Complete and verify persistent, versioned, editable study planning with validated AI drafts.
+- [ ] Complete and verify the administrator workspace and privacy-bounded aggregate analytics.
+- [ ] Complete migration checks, staged rollout controls, legacy retirement, full quality gates, documentation, and final published checkpoint.

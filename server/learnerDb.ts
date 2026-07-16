@@ -13,6 +13,7 @@ import {
   CURRICULUM_SKILLS,
   DEFAULT_ACCESSIBILITY_PREFERENCES,
   type AccessibilityPreferences,
+  type CurriculumLesson,
   type LessonProgressStatus,
 } from "../shared/learnerDomain";
 import { getDb } from "./db";
@@ -143,6 +144,97 @@ export async function listLessonProgress(userId: number): Promise<LessonProgress
     .from(lessonProgress)
     .where(eq(lessonProgress.userId, userId))
     .orderBy(asc(lessonProgress.lastAccessedAt));
+}
+
+type ContinueLearningProgress = Pick<
+  LessonProgress,
+  "lessonId" | "status" | "step" | "percentComplete" | "lastAccessedAt" | "completedAt"
+>;
+
+type ContinueLearningActionKind = "resume" | "start" | "review";
+
+function timestamp(value: Date | null | undefined) {
+  return value?.getTime() ?? 0;
+}
+
+function lessonSequence(lessonId: string, lessons: CurriculumLesson[]) {
+  return lessons.find(item => item.id === lessonId)?.sequence ?? Number.MAX_SAFE_INTEGER;
+}
+
+export function buildContinueLearning(
+  progress: ContinueLearningProgress[],
+  lessons: CurriculumLesson[] = CURRICULUM_LESSONS,
+) {
+  const orderedLessons = [...lessons].sort((a, b) => a.sequence - b.sequence);
+  const progressByLesson = new Map(progress.map(item => [item.lessonId, item]));
+  const inProgress = progress
+    .filter(item => item.status === "in_progress")
+    .sort((a, b) => timestamp(b.lastAccessedAt) - timestamp(a.lastAccessedAt) ||
+      lessonSequence(a.lessonId, orderedLessons) - lessonSequence(b.lessonId, orderedLessons));
+  const unstarted = orderedLessons.filter(lesson => {
+    const item = progressByLesson.get(lesson.id);
+    return !item || item.status === "not_started";
+  });
+  const completed = progress
+    .filter(item => item.status === "completed")
+    .sort((a, b) => timestamp(b.completedAt ?? b.lastAccessedAt) - timestamp(a.completedAt ?? a.lastAccessedAt) ||
+      lessonSequence(a.lessonId, orderedLessons) - lessonSequence(b.lessonId, orderedLessons));
+
+  const selected = inProgress[0] ?? (unstarted[0]
+    ? { lessonId: unstarted[0].id, status: "not_started" as const, step: 0, percentComplete: 0, lastAccessedAt: null, completedAt: null }
+    : completed[0]);
+  const selectedLesson = selected
+    ? orderedLessons.find(lesson => lesson.id === selected.lessonId) ?? null
+    : null;
+  const actionKind: ContinueLearningActionKind | null = inProgress[0]
+    ? "resume"
+    : unstarted[0]
+      ? "start"
+      : completed[0]
+        ? "review"
+        : null;
+  const completedCount = orderedLessons.filter(
+    lesson => progressByLesson.get(lesson.id)?.status === "completed",
+  ).length;
+
+  return {
+    state: progress.length === 0 ? "empty" as const : completedCount === orderedLessons.length
+      ? "completed" as const
+      : "active" as const,
+    summary: {
+      totalLessons: orderedLessons.length,
+      completedLessons: completedCount,
+      inProgressLessons: inProgress.length,
+      remainingLessons: orderedLessons.length - completedCount,
+      percentComplete: orderedLessons.length === 0
+        ? 0
+        : Math.round((completedCount / orderedLessons.length) * 100),
+    },
+    primaryAction: selectedLesson && actionKind ? {
+      kind: actionKind,
+      label: actionKind === "resume" ? "Resume lesson" : actionKind === "start" ? "Start lesson" : "Review lesson",
+      lesson: selectedLesson,
+      progress: {
+        step: selected?.step ?? 0,
+        percentComplete: selected?.percentComplete ?? 0,
+        lastAccessedAt: selected?.lastAccessedAt ?? null,
+      },
+    } : null,
+    recentLessons: [...progress]
+      .filter(item => orderedLessons.some(lesson => lesson.id === item.lessonId))
+      .sort((a, b) => timestamp(b.lastAccessedAt) - timestamp(a.lastAccessedAt))
+      .slice(0, 3)
+      .map(item => ({
+        lesson: orderedLessons.find(lesson => lesson.id === item.lessonId)!,
+        status: item.status,
+        percentComplete: item.percentComplete,
+        lastAccessedAt: item.lastAccessedAt,
+      })),
+  };
+}
+
+export async function getContinueLearning(userId: number) {
+  return buildContinueLearning(await listLessonProgress(userId));
 }
 
 export async function upsertLessonProgress(

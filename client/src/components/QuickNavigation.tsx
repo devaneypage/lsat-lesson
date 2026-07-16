@@ -21,7 +21,7 @@ interface QuickAction {
   color: string;
 }
 
-const QUICK_ACTIONS: QuickAction[] = [
+export const QUICK_ACTIONS: QuickAction[] = [
   {
     label: "Start Drill",
     route: "/question-bank",
@@ -76,7 +76,7 @@ const QuickNavigation: React.FC = () => {
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         {QUICK_ACTIONS.map((action) => (
           <Link
-            key={action.route}
+            key={action.label}
             href={action.route}
             className="px-3 py-2 flex items-center gap-2 transition-all duration-200"
             style={{

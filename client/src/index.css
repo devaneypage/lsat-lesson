@@ -256,3 +256,60 @@
     }
   }
 }
+
+/* Learner accessibility preferences — applied only while the release flag is enabled. */
+html[data-text-scale="large"] {
+  font-size: 112.5%;
+}
+
+html[data-text-scale="extra_large"] {
+  font-size: 125%;
+}
+
+html[data-reading-width="comfortable"] :where(article, .lesson-content, .reading-passage) {
+  max-width: 72ch;
+  margin-inline: auto;
+}
+
+html[data-reading-width="wide"] :where(article, .lesson-content, .reading-passage) {
+  max-width: 92ch;
+  margin-inline: auto;
+}
+
+html[data-reading-width="full"] :where(article, .lesson-content, .reading-passage) {
+  max-width: none;
+}
+
+html[data-contrast="high"] {
+  --border: oklch(0.35 0 0);
+  --muted-foreground: oklch(0.28 0 0);
+}
+
+html.dark[data-contrast="high"] {
+  --border: oklch(0.84 0 0);
+  --muted-foreground: oklch(0.88 0 0);
+}
+
+html[data-passage-focus="on"] .reading-passage {
+  background: var(--card);
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 0.35rem color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -30,6 +30,9 @@ import About from "@/pages/About";
 import Booking from "@/pages/Booking";
 import FlagAdmin from "@/pages/FlagAdmin";
 import { useLegacyProgressImport } from "@/hooks/useLegacyProgressImport";
+import { AccessibilityControls } from "@/components/AccessibilityControls";
+import { CommandPalette } from "@/components/CommandPalette";
+import { RouteOrientation } from "@/components/ContextualOrientationHeader";
 
 function LearnerStateBridge() {
   useLegacyProgressImport();
@@ -41,6 +44,7 @@ function Router() {
   return (
     <>
       <MainNavigationBar />
+      <RouteOrientation />
       <Switch>
         <Route path={"/"} component={PathSelector} />
         <Route path={"/dashboard"} component={Dashboard} />
@@ -92,6 +96,8 @@ function App() {
             <Toaster />
             <LearnerStateBridge />
             <Router />
+            <AccessibilityControls />
+            <CommandPalette />
           </TooltipProvider>
         </PathProvider>
       </ThemeProvider>

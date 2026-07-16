@@ -18,6 +18,7 @@ import ScoreCard from "@/components/ScoreCard";
 import MasteryOverview from "@/components/MasteryOverview";
 import QuickNavigation from "@/components/QuickNavigation";
 import PathSelector from "@/components/PathSelector";
+import { ContinueLearningMain, ContinueLearningSidebar } from "@/components/ContinueLearningDashboard";
 import { useAllFeatureFlags } from "@/lib/flags";
 
 export default function Dashboard() {
@@ -55,11 +56,10 @@ export default function Dashboard() {
     return <PathSelector />;
   }
 
-  // Main content: concept map (default) or lesson grid (fallback)
-  const mainContent = flags.concept_map ? <ConceptMap /> : <LessonGrid />;
+  const legacyMainContent = flags.concept_map ? <ConceptMap /> : <LessonGrid />;
+  const mainContent = flags.learner_dashboard_v2 ? <ContinueLearningMain /> : legacyMainContent;
 
-  // Sidebar: actions first (P4 fix), then data widgets
-  const sidebarContent = (
+  const legacySidebar = (
     <>
       <QuickNavigation />
       {flags.score_card && (
@@ -68,6 +68,12 @@ export default function Dashboard() {
       <MasteryOverview />
     </>
   );
+  const sidebarContent = flags.learner_dashboard_v2 ? (
+    <>
+      <ContinueLearningSidebar />
+      <QuickNavigation />
+    </>
+  ) : legacySidebar;
 
   return (
     <NexusDashboardLayout

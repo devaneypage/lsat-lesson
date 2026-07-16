@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import {
   ensureLearnerState,
+  getContinueLearning,
   importLegacyLessonProgress,
   listLessonProgress,
   seedCurriculumRegistry,
@@ -47,6 +48,8 @@ export const learnerRouter = router({
     .mutation(({ ctx, input }) => updateLearnerProfile(ctx.user.id, input)),
 
   progress: protectedProcedure.query(({ ctx }) => listLessonProgress(ctx.user.id)),
+
+  continueLearning: protectedProcedure.query(({ ctx }) => getContinueLearning(ctx.user.id)),
 
   saveProgress: protectedProcedure
     .input(progressSchema)
