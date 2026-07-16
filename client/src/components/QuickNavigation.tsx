@@ -24,19 +24,19 @@ interface QuickAction {
 export const QUICK_ACTIONS: QuickAction[] = [
   {
     label: "Start Drill",
-    route: "/question-bank",
+    route: "/practice",
     icon: <Zap size={18} />,
     color: "var(--nexus-teal)",
   },
   {
     label: "Analyze Errors",
-    route: "/question-bank",
+    route: "/practice",
     icon: <AlertCircle size={18} />,
     color: "var(--nexus-amber)",  // P8: reassigned from terra (destructive) to amber (attention)
   },
   {
     label: "Study Plan",
-    route: "/lesson-plan-generator",
+    route: "/plan",
     icon: <BookOpen size={18} />,
     color: "var(--nexus-forest)",
   },

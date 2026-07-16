@@ -9,8 +9,8 @@ describe("QuickNavigation", () => {
   });
 
   it("allows distinct workflows to share a destination without sharing a key", () => {
-    const questionBankActions = QUICK_ACTIONS.filter(action => action.route === "/question-bank");
+    const practiceActions = QUICK_ACTIONS.filter(action => action.route === "/practice");
 
-    expect(questionBankActions.map(action => action.label)).toEqual(["Start Drill", "Analyze Errors"]);
+    expect(practiceActions.map(action => action.label)).toEqual(["Start Drill", "Analyze Errors"]);
   });
 });

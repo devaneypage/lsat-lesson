@@ -50,7 +50,7 @@ const NODES: ConceptNode[] = [
     h: 100,
     color: "var(--nexus-forest)",
     textColor: "#FFFDF8",
-    route: "/lessons",
+    route: "/learn",
     cluster: "center",
     tooltip: {
       description: "Your LSAT command center. Navigate to any topic or view all lessons.",
@@ -73,7 +73,7 @@ const NODES: ConceptNode[] = [
     h: 52,
     color: "var(--nexus-teal)",
     textColor: "#FFFDF8",
-    route: "/lessons/necessary-assumptions",
+    route: "/learn/necessary-assumptions",
     cluster: "LR",
     tooltip: {
       description: "Logical Reasoning: analyze arguments, identify assumptions, and evaluate evidence. Covers 5 core question types.",
@@ -95,7 +95,7 @@ const NODES: ConceptNode[] = [
     r: 44,
     color: "var(--nexus-amber)",
     textColor: "#111111",
-    route: "/lessons/necessary-assumptions",
+    route: "/learn/necessary-assumptions",
     cluster: "LR",
     tooltip: {
       description: "Master the Negation Test™ to identify unstated premises that an argument cannot function without.",
@@ -115,7 +115,7 @@ const NODES: ConceptNode[] = [
     r: 44,
     color: "var(--nexus-teal)",
     textColor: "#FFFDF8",
-    route: "/lessons/sufficient-assumptions",
+    route: "/learn/sufficient-assumptions",
     cluster: "LR",
     tooltip: {
       description: "Master the Conditional Bridge Method to identify assumptions that, if true, guarantee the conclusion.",
@@ -135,7 +135,7 @@ const NODES: ConceptNode[] = [
     r: 44,
     color: "var(--nexus-terra)",
     textColor: "#FFFDF8",
-    route: "/lessons/flaw-in-reasoning",
+    route: "/learn/flaw-in-reasoning",
     cluster: "LR",
     tooltip: {
       description: "Identify logical fallacies and structural weaknesses in arguments. Prerequisite for Common Flaws.",
@@ -155,7 +155,7 @@ const NODES: ConceptNode[] = [
     r: 40,
     color: "var(--nexus-lime)",
     textColor: "#FFFDF8",
-    route: "/lessons/common-flaws",
+    route: "/learn/common-flaws",
     cluster: "LR",
     tooltip: {
       description: "Learn the 19 most frequently tested logical fallacies with pattern recognition drills.",
@@ -175,7 +175,7 @@ const NODES: ConceptNode[] = [
     r: 40,
     color: "var(--nexus-forest)",
     textColor: "#FFFDF8",
-    route: "/lessons/strengthen-weaken",
+    route: "/learn/strengthen-weaken",
     cluster: "LR",
     tooltip: {
       description: "Develop the systematic approach to finding answers that add or remove support for an argument's conclusion.",
@@ -198,7 +198,7 @@ const NODES: ConceptNode[] = [
     h: 52,
     color: "var(--nexus-blue)",
     textColor: "#FFFDF8",
-    route: "/lessons/reading-comprehension",
+    route: "/learn/reading-comprehension",
     cluster: "RC",
     tooltip: {
       description: "Reading Comprehension and Formal Logic: passage analysis, inference, and logical notation.",
@@ -221,7 +221,7 @@ const NODES: ConceptNode[] = [
     h: 58,
     color: "var(--nexus-blue)",
     textColor: "#FFFDF8",
-    route: "/lessons/reading-comprehension",
+    route: "/learn/reading-comprehension",
     cluster: "RC",
     tooltip: {
       description: "Master efficient passage annotation, structural mapping, and the 5 core RC question types.",
@@ -242,7 +242,7 @@ const NODES: ConceptNode[] = [
     h: 54,
     color: "var(--nexus-purple)",
     textColor: "#FFFDF8",
-    route: "/lessons/formal-logic",
+    route: "/learn/formal-logic",
     cluster: "RC",
     tooltip: {
       description: "Master logical notation, conditional statements, contrapositive, and quantifiers (all/some/none).",

@@ -143,7 +143,7 @@ export default function LessonStrengthenWeaken() {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         whileHover={{ x: -4 }}
-        onClick={() => navigate("/lessons")}
+        onClick={() => navigate("/learn")}
         className="fixed top-20 left-4 z-40 p-2 rounded-lg transition-all duration-200"
         style={{
           background: "rgba(255,255,255,0.9)",
@@ -922,7 +922,7 @@ export default function LessonStrengthenWeaken() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/lessons")}
+              onClick={() => navigate("/learn")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200"
               style={{
                 background: "#1E2130",

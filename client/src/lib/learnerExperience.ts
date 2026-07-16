@@ -52,3 +52,8 @@ export function scheduleDebouncedSearch(
   const timer = globalThis.setTimeout(() => commit(value.trim()), delay);
   return () => globalThis.clearTimeout(timer);
 }
+
+export const TODAY_EVIDENCE_STATUS = {
+  title: "Your baseline begins with completed practice",
+  body: "Scores, percentiles, and mastery estimates will appear only after the practice system records enough verified attempts. No sample performance data is shown.",
+} as const;

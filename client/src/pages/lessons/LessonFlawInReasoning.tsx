@@ -1551,7 +1551,7 @@ function RecapStep() {
         <p>
           What's next:{" "}
           <button
-            onClick={() => navigate("/lessons")}
+            onClick={() => navigate("/learn")}
             style={{
               color: RED,
               fontWeight: 600,
@@ -1572,7 +1572,7 @@ function RecapStep() {
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
-        onClick={() => navigate("/lessons")}
+        onClick={() => navigate("/learn")}
         className="flex items-center gap-2 px-7 py-3 rounded-xl font-semibold transition-all"
         style={{
           background: `${RED}12`,
@@ -1618,7 +1618,7 @@ export default function LessonFlawInReasoning() {
   };
 
   const handleBack = () => {
-    navigate("/lessons");
+    navigate("/learn");
   };
 
   return (

@@ -2,6 +2,7 @@ import { ArrowRight, CheckCircle2, Clock3, Compass, LockKeyhole } from "lucide-r
 import { Link, useLocation } from "wouter";
 import { CURRICULUM_LESSONS, getLessonById, type CurriculumLesson } from "@shared/learnerDomain";
 import { useFeatureFlag } from "@/lib/flags";
+import { canonicalizeAppPath, ROUTE_BY_ID } from "@/lib/routes";
 
 export type OrientationHeaderProps = {
   breadcrumb: Array<{ label: string; href?: string }>;
@@ -74,15 +75,15 @@ function lessonOrientation(lesson: CurriculumLesson) {
   const prerequisites = lesson.prerequisites
     .map(id => getLessonById(id))
     .filter((item): item is CurriculumLesson => Boolean(item))
-    .map(item => ({ label: item.title, href: item.route }));
+    .map(item => ({ label: item.title, href: canonicalizeAppPath(item.route) }));
   const next = CURRICULUM_LESSONS.find(item => item.sequence === lesson.sequence + 1);
   return {
-    breadcrumb: [{ label: "Dashboard", href: "/dashboard" }, { label: "Lessons", href: "/lessons" }, { label: lesson.title }],
+    breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.learn.label, href: ROUTE_BY_ID.learn.path }, { label: lesson.title }],
     title: lesson.title,
     purpose: lesson.description,
     prerequisites,
     estimate: `${lesson.durationMinutes} minutes`,
-    nextAction: next ? { label: `Next: ${next.title}`, href: next.route } : { label: "Review curriculum", href: "/lessons" },
+    nextAction: next ? { label: `Next: ${next.title}`, href: canonicalizeAppPath(next.route) } : { label: "Review curriculum", href: ROUTE_BY_ID.learn.path },
   };
 }
 
@@ -91,10 +92,11 @@ export function RouteOrientation() {
   const [location] = useLocation();
   if (!enabled) return null;
 
-  const lesson = CURRICULUM_LESSONS.find(item => item.route === location);
+  const canonicalLocation = canonicalizeAppPath(location);
+  const lesson = CURRICULUM_LESSONS.find(item => canonicalizeAppPath(item.route) === canonicalLocation);
   if (lesson) return <ContextualOrientationHeader {...lessonOrientation(lesson)} />;
-  if (location === "/question-bank") {
-    return <ContextualOrientationHeader breadcrumb={[{ label: "Dashboard", href: "/dashboard" }, { label: "Question Bank" }]} title="Question Bank" purpose="Deliberate question selection turns practice volume into interpretable evidence about reasoning skill." estimate="Choose your own session" nextAction={{ label: "Return to dashboard", href: "/dashboard" }} />;
+  if (canonicalLocation === ROUTE_BY_ID.practice.path) {
+    return <ContextualOrientationHeader breadcrumb={[{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.practice.label }]} title={ROUTE_BY_ID.practice.label} purpose={ROUTE_BY_ID.practice.description} estimate="Choose your own session" nextAction={{ label: "Return to Today", href: ROUTE_BY_ID.today.path }} />;
   }
   return null;
 }

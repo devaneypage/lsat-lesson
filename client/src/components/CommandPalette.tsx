@@ -15,6 +15,11 @@ import {
 } from "@/components/ui/command";
 import { trpc } from "@/lib/trpc";
 import { useFeatureFlag } from "@/lib/flags";
+import {
+  ADMIN_NAV_ROUTES,
+  canonicalizeAppPath,
+  LEARNER_NAV_ROUTES,
+} from "@/lib/routes";
 import { CURRICULUM_LESSONS } from "@shared/learnerDomain";
 import {
   QUESTION_SEARCH_DEBOUNCE_MS,
@@ -33,7 +38,7 @@ function isEditableTarget(target: EventTarget | null) {
 
 export function CommandPalette() {
   const { enabled } = useFeatureFlag("unified_command_search");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [, navigate] = useLocation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -54,16 +59,26 @@ export function CommandPalette() {
     staleTime: 30_000,
   });
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const routeResults = useMemo(() => {
+    const routes = user?.role === "admin"
+      ? [...LEARNER_NAV_ROUTES, ...ADMIN_NAV_ROUTES]
+      : LEARNER_NAV_ROUTES;
+    if (!normalizedQuery) return routes;
+    return routes.filter(route =>
+      [route.label, route.description].join(" ").toLowerCase().includes(normalizedQuery),
+    );
+  }, [normalizedQuery, user?.role]);
+
   const localResults = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return CURRICULUM_LESSONS;
+    if (!normalizedQuery) return CURRICULUM_LESSONS;
     return CURRICULUM_LESSONS.filter(lesson =>
       [lesson.title, lesson.description, lesson.section, ...lesson.primarySkillIds]
         .join(" ")
         .toLowerCase()
-        .includes(normalized),
+        .includes(normalizedQuery),
     );
-  }, [query]);
+  }, [normalizedQuery]);
 
   useEffect(() => {
     setOffset(0);
@@ -99,7 +114,7 @@ export function CommandPalette() {
   const selectRoute = (route: string) => {
     setOpen(false);
     setQuery("");
-    navigate(route);
+    navigate(canonicalizeAppPath(route));
   };
 
   return (
@@ -111,6 +126,18 @@ export function CommandPalette() {
         <CommandInput value={query} onValueChange={setQuery} placeholder="Search lessons, skills, or question text…" aria-label="Search lessons and practice questions" />
         <CommandList className="max-h-[65vh]">
           <CommandEmpty>{questionSearch.isFetching ? "Searching questions…" : "No matching lessons or questions."}</CommandEmpty>
+          {routeResults.length > 0 && (
+            <CommandGroup heading="Workspace">
+              {routeResults.map(route => (
+                <CommandItem key={route.id} value={`${route.label} ${route.description}`} onSelect={() => selectRoute(route.path)}>
+                  <Search className="size-4 text-primary" aria-hidden="true" />
+                  <div className="min-w-0"><div className="font-semibold">{route.label}</div><div className="truncate text-xs text-muted-foreground">{route.description}</div></div>
+                  <ChevronRight className="ml-auto size-4" aria-hidden="true" />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {routeResults.length > 0 && localResults.length > 0 && <CommandSeparator />}
           {localResults.length > 0 && (
             <CommandGroup heading="Curriculum">
               {localResults.map(lesson => (
@@ -126,7 +153,7 @@ export function CommandPalette() {
           {questionResults.length > 0 && (
             <CommandGroup heading={`Practice questions · ${questionSearch.data?.total ?? questionResults.length} found`}>
               {questionResults.map(item => (
-                <CommandItem key={item.id} value={`${item.questionId} ${item.questionText} ${item.category ?? ""}`} onSelect={() => selectRoute(`/question-bank?question=${encodeURIComponent(item.questionId)}`)}>
+                <CommandItem key={item.id} value={`${item.questionId} ${item.questionText} ${item.category ?? ""}`} onSelect={() => selectRoute(`/practice?question=${encodeURIComponent(item.questionId)}`)}>
                   <FileQuestion className="size-4 text-primary" aria-hidden="true" />
                   <div className="min-w-0"><div className="font-semibold">{item.questionId}{item.category ? ` · ${item.category}` : ""}</div><div className="line-clamp-2 text-xs text-muted-foreground">{item.questionText}</div></div>
                   <ChevronRight className="ml-auto size-4" aria-hidden="true" />

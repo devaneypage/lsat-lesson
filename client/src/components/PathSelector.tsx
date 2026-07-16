@@ -95,7 +95,7 @@ export default function PathSelector() {
 
   const handleSelectPath = (path: StudentPathType) => {
     setSelectedPath(path);
-    navigate("/dashboard");
+    navigate("/today");
   };
 
   return (

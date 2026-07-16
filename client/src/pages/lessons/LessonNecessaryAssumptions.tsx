@@ -53,7 +53,7 @@ export default function LessonNecessaryAssumptions() {
   };
 
   const handleBack = () => {
-    navigate("/lessons");
+    navigate("/learn");
   };
 
   return (

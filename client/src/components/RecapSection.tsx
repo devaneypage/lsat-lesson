@@ -262,7 +262,7 @@ export default function RecapSection() {
             The logic is the same — only the task changes.
           </p>
           <button
-            onClick={() => navigate("/lessons")}
+            onClick={() => navigate("/learn")}
             className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200"
             style={{
               color: "#C8860A",

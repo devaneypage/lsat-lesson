@@ -14,12 +14,11 @@
 import NexusDashboardLayout from "@/components/NexusDashboardLayout";
 import ConceptMap from "@/components/ConceptMap";
 import LessonGrid from "@/components/LessonGrid";
-import ScoreCard from "@/components/ScoreCard";
-import MasteryOverview from "@/components/MasteryOverview";
 import QuickNavigation from "@/components/QuickNavigation";
 import PathSelector from "@/components/PathSelector";
 import { ContinueLearningMain, ContinueLearningSidebar } from "@/components/ContinueLearningDashboard";
 import { useAllFeatureFlags } from "@/lib/flags";
+import { TODAY_EVIDENCE_STATUS } from "@/lib/learnerExperience";
 
 export default function Dashboard() {
   const { flags, loading } = useAllFeatureFlags();
@@ -62,10 +61,17 @@ export default function Dashboard() {
   const legacySidebar = (
     <>
       <QuickNavigation />
-      {flags.score_card && (
-        <ScoreCard currentScore={157} percentile={63} targetScore={170} />
-      )}
-      <MasteryOverview />
+      <section className="border border-border bg-card p-5 text-card-foreground" aria-labelledby="evidence-status-title">
+        <p className="mb-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
+          Evidence status
+        </p>
+        <h2 id="evidence-status-title" className="font-display text-xl font-bold">
+          {TODAY_EVIDENCE_STATUS.title}
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          {TODAY_EVIDENCE_STATUS.body}
+        </p>
+      </section>
     </>
   );
   const sidebarContent = flags.learner_dashboard_v2 ? (

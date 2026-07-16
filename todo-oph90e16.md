@@ -64,7 +64,7 @@
 - [x] Establish and document the live baseline: checkpoint, routes, roles, flags, migrations, tests, build, runtime logs, responsive screenshots, and representative data counts.
 - [x] Reconcile partially implemented learner-experience components against the tracker, flags, tests, and release state; classify each as retain, refactor, or discard.
 - [x] Produce the product workflow, content integrity, curriculum mapping, and learner-evidence audits with a prioritized issue register.
-- [ ] Implement a central route registry, canonical route aliases, a learner application shell, and a separately authorized admin application shell.
+- [x] Implement a central route registry, canonical route aliases, a learner application shell, and a separately authorized admin application shell.
 - [ ] Consolidate the Academic Light design tokens, typography, semantic states, shared page primitives, and global accessibility behavior.
 - [ ] Decompose legacy question, taxonomy, flag, administration, and study-plan procedures into focused routers and repositories with hardened authorization and input contracts.
 - [ ] Complete and verify the coherent daily learner release: Today, orientation, command search, accessibility, and non-fabricated states.
