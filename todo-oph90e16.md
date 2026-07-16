@@ -66,7 +66,7 @@
 - [x] Produce the product workflow, content integrity, curriculum mapping, and learner-evidence audits with a prioritized issue register.
 - [x] Implement a central route registry, canonical route aliases, a learner application shell, and a separately authorized admin application shell.
 - [x] Consolidate the Academic Light design tokens, typography, semantic states, shared page primitives, and global accessibility behavior.
-- [ ] Decompose legacy question, taxonomy, flag, administration, and study-plan procedures into focused routers and repositories with hardened authorization and input contracts.
+- [x] Decompose legacy question, taxonomy, flag, administration, and study-plan procedures into focused routers and repositories with hardened authorization and input contracts.
 - [ ] Complete and verify the coherent daily learner release: Today, orientation, command search, accessibility, and non-fabricated states.
 - [ ] Complete and verify server-authoritative practice attempts, confidence calibration, active timing, answer protection, and practice analytics.
 - [ ] Complete and verify deterministic adaptive review plus the private structured mistake journal.
