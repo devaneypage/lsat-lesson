@@ -12,6 +12,7 @@
 import LessonGrid from "@/components/LessonGrid";
 import PathSelector from "@/components/PathSelector";
 import { useFeatureFlag } from "@/lib/flags";
+import PageMeta from "@/components/PageMeta";
 
 export default function Lessons() {
   const { enabled: lessonGridEnabled, loading } = useFeatureFlag("lesson_grid");
@@ -56,6 +57,20 @@ export default function Lessons() {
         padding: "1.5rem 1.5rem 3rem",
       }}
     >
+      <PageMeta
+        title="LSAT Lessons: Logical Reasoning & Reading | Devaney"
+        description="Seven structured LSAT lessons covering necessary assumptions, sufficient assumptions, flaw in reasoning, reading comprehension, and more."
+        keywords={[
+          "LSAT lessons",
+          "logical reasoning",
+          "necessary assumptions",
+          "flaw in reasoning",
+          "reading comprehension",
+          "LSAT tutor",
+          "law school admissions",
+        ]}
+        canonical="https://devasophy.blog/lessons"
+      />
       <div
         style={{
           maxWidth: "1200px",

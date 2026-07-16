@@ -244,6 +244,104 @@ export default function PathSelector() {
           </button>
         </div>
 
+        {/* Expertise Section — SEO: highlights LR and RC for keyword alignment */}
+        <section
+          className="mt-12"
+          style={{
+            borderTop: "1.5px solid #e5e7eb",
+            paddingTop: "2.5rem",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "'Archivo Black', sans-serif",
+              fontSize: "1.35rem",
+              fontWeight: 900,
+              letterSpacing: "0.02em",
+              color: "#1C1F26",
+              textAlign: "center",
+              marginBottom: "0.5rem",
+            }}
+          >
+            Expert LSAT Tutoring in Two Core Domains
+          </h2>
+          <p
+            style={{
+              fontFamily: "'Archivo', sans-serif",
+              fontSize: "0.95rem",
+              color: "#6B7280",
+              textAlign: "center",
+              maxWidth: "560px",
+              margin: "0 auto 2rem",
+              lineHeight: 1.6,
+            }}
+          >
+            Every lesson is built around the two sections that determine your LSAT score.
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "1.25rem",
+              maxWidth: "760px",
+              margin: "0 auto",
+            }}
+          >
+            {/* Logical Reasoning */}
+            <div
+              style={{
+                background: "#fff",
+                border: "1.5px solid #e5e7eb",
+                borderRadius: "6px",
+                padding: "1.5rem",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: "#0E7C7B", flexShrink: 0 }} />
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: "1rem", fontWeight: 900, color: "#1C1F26", margin: 0, letterSpacing: "0.02em" }}>
+                  Logical Reasoning
+                </h3>
+              </div>
+              <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1rem" }}>
+                Master argument analysis through five structured lessons: necessary assumptions,
+                sufficient assumptions, flaw in reasoning, common flaws, and strengthen/weaken.
+                Each lesson uses real LSAT-style questions with step-by-step walkthroughs.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                {["Necessary Assumptions", "Sufficient Assumptions", "Flaw in Reasoning", "Common Flaws", "Strengthen/Weaken"].map((t) => (
+                  <span key={t} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.72rem", color: "#0E7C7B", background: "rgba(14,124,123,0.08)", border: "1px solid rgba(14,124,123,0.2)", borderRadius: "3px", padding: "0.2rem 0.5rem", letterSpacing: "0.03em" }}>{t}</span>
+                ))}
+              </div>
+            </div>
+            {/* Reading Comprehension */}
+            <div
+              style={{
+                background: "#fff",
+                border: "1.5px solid #e5e7eb",
+                borderRadius: "6px",
+                padding: "1.5rem",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: "#D4860A", flexShrink: 0 }} />
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: "1rem", fontWeight: 900, color: "#1C1F26", margin: 0, letterSpacing: "0.02em" }}>
+                  Reading Comprehension
+                </h3>
+              </div>
+              <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1rem" }}>
+                Build the passage-mapping and inference skills needed to handle dense academic
+                texts under timed conditions. Learn to identify main ideas, author tone, and
+                comparative passage structure with precision.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                {["Passage Mapping", "Main Idea", "Inference", "Author Tone", "Comparative Passages"].map((t) => (
+                  <span key={t} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.72rem", color: "#D4860A", background: "rgba(212,134,10,0.08)", border: "1px solid rgba(212,134,10,0.2)", borderRadius: "3px", padding: "0.2rem 0.5rem", letterSpacing: "0.03em" }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Meet Your Instructor */}
         <div className="mt-5 flex justify-center">
           <button
