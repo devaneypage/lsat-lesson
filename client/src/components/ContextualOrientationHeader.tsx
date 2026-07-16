@@ -11,6 +11,7 @@ export type OrientationHeaderProps = {
   prerequisites?: Array<{ label: string; href: string }>;
   estimate?: string;
   status?: "not_started" | "in_progress" | "completed";
+  statusLabel?: string;
   nextAction?: { label: string; href: string };
 };
 
@@ -27,6 +28,7 @@ export function ContextualOrientationHeader({
   prerequisites = [],
   estimate,
   status = "not_started",
+  statusLabel,
   nextAction,
 }: OrientationHeaderProps) {
   return (
@@ -47,7 +49,7 @@ export function ContextualOrientationHeader({
               <Compass className="size-5 text-primary" aria-hidden="true" />
               <span className="rounded-sm border border-border bg-background px-2 py-1 text-[0.7rem] font-bold uppercase tracking-[0.14em]">
                 {status === "completed" && <CheckCircle2 className="mr-1 inline size-3" aria-hidden="true" />}
-                {statusLabels[status]}
+                {statusLabel ?? statusLabels[status]}
               </span>
               {estimate && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" aria-hidden="true" />{estimate}</span>}
             </div>
@@ -95,8 +97,58 @@ export function RouteOrientation() {
   const canonicalLocation = canonicalizeAppPath(location);
   const lesson = CURRICULUM_LESSONS.find(item => canonicalizeAppPath(item.route) === canonicalLocation);
   if (lesson) return <ContextualOrientationHeader {...lessonOrientation(lesson)} />;
-  if (canonicalLocation === ROUTE_BY_ID.practice.path) {
-    return <ContextualOrientationHeader breadcrumb={[{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.practice.label }]} title={ROUTE_BY_ID.practice.label} purpose={ROUTE_BY_ID.practice.description} estimate="Choose your own session" nextAction={{ label: "Return to Today", href: ROUTE_BY_ID.today.path }} />;
-  }
-  return null;
+
+  const routeOrientations: Partial<Record<keyof typeof ROUTE_BY_ID, OrientationHeaderProps>> = {
+    today: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label }],
+      title: ROUTE_BY_ID.today.label,
+      purpose: ROUTE_BY_ID.today.description,
+      estimate: "One clear next step",
+      statusLabel: "Current workspace",
+      nextAction: { label: "Browse curriculum", href: ROUTE_BY_ID.learn.path },
+    },
+    learn: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.learn.label }],
+      title: ROUTE_BY_ID.learn.label,
+      purpose: ROUTE_BY_ID.learn.description,
+      estimate: "Self-paced curriculum",
+      statusLabel: "Available",
+      nextAction: { label: "Choose practice", href: ROUTE_BY_ID.practice.path },
+    },
+    practice: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.practice.label }],
+      title: ROUTE_BY_ID.practice.label,
+      purpose: ROUTE_BY_ID.practice.description,
+      estimate: "Choose your own session",
+      statusLabel: "Available",
+      nextAction: { label: "Return to Today", href: ROUTE_BY_ID.today.path },
+    },
+    review: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.review.label }],
+      title: ROUTE_BY_ID.review.label,
+      purpose: ROUTE_BY_ID.review.description,
+      estimate: "Based on due evidence",
+      statusLabel: "Evidence dependent",
+      nextAction: { label: "Return to Today", href: ROUTE_BY_ID.today.path },
+    },
+    progress: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.progress.label }],
+      title: ROUTE_BY_ID.progress.label,
+      purpose: ROUTE_BY_ID.progress.description,
+      estimate: "Builds through practice",
+      statusLabel: "Evidence dependent",
+      nextAction: { label: "Build evidence", href: ROUTE_BY_ID.practice.path },
+    },
+    plan: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.plan.label }],
+      title: ROUTE_BY_ID.plan.label,
+      purpose: ROUTE_BY_ID.plan.description,
+      estimate: "Weekly planning workspace",
+      statusLabel: "Editable",
+      nextAction: { label: "Return to Today", href: ROUTE_BY_ID.today.path },
+    },
+  };
+  const routeEntry = Object.entries(ROUTE_BY_ID).find(([, route]) => route.path === canonicalLocation);
+  const orientation = routeEntry ? routeOrientations[routeEntry[0] as keyof typeof ROUTE_BY_ID] : undefined;
+  return orientation ? <ContextualOrientationHeader {...orientation} /> : null;
 }

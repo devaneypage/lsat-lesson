@@ -3,7 +3,7 @@
  * Displays all imported LSAT questions with filtering and search
  */
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,20 +40,30 @@ import { trpc } from "@/lib/trpc";
 import { motion } from "framer-motion";
 import { useSearch } from "wouter";
 
+const QUESTIONS_PER_PAGE = 200;
+
 export default function QuestionBank() {
-  // Get URL parameters for module filtering
+  // Get URL parameters for module filtering and direct command-search links.
   const queryParams = useSearch();
   const params = new URLSearchParams(queryParams);
   const moduleId = params.get("module");
   const moduleName = params.get("moduleName");
+  const linkedQuestionId = Number(params.get("question")) || null;
+  const [page, setPage] = useState(0);
 
-  // Fetch questions from backend
+  // Fetch a bounded page for browsing and one explicit item for deep links.
   const { data: questionsData, isLoading } = trpc.questions.list.useQuery({
-    limit: 10000,
-    offset: 0,
+    limit: QUESTIONS_PER_PAGE,
+    offset: page * QUESTIONS_PER_PAGE,
   });
+  const { data: linkedQuestion, isLoading: isLinkedQuestionLoading, error: linkedQuestionError } = trpc.questions.getById.useQuery(
+    { questionId: linkedQuestionId ?? 1 },
+    { enabled: linkedQuestionId !== null, retry: false },
+  );
 
   const questions = questionsData?.questions || [];
+  const totalQuestions = questionsData?.total ?? 0;
+  const linkedQuestionMissing = linkedQuestionId !== null && !isLinkedQuestionLoading && linkedQuestion === null;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | "all">("all");
@@ -70,7 +80,7 @@ export default function QuestionBank() {
 
   // Fetch question IDs for the selected tag
   const { data: taggedQuestionData } = trpc.tags.getQuestions.useQuery(
-    { tagId: selectedTagId ?? 0, limit: 10000, offset: 0 },
+    { tagId: selectedTagId ?? 0, limit: QUESTIONS_PER_PAGE, offset: page * QUESTIONS_PER_PAGE },
     { enabled: selectedTagId !== null }
   );
   const taggedQuestionIds = useMemo(
@@ -139,6 +149,14 @@ export default function QuestionBank() {
     setShowExplanation(false);
     setViewMode("practice");
   };
+
+  useEffect(() => {
+    if (!linkedQuestion) return;
+    setSelectedQuestion(linkedQuestion);
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    setViewMode("practice");
+  }, [linkedQuestion]);
 
   const handleSubmitAnswer = () => {
     if (selectedAnswer) {
@@ -491,6 +509,14 @@ export default function QuestionBank() {
           </Button>
         </div>
 
+        {linkedQuestionId !== null && (isLinkedQuestionLoading || linkedQuestionError || linkedQuestionMissing) && (
+          <div className="mb-6 rounded-sm border border-border bg-card px-4 py-3 text-sm text-card-foreground" role={linkedQuestionError || linkedQuestionMissing ? "alert" : "status"}>
+            {linkedQuestionError || linkedQuestionMissing
+              ? "That question is no longer available. Browse the current question bank instead."
+              : "Opening the selected question…"}
+          </div>
+        )}
+
         {/* Questions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuestions.length === 0 ? (
@@ -557,6 +583,18 @@ export default function QuestionBank() {
             ))
           )}
         </div>
+
+        {viewMode === "grid" && totalQuestions > QUESTIONS_PER_PAGE && (
+          <nav className="mt-8 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between" aria-label="Question pages">
+            <p className="text-sm text-muted-foreground">
+              Showing {page * QUESTIONS_PER_PAGE + 1}–{Math.min((page + 1) * QUESTIONS_PER_PAGE, totalQuestions)} of {totalQuestions}
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" disabled={page === 0} onClick={() => setPage(current => Math.max(0, current - 1))}>Previous</Button>
+              <Button variant="outline" disabled={(page + 1) * QUESTIONS_PER_PAGE >= totalQuestions} onClick={() => setPage(current => current + 1)}>Next</Button>
+            </div>
+          </nav>
+        )}
       </div>
     </div>
   );

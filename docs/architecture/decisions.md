@@ -69,3 +69,27 @@ The current public question-list response still includes legacy answer fields be
 ## Backend decomposition verification record
 
 The root-router composition contract, repository imports, administrator middleware, authenticated plan drafting, feature-flag privacy boundary, and CSV answer normalization are covered by focused Vitest suites. The extraction is also required to pass the full TypeScript and production-build gates before release.
+
+## ADR-009: One server-derived Today action
+
+**Status:** Accepted and implemented behind `learner_dashboard_v2`.
+
+The Today response selects exactly one primary action by deterministic server priority: due review, then the most recently active incomplete lesson, then the next due task from the active study plan, then curriculum onboarding. The client renders this generic action contract and may not infer competing recommendations from separate requests. Supporting counts remain secondary evidence, not parallel calls to action.
+
+## ADR-010: Canonical contextual orientation
+
+**Status:** Accepted and implemented behind `contextual_orientation`.
+
+Today, Learn, Practice, Review, Progress, and Plan share one route-derived orientation contract for breadcrumb, purpose, estimated time, current state, and next action. Lesson routes extend the same contract with prerequisite context. Orientation metadata is not duplicated inside individual page implementations.
+
+## ADR-011: Bounded Practice discovery and nullable command-search deep links
+
+**Status:** Accepted and implemented.
+
+Practice browsing requests at most 200 questions per page and reports the accurate visible range against the authoritative server total. Command-search question results hydrate one bounded `questions.getById` lookup rather than loading the entire bank. A removed or stale result returns `null` as a normal read outcome; Practice presents an explicit browseable fallback without retries, full-page trapping, or expected API errors in runtime logs.
+
+The later practice-evidence phase will replace public answer-bearing discovery records with answer-protected attempt contracts. Bounded discovery is an interim performance and navigation correction, not the final answer-security architecture.
+
+## Daily learner release verification record
+
+Deterministic priority coverage includes due review, active lesson, active plan task, onboarding, completed-curriculum review, and empty-data states. Release-level tests cover valid and stale question links, bounded pagination, and orientation coverage across every canonical learner surface. Desktop visual verification confirms real question hydration and the stale-link fallback. The complete automated suite, TypeScript check, and production build must pass before enabling the four daily learner feature flags.

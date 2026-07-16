@@ -53,6 +53,68 @@ describe("Continue Learning aggregation", () => {
     expect(result.recentLessons.map(item => item.lesson.id)).toEqual([lessons[1].id, lessons[0].id]);
   });
 
+  it("prioritizes due review over an active lesson and active-plan task", () => {
+    const result = buildContinueLearning([
+      progress(lessons[0].id, "in_progress", new Date("2026-07-02T10:00:00Z"), 60),
+    ], lessons, {
+      dueReview: { count: 3, nextDueAt: new Date("2026-07-03T09:00:00Z"), reason: "Incorrect answer due for retrieval practice." },
+      activePlanTask: {
+        id: 7,
+        title: "Complete a strengthen drill",
+        itemType: "practice",
+        lessonId: null,
+        skillId: null,
+        dueAt: new Date("2026-07-03T10:00:00Z"),
+      },
+    });
+
+    expect(result.primaryAction).toMatchObject({
+      kind: "due_review",
+      route: "/review",
+      dueCount: 3,
+    });
+    expect(result.summary.dueReviewCount).toBe(3);
+  });
+
+  it("prioritizes an active lesson over a pending plan task", () => {
+    const result = buildContinueLearning([
+      progress(lessons[0].id, "in_progress", new Date("2026-07-02T10:00:00Z"), 40),
+    ], lessons, {
+      dueReview: null,
+      activePlanTask: {
+        id: 8,
+        title: "Review conditional reasoning",
+        itemType: "review",
+        lessonId: null,
+        skillId: null,
+        dueAt: null,
+      },
+    });
+
+    expect(result.primaryAction).toMatchObject({ kind: "resume", lesson: { id: lessons[0].id } });
+  });
+
+  it("prioritizes the next active-plan task over onboarding an unstarted lesson", () => {
+    const result = buildContinueLearning([], lessons, {
+      dueReview: null,
+      activePlanTask: {
+        id: 9,
+        title: "Read the flaw lesson",
+        itemType: "lesson",
+        lessonId: lessons[1].id,
+        skillId: null,
+        dueAt: null,
+      },
+    });
+
+    expect(result.state).toBe("active");
+    expect(result.primaryAction).toMatchObject({
+      kind: "plan",
+      title: "Read the flaw lesson",
+      route: lessons[1].route,
+    });
+  });
+
   it("reports completion and reviews the most recently completed lesson when all lessons are done", () => {
     const completed = lessons.map((lesson, index) =>
       progress(lesson.id, "completed", new Date(`2026-07-0${index + 1}T10:00:00Z`)),
@@ -65,7 +127,7 @@ describe("Continue Learning aggregation", () => {
       remainingLessons: 0,
       percentComplete: 100,
     });
-    expect(result.primaryAction).toMatchObject({ kind: "review", lesson: { id: lessons[2].id } });
+    expect(result.primaryAction).toMatchObject({ kind: "lesson_review", lesson: { id: lessons[2].id } });
   });
 });
 

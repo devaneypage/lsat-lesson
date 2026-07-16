@@ -1,6 +1,7 @@
 import type { InsertImportHistory, InsertQuestion } from "../../drizzle/schema";
 import {
   createImportHistory as createImportHistoryLegacy,
+  getQuestionById as getQuestionByIdLegacy,
   getQuestionCount as getQuestionCountLegacy,
   getQuestions as getQuestionsLegacy,
   insertQuestions as insertQuestionsLegacy,
@@ -20,6 +21,10 @@ export const questionRepository = {
 
   list(limit: number, offset: number) {
     return getQuestionsLegacy(limit, offset);
+  },
+
+  getById(questionId: number) {
+    return getQuestionByIdLegacy(questionId);
   },
 
   count() {

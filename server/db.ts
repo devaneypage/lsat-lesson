@@ -139,6 +139,26 @@ export async function getQuestions(limit = 100, offset = 0) {
 /**
  * Get total question count
  */
+export async function getQuestionById(questionId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get question: database not available");
+    return null;
+  }
+
+  try {
+    const result = await db
+      .select()
+      .from(questions)
+      .where(eq(questions.id, questionId))
+      .limit(1);
+    return result[0] ?? null;
+  } catch (error) {
+    console.error("[Database] Failed to get question:", error);
+    return null;
+  }
+}
+
 export async function getQuestionCount(): Promise<number> {
   const db = await getDb();
   if (!db) {

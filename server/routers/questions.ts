@@ -89,5 +89,9 @@ export const questionsRouter = router({
     return { questions, total };
   }),
 
+  getById: publicProcedure
+    .input(z.object({ questionId: z.number().int().positive() }))
+    .query(({ input }) => questionRepository.getById(input.questionId)),
+
   count: publicProcedure.query(() => questionRepository.count()),
 });

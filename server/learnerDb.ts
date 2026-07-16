@@ -17,6 +17,7 @@ import {
   type LessonProgressStatus,
 } from "../shared/learnerDomain";
 import { getDb } from "./db";
+import { getTodaySignals, type TodayPlanTaskSignal, type TodayReviewSignal } from "./repositories/today";
 
 export type LegacyProgressInput = {
   lessonId: string;
@@ -151,7 +152,26 @@ type ContinueLearningProgress = Pick<
   "lessonId" | "status" | "step" | "percentComplete" | "lastAccessedAt" | "completedAt"
 >;
 
-type ContinueLearningActionKind = "resume" | "start" | "review";
+type ContinueLearningActionKind = "due_review" | "resume" | "plan" | "start" | "lesson_review";
+
+type TodaySignals = {
+  dueReview: TodayReviewSignal | null;
+  activePlanTask: TodayPlanTaskSignal | null;
+};
+
+const EMPTY_TODAY_SIGNALS: TodaySignals = {
+  dueReview: null,
+  activePlanTask: null,
+};
+
+function planTaskRoute(task: TodayPlanTaskSignal, lessons: CurriculumLesson[]) {
+  if (task.itemType === "lesson" && task.lessonId) {
+    return lessons.find(lesson => lesson.id === task.lessonId)?.route ?? "/learn";
+  }
+  if (task.itemType === "review") return "/review";
+  if (task.itemType === "practice") return "/practice";
+  return "/plan";
+}
 
 function timestamp(value: Date | null | undefined) {
   return value?.getTime() ?? 0;
@@ -164,6 +184,7 @@ function lessonSequence(lessonId: string, lessons: CurriculumLesson[]) {
 export function buildContinueLearning(
   progress: ContinueLearningProgress[],
   lessons: CurriculumLesson[] = CURRICULUM_LESSONS,
+  signals: TodaySignals = EMPTY_TODAY_SIGNALS,
 ) {
   const orderedLessons = [...lessons].sort((a, b) => a.sequence - b.sequence);
   const progressByLesson = new Map(progress.map(item => [item.lessonId, item]));
@@ -186,21 +207,56 @@ export function buildContinueLearning(
   const selectedLesson = selected
     ? orderedLessons.find(lesson => lesson.id === selected.lessonId) ?? null
     : null;
-  const actionKind: ContinueLearningActionKind | null = inProgress[0]
-    ? "resume"
-    : unstarted[0]
-      ? "start"
-      : completed[0]
-        ? "review"
-        : null;
+
+  const lessonAction = selectedLesson && selected
+    ? {
+        kind: (inProgress[0] ? "resume" : unstarted[0] ? "start" : "lesson_review") as ContinueLearningActionKind,
+        label: inProgress[0] ? "Resume lesson" : unstarted[0] ? "Start lesson" : "Review lesson",
+        title: selectedLesson.title,
+        description: selectedLesson.description,
+        route: selectedLesson.route,
+        lesson: selectedLesson,
+        progress: {
+          step: selected.step ?? 0,
+          percentComplete: selected.percentComplete ?? 0,
+          lastAccessedAt: selected.lastAccessedAt ?? null,
+        },
+      }
+    : null;
+
+  const primaryAction = signals.dueReview
+    ? {
+        kind: "due_review" as const,
+        label: signals.dueReview.count === 1 ? "Review 1 due question" : `Review ${signals.dueReview.count} due questions`,
+        title: "Strengthen what is due today",
+        description: signals.dueReview.reason,
+        route: "/review",
+        dueCount: signals.dueReview.count,
+        progress: null,
+      }
+    : inProgress[0] && lessonAction
+      ? lessonAction
+      : signals.activePlanTask
+        ? {
+            kind: "plan" as const,
+            label: "Begin plan task",
+            title: signals.activePlanTask.title,
+            description: "This is the next pending task in your active study plan.",
+            route: planTaskRoute(signals.activePlanTask, orderedLessons),
+            task: signals.activePlanTask,
+            progress: null,
+          }
+        : lessonAction;
   const completedCount = orderedLessons.filter(
     lesson => progressByLesson.get(lesson.id)?.status === "completed",
   ).length;
 
   return {
-    state: progress.length === 0 ? "empty" as const : completedCount === orderedLessons.length
-      ? "completed" as const
-      : "active" as const,
+    state: progress.length === 0 && !signals.dueReview && !signals.activePlanTask
+      ? "empty" as const
+      : completedCount === orderedLessons.length && !signals.dueReview && !signals.activePlanTask
+        ? "completed" as const
+        : "active" as const,
     summary: {
       totalLessons: orderedLessons.length,
       completedLessons: completedCount,
@@ -209,17 +265,10 @@ export function buildContinueLearning(
       percentComplete: orderedLessons.length === 0
         ? 0
         : Math.round((completedCount / orderedLessons.length) * 100),
+      dueReviewCount: signals.dueReview?.count ?? 0,
+      hasActivePlanTask: Boolean(signals.activePlanTask),
     },
-    primaryAction: selectedLesson && actionKind ? {
-      kind: actionKind,
-      label: actionKind === "resume" ? "Resume lesson" : actionKind === "start" ? "Start lesson" : "Review lesson",
-      lesson: selectedLesson,
-      progress: {
-        step: selected?.step ?? 0,
-        percentComplete: selected?.percentComplete ?? 0,
-        lastAccessedAt: selected?.lastAccessedAt ?? null,
-      },
-    } : null,
+    primaryAction,
     recentLessons: [...progress]
       .filter(item => orderedLessons.some(lesson => lesson.id === item.lessonId))
       .sort((a, b) => timestamp(b.lastAccessedAt) - timestamp(a.lastAccessedAt))
@@ -234,7 +283,11 @@ export function buildContinueLearning(
 }
 
 export async function getContinueLearning(userId: number) {
-  return buildContinueLearning(await listLessonProgress(userId));
+  const [progress, signals] = await Promise.all([
+    listLessonProgress(userId),
+    getTodaySignals(userId),
+  ]);
+  return buildContinueLearning(progress, CURRICULUM_LESSONS, signals);
 }
 
 export async function upsertLessonProgress(

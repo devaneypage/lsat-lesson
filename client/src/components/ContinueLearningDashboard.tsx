@@ -58,9 +58,9 @@ export function ContinueLearningMain() {
           <div className="max-w-2xl">
             <StateIcon className="mb-5 size-8 text-primary" aria-hidden="true" />
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
-            <h2 className="mt-2 font-display font-bold text-2xl leading-tight md:text-3xl">{primaryAction?.lesson.title ?? "Your curriculum is ready"}</h2>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">{primaryAction?.lesson.description ?? "Choose a lesson from the curriculum map."}</p>
-            {primaryAction?.kind === "resume" && (
+            <h2 className="mt-2 font-display font-bold text-2xl leading-tight md:text-3xl">{primaryAction?.title ?? "Your curriculum is ready"}</h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">{primaryAction?.description ?? "Choose a lesson from the curriculum map."}</p>
+            {primaryAction?.kind === "resume" && primaryAction.progress && (
               <div className="mt-5" aria-label={`${primaryAction.progress.percentComplete}% complete`}>
                 <div className="mb-2 flex justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground"><span>Lesson progress</span><span>{primaryAction.progress.percentComplete}%</span></div>
                 <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary" style={{ width: `${primaryAction.progress.percentComplete}%` }} /></div>
@@ -68,8 +68,8 @@ export function ContinueLearningMain() {
             )}
           </div>
           {primaryAction && (
-            <Link href={primaryAction.lesson.route} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-primary px-5 py-3 text-sm font-bold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              {primaryAction.kind === "review" && <RotateCcw className="size-4" aria-hidden="true" />}
+            <Link href={primaryAction.route} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-primary px-5 py-3 text-sm font-bold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              {(primaryAction.kind === "due_review" || primaryAction.kind === "lesson_review") && <RotateCcw className="size-4" aria-hidden="true" />}
               {primaryAction.label}<ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           )}
