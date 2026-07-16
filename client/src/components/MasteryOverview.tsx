@@ -39,7 +39,7 @@ const MasteryOverview: React.FC<MasteryOverviewProps> = ({
     >
       <h3
         style={{
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontSize: "0.75rem",
           fontWeight: 600,
           letterSpacing: "0.05em",
@@ -63,7 +63,7 @@ const MasteryOverview: React.FC<MasteryOverviewProps> = ({
             >
               <label
                 style={{
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   fontSize: "0.85rem",
                   fontWeight: 500,
                   color: "var(--foreground)",

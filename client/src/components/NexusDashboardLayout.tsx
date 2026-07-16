@@ -53,7 +53,7 @@ const NexusDashboardLayout: React.FC<NexusDashboardLayoutProps> = ({
         >
           <h1
             style={{
-              fontFamily: "'Archivo Black', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "1.75rem",
               fontWeight: 900,
               letterSpacing: "0.02em",
@@ -66,7 +66,7 @@ const NexusDashboardLayout: React.FC<NexusDashboardLayoutProps> = ({
           </h1>
           <span
             style={{
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.8rem",
               fontWeight: 500,
               letterSpacing: "0.04em",

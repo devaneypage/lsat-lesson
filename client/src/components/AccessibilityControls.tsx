@@ -113,7 +113,7 @@ export function AccessibilityControls() {
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-['Archivo_Black'] text-2xl">Accessibility preferences</DialogTitle>
+          <DialogTitle className="font-display text-2xl font-bold tracking-[-0.02em]">Accessibility preferences</DialogTitle>
           <DialogDescription>{isAuthenticated ? "Preferences are saved to your learner profile." : "Guest preferences are saved in this browser."}</DialogDescription>
         </DialogHeader>
         <div className="mt-3 space-y-5">

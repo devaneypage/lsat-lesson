@@ -5,7 +5,7 @@
  * - Background: var(--background) cream #F4EDE0
  * - Cards: var(--card) #FFFDF8 with 1.5px border
  * - Accent: nexus-amber #EFA01C for active states
- * - Typography: Archivo Black / Archivo
+ * - Typography: Space Grotesk / Lora
  *
  * Test Date: pre-populated with official LSAC 2026-2027 dates
  * Source: https://www.lsac.org/LSATdates (retrieved 2026-07-03)
@@ -104,7 +104,7 @@ const cardStyle: React.CSSProperties = {
 };
 
 const sectionLabelStyle: React.CSSProperties = {
-  fontFamily: "'Archivo Black', sans-serif",
+  fontFamily: "'Space Grotesk', sans-serif",
   fontWeight: 900,
   fontSize: "0.85rem",
   color: "var(--foreground)",
@@ -114,7 +114,7 @@ const sectionLabelStyle: React.CSSProperties = {
 };
 
 const mutedStyle: React.CSSProperties = {
-  fontFamily: "'Archivo', sans-serif",
+  fontFamily: "'Space Grotesk', sans-serif",
   fontSize: "0.82rem",
   color: "rgba(17,17,17,0.55)",
   lineHeight: 1.5,
@@ -218,7 +218,7 @@ export default function LessonPlanGenerator() {
           <div>
             <h1
               style={{
-                fontFamily: "'Archivo Black', sans-serif",
+                fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 900,
                 fontSize: "1.1rem",
                 color: "var(--foreground)",
@@ -261,7 +261,7 @@ export default function LessonPlanGenerator() {
                     onClick={() => { setHasScore(val); if (!val) setCurrentScore("untested"); }}
                     className="px-4 py-2 text-sm font-semibold transition-all duration-150"
                     style={{
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       borderRadius: "0.25rem",
                       border: hasScore === val
                         ? "1.5px solid var(--nexus-amber)"
@@ -283,7 +283,7 @@ export default function LessonPlanGenerator() {
                     <label style={mutedStyle}>Current Score</label>
                     <span
                       style={{
-                        fontFamily: "'Archivo Black', sans-serif",
+                        fontFamily: "'Space Grotesk', sans-serif",
                         fontSize: "1.5rem",
                         color: "var(--nexus-amber)",
                       }}
@@ -308,7 +308,7 @@ export default function LessonPlanGenerator() {
                   <label style={mutedStyle}>Target Score</label>
                   <span
                     style={{
-                      fontFamily: "'Archivo Black', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       fontSize: "1.5rem",
                       color: "#2D6A4F",
                     }}
@@ -335,7 +335,7 @@ export default function LessonPlanGenerator() {
                     border: "1px solid rgba(45,106,79,0.25)",
                     borderRadius: "0.25rem",
                     color: "#2D6A4F",
-                    fontFamily: "'Archivo', sans-serif",
+                    fontFamily: "'Space Grotesk', sans-serif",
                   }}
                 >
                   Score gap: <strong>{targetScore - currentScore} points</strong> — that's achievable with focused preparation.
@@ -384,7 +384,7 @@ export default function LessonPlanGenerator() {
                       border: "1.5px solid var(--border)",
                       borderRadius: "0.25rem",
                       color: "var(--foreground)",
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       outline: "none",
                       cursor: "pointer",
                     }}
@@ -416,7 +416,7 @@ export default function LessonPlanGenerator() {
                         background: "rgba(239,160,28,0.04)",
                         border: "1px solid rgba(239,160,28,0.18)",
                         borderRadius: "0.25rem",
-                        fontFamily: "'Archivo', sans-serif",
+                        fontFamily: "'Space Grotesk', sans-serif",
                       }}
                     >
                       {/* Countdown row */}
@@ -432,7 +432,7 @@ export default function LessonPlanGenerator() {
                           <Clock size={14} style={{ color: u.color }} />
                           <span
                             style={{
-                              fontFamily: "'Archivo Black', sans-serif",
+                              fontFamily: "'Space Grotesk', sans-serif",
                               fontSize: "1.15rem",
                               fontWeight: 900,
                               color: u.color,
@@ -487,7 +487,7 @@ export default function LessonPlanGenerator() {
                       border: "1.5px solid var(--border)",
                       borderRadius: "0.25rem",
                       color: "var(--foreground)",
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       outline: "none",
                     }}
                     onFocus={(e) => { e.currentTarget.style.borderColor = "var(--nexus-amber)"; }}
@@ -519,7 +519,7 @@ export default function LessonPlanGenerator() {
                     >
                       <div
                         style={{
-                          fontFamily: "'Archivo Black', sans-serif",
+                          fontFamily: "'Space Grotesk', sans-serif",
                           fontSize: "0.85rem",
                           color: hoursPerWeek === opt.value ? "var(--nexus-amber)" : "var(--foreground)",
                         }}
@@ -546,7 +546,7 @@ export default function LessonPlanGenerator() {
                         background: "rgba(239,160,28,0.12)",
                         color: "var(--nexus-amber)",
                         border: "1px solid rgba(239,160,28,0.3)",
-                        fontFamily: "'Archivo', sans-serif",
+                        fontFamily: "'Space Grotesk', sans-serif",
                         textTransform: "none",
                         letterSpacing: 0,
                       }}
@@ -575,7 +575,7 @@ export default function LessonPlanGenerator() {
                           : "1.5px solid var(--border)",
                         background: selected ? "rgba(239,160,28,0.1)" : "transparent",
                         color: selected ? "var(--nexus-amber)" : "rgba(17,17,17,0.65)",
-                        fontFamily: "'Archivo', sans-serif",
+                        fontFamily: "'Space Grotesk', sans-serif",
                       }}
                     >
                       {selected && <CheckCircle2 size={13} />}
@@ -586,7 +586,7 @@ export default function LessonPlanGenerator() {
               </div>
 
               {weakAreas.length === 0 && (
-                <p className="text-xs mt-3" style={{ color: "var(--nexus-terra)", fontFamily: "'Archivo', sans-serif" }}>
+                <p className="text-xs mt-3" style={{ color: "var(--nexus-terra)", fontFamily: "'Space Grotesk', sans-serif" }}>
                   Please select at least one weak area to generate your plan.
                 </p>
               )}
@@ -601,7 +601,7 @@ export default function LessonPlanGenerator() {
                 style={{
                   background: "var(--nexus-amber)",
                   color: "#111111",
-                  fontFamily: "'Archivo Black', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   fontSize: "0.9rem",
                   letterSpacing: "0.03em",
                   textTransform: "uppercase",
@@ -649,7 +649,7 @@ export default function LessonPlanGenerator() {
                       border: `1px solid ${border}`,
                       borderRadius: "0.25rem",
                       color,
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                     }}
                   >
                     {icon}{label}
@@ -673,7 +673,7 @@ export default function LessonPlanGenerator() {
                     border: "1.5px solid var(--border)",
                     borderRadius: "0.25rem",
                     color: "rgba(17,17,17,0.65)",
-                    fontFamily: "'Archivo', sans-serif",
+                    fontFamily: "'Space Grotesk', sans-serif",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--nexus-teal)"; e.currentTarget.style.color = "var(--nexus-teal)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "rgba(17,17,17,0.65)"; }}
@@ -689,7 +689,7 @@ export default function LessonPlanGenerator() {
                   border: "1.5px solid var(--border)",
                   borderRadius: "0.25rem",
                   color: "rgba(17,17,17,0.65)",
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--nexus-terra)"; e.currentTarget.style.color = "var(--nexus-terra)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "rgba(17,17,17,0.65)"; }}
@@ -707,7 +707,7 @@ export default function LessonPlanGenerator() {
               }}
               className="print:bg-white print:border-gray-200"
             >
-              <div className="prose prose-sm max-w-none prose-headings:font-['Archivo_Black'] prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[rgba(17,17,17,0.8)] prose-p:text-[rgba(17,17,17,0.8)] print:prose-headings:text-gray-900 print:prose-p:text-gray-800">
+              <div className="prose prose-sm max-w-none prose-headings:font-display font-bold prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[rgba(17,17,17,0.8)] prose-p:text-[rgba(17,17,17,0.8)] print:prose-headings:text-gray-900 print:prose-p:text-gray-800">
                 <Streamdown>{generatedPlan}</Streamdown>
               </div>
             </div>
@@ -722,7 +722,7 @@ export default function LessonPlanGenerator() {
                   border: "1.5px solid var(--border)",
                   borderRadius: "0.25rem",
                   color: "rgba(17,17,17,0.65)",
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--nexus-amber)"; e.currentTarget.style.color = "var(--nexus-amber)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "rgba(17,17,17,0.65)"; }}

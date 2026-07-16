@@ -254,7 +254,7 @@ export default function PathSelector() {
         >
           <h2
             style={{
-              fontFamily: "'Archivo Black', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "1.35rem",
               fontWeight: 900,
               letterSpacing: "0.02em",
@@ -267,7 +267,7 @@ export default function PathSelector() {
           </h2>
           <p
             style={{
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.95rem",
               color: "#6B7280",
               textAlign: "center",
@@ -298,11 +298,11 @@ export default function PathSelector() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
                 <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: "#0E7C7B", flexShrink: 0 }} />
-                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: "1rem", fontWeight: 900, color: "#1C1F26", margin: 0, letterSpacing: "0.02em" }}>
+                <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1rem", fontWeight: 900, color: "#1C1F26", margin: 0, letterSpacing: "0.02em" }}>
                   Logical Reasoning
                 </h3>
               </div>
-              <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1rem" }}>
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1rem" }}>
                 Master argument analysis through five structured lessons: necessary assumptions,
                 sufficient assumptions, flaw in reasoning, common flaws, and strengthen/weaken.
                 Each lesson uses real LSAT-style questions with step-by-step walkthroughs.
@@ -324,11 +324,11 @@ export default function PathSelector() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
                 <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: "#D4860A", flexShrink: 0 }} />
-                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: "1rem", fontWeight: 900, color: "#1C1F26", margin: 0, letterSpacing: "0.02em" }}>
+                <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1rem", fontWeight: 900, color: "#1C1F26", margin: 0, letterSpacing: "0.02em" }}>
                   Reading Comprehension
                 </h3>
               </div>
-              <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1rem" }}>
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1rem" }}>
                 Build the passage-mapping and inference skills needed to handle dense academic
                 texts under timed conditions. Learn to identify main ideas, author tone, and
                 comparative passage structure with precision.

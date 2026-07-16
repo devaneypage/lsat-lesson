@@ -31,7 +31,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
     >
       <h3
         style={{
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontSize: "0.75rem",
           fontWeight: 600,
           letterSpacing: "0.05em",
@@ -58,7 +58,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
 
       <p
         style={{
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontSize: "0.8rem",
           color: "var(--muted-foreground)",
           marginBottom: "1.5rem",
@@ -75,7 +75,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
       >
         <p
           style={{
-            fontFamily: "'Archivo', sans-serif",
+            fontFamily: "'Space Grotesk', sans-serif",
             fontSize: "0.75rem",
             fontWeight: 600,
             letterSpacing: "0.05em",

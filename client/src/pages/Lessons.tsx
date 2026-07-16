@@ -31,7 +31,7 @@ export default function Lessons() {
       >
         <div
           style={{
-            fontFamily: "'Archivo', sans-serif",
+            fontFamily: "'Space Grotesk', sans-serif",
             fontSize: "0.9rem",
             color: "var(--muted-foreground)",
             letterSpacing: "0.05em",
@@ -91,7 +91,7 @@ export default function Lessons() {
           >
             <h1
               style={{
-                fontFamily: "'Archivo Black', sans-serif",
+                fontFamily: "'Space Grotesk', sans-serif",
                 fontSize: "1.75rem",
                 fontWeight: 900,
                 letterSpacing: "0.02em",
@@ -104,7 +104,7 @@ export default function Lessons() {
             </h1>
             <span
               style={{
-                fontFamily: "'Archivo', sans-serif",
+                fontFamily: "'Space Grotesk', sans-serif",
                 fontSize: "0.8rem",
                 fontWeight: 500,
                 letterSpacing: "0.04em",
@@ -117,7 +117,7 @@ export default function Lessons() {
           </div>
           <p
             style={{
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.95rem",
               color: "var(--muted-foreground)",
               margin: "0 0 0.875rem 0",

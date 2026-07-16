@@ -130,7 +130,7 @@ export default function MainNavigationBar() {
           </svg>
           <span
             style={{
-              fontFamily: "'Archivo Black', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 900,
               fontSize: "0.9rem",
               color: "var(--nexus-amber)",
@@ -154,7 +154,7 @@ export default function MainNavigationBar() {
                 style={{
                   color: active ? "var(--nexus-amber)" : "#CCCCCC",
                   fontSize: "0.72rem",
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: active ? 700 : 500,
                   letterSpacing: "0.03em",
                   textTransform: "uppercase",
@@ -187,7 +187,7 @@ export default function MainNavigationBar() {
                       padding: "0.5rem 0.75rem",
                       borderRadius: "0.25rem",
                       fontSize: "0.7rem",
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       whiteSpace: "nowrap",
                       border: "1px solid var(--nexus-amber)",
                     }}
@@ -209,7 +209,7 @@ export default function MainNavigationBar() {
             style={{
               background: "var(--nexus-amber)",
               color: "#111111",
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.85rem",
               letterSpacing: "0.02em",
               textTransform: "uppercase",
@@ -237,7 +237,7 @@ export default function MainNavigationBar() {
             style={{
               color: "#111111",
               background: "var(--nexus-teal)",
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.85rem",
               fontWeight: 600,
               letterSpacing: "0.02em",
@@ -293,7 +293,7 @@ export default function MainNavigationBar() {
           </svg>
           <span
             style={{
-              fontFamily: "'Archivo Black', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 900,
               fontSize: "0.85rem",
               color: "var(--nexus-amber)",
@@ -340,7 +340,7 @@ export default function MainNavigationBar() {
                       color: active ? "var(--nexus-amber)" : "#CCCCCC",
                       background: active ? "rgba(239, 160, 28, 0.1)" : "transparent",
                       borderColor: "#333333",
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       fontSize: "0.9rem",
                       fontWeight: active ? 600 : 500,
                       letterSpacing: "0.02em",
@@ -358,7 +358,7 @@ export default function MainNavigationBar() {
                 style={{
                   background: "var(--nexus-amber)",
                   color: "#111111",
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   fontSize: "0.9rem",
                   fontWeight: 600,
                   letterSpacing: "0.02em",

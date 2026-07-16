@@ -51,7 +51,7 @@ export function ContextualOrientationHeader({
               </span>
               {estimate && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" aria-hidden="true" />{estimate}</span>}
             </div>
-            <h1 id="orientation-title" className="font-['Archivo_Black'] text-2xl leading-tight md:text-3xl">{title}</h1>
+            <h1 id="orientation-title" className="font-display font-bold text-2xl leading-tight md:text-3xl">{title}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground"><strong className="text-foreground">Why this matters:</strong> {purpose}</p>
             {prerequisites.length > 0 && (
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

@@ -41,7 +41,7 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
     >
       <p
         style={{
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 700,
           fontSize: "0.7rem",
           color: "var(--nexus-amber)",
@@ -55,7 +55,7 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
 
       <h3
         style={{
-          fontFamily: "'Archivo Black', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 900,
           fontSize: "1.15rem",
           color: "var(--foreground)",
@@ -68,7 +68,7 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
 
       <p
         style={{
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontSize: "0.88rem",
           color: "rgba(17, 17, 17, 0.65)",
           lineHeight: 1.7,
@@ -87,7 +87,7 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
         style={{
           background: "var(--nexus-amber)",
           color: "#111111",
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontSize: "0.85rem",
           fontWeight: 700,
           letterSpacing: "0.02em",

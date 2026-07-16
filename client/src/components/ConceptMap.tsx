@@ -336,7 +336,7 @@ const NodeTooltip: React.FC<TooltipProps> = ({ node, svgRect }) => {
         padding: "0.75rem",
         zIndex: 9999,
         pointerEvents: "none",
-        fontFamily: "'Archivo', sans-serif",
+        fontFamily: "'Space Grotesk', sans-serif",
       }}
     >
       {/* Header row */}
@@ -515,8 +515,8 @@ const ConceptMap: React.FC = () => {
       return (
         <g key={node.id} {...baseProps}>
           <polygon points={points} fill={node.color} stroke="#111111" strokeWidth={isHovered ? "2" : "1.5"} />
-          <text x={node.cx} y={labelY} textAnchor="middle" fontSize="13" fontWeight="900" fontFamily="Archivo Black" fill={node.textColor}>{node.label}</text>
-          {node.sublabel && <text x={node.cx} y={sublabelY} textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="Archivo" fill={node.textColor}>{node.sublabel}</text>}
+          <text x={node.cx} y={labelY} textAnchor="middle" fontSize="13" fontWeight="900" fontFamily="Space Grotesk" fill={node.textColor}>{node.label}</text>
+          {node.sublabel && <text x={node.cx} y={sublabelY} textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="Space Grotesk" fill={node.textColor}>{node.sublabel}</text>}
         </g>
       );
     }
@@ -527,8 +527,8 @@ const ConceptMap: React.FC = () => {
       return (
         <g key={node.id} {...baseProps}>
           <rect x={node.cx - hw} y={node.cy - hh} width={node.w} height={node.h} rx="3" fill={node.color} stroke="#111111" strokeWidth={isHovered ? "2" : "1.5"} />
-          <text x={node.cx} y={labelY} textAnchor="middle" fontSize="12" fontWeight="700" fontFamily="Archivo" fill={node.textColor}>{node.label}</text>
-          {node.sublabel && <text x={node.cx} y={sublabelY} textAnchor="middle" fontSize="12" fontWeight="700" fontFamily="Archivo" fill={node.textColor}>{node.sublabel}</text>}
+          <text x={node.cx} y={labelY} textAnchor="middle" fontSize="12" fontWeight="700" fontFamily="Space Grotesk" fill={node.textColor}>{node.label}</text>
+          {node.sublabel && <text x={node.cx} y={sublabelY} textAnchor="middle" fontSize="12" fontWeight="700" fontFamily="Space Grotesk" fill={node.textColor}>{node.sublabel}</text>}
         </g>
       );
     }
@@ -537,8 +537,8 @@ const ConceptMap: React.FC = () => {
       return (
         <g key={node.id} {...baseProps}>
           <circle cx={node.cx} cy={node.cy} r={node.r ?? 40} fill={node.color} stroke="#111111" strokeWidth={isHovered ? "2" : "1.5"} />
-          <text x={node.cx} y={labelY} textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="Archivo" fill={node.textColor}>{node.label}</text>
-          {node.sublabel && <text x={node.cx} y={sublabelY} textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="Archivo" fill={node.textColor}>{node.sublabel}</text>}
+          <text x={node.cx} y={labelY} textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="Space Grotesk" fill={node.textColor}>{node.label}</text>
+          {node.sublabel && <text x={node.cx} y={sublabelY} textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="Space Grotesk" fill={node.textColor}>{node.sublabel}</text>}
         </g>
       );
     }
@@ -568,7 +568,7 @@ const ConceptMap: React.FC = () => {
       <div style={{ marginBottom: "1rem" }}>
         <h2
           style={{
-            fontFamily: "'Archivo Black', sans-serif",
+            fontFamily: "'Space Grotesk', sans-serif",
             fontSize: "1.25rem",
             fontWeight: 900,
             letterSpacing: "0.02em",
@@ -580,7 +580,7 @@ const ConceptMap: React.FC = () => {
         </h2>
         <p
           style={{
-            fontFamily: "'Archivo', sans-serif",
+            fontFamily: "'Space Grotesk', sans-serif",
             fontSize: "0.8rem",
             color: "var(--muted-foreground)",
             margin: "0.25rem 0 0 0",
@@ -607,7 +607,7 @@ const ConceptMap: React.FC = () => {
             stroke="var(--nexus-teal)" strokeOpacity="0.18" strokeWidth="1"
           />
           <text x={LR_ZONE.x + 10} y={LR_ZONE.y + 20} fontSize="10" fontWeight="700"
-            fontFamily="Archivo" fill="var(--nexus-teal)" fillOpacity="0.55"
+            fontFamily="Space Grotesk" fill="var(--nexus-teal)" fillOpacity="0.55"
             letterSpacing="0.06em">
             LOGICAL REASONING
           </text>
@@ -618,7 +618,7 @@ const ConceptMap: React.FC = () => {
             stroke="var(--nexus-blue)" strokeOpacity="0.18" strokeWidth="1"
           />
           <text x={RC_ZONE.x + 10} y={RC_ZONE.y + 20} fontSize="10" fontWeight="700"
-            fontFamily="Archivo" fill="var(--nexus-blue)" fillOpacity="0.55"
+            fontFamily="Space Grotesk" fill="var(--nexus-blue)" fillOpacity="0.55"
             letterSpacing="0.06em">
             READING &amp; LOGIC
           </text>

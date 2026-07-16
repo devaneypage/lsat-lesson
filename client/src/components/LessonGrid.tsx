@@ -187,7 +187,7 @@ const LessonGrid: React.FC = () => {
               {lesson.seq === 1 && (
                 <span
                   style={{
-                    fontFamily: "'Archivo', sans-serif",
+                    fontFamily: "'Space Grotesk', sans-serif",
                     fontSize: "0.65rem",
                     fontWeight: 700,
                     letterSpacing: "0.06em",
@@ -238,7 +238,7 @@ const LessonGrid: React.FC = () => {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h3
                   style={{
-                    fontFamily: "'Archivo', sans-serif",
+                    fontFamily: "'Space Grotesk', sans-serif",
                     fontSize: "1rem",
                     fontWeight: 700,
                     color: "var(--foreground)",
@@ -258,7 +258,7 @@ const LessonGrid: React.FC = () => {
                 >
                   <p
                     style={{
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       fontSize: "0.75rem",
                       color: lesson.color,
                       fontWeight: 600,
@@ -272,7 +272,7 @@ const LessonGrid: React.FC = () => {
                   {/* Group tag */}
                   <span
                     style={{
-                      fontFamily: "'Archivo', sans-serif",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       fontSize: "0.65rem",
                       fontWeight: 600,
                       letterSpacing: "0.04em",
@@ -290,7 +290,7 @@ const LessonGrid: React.FC = () => {
             {/* Description — P9: var(--muted-foreground) instead of rgba */}
             <p
               style={{
-                fontFamily: "'Archivo', sans-serif",
+                fontFamily: "'Space Grotesk', sans-serif",
                 fontSize: "0.9rem",  // P typography: increased from 0.85rem
                 color: "var(--muted-foreground)",
                 margin: 0,
@@ -310,7 +310,7 @@ const LessonGrid: React.FC = () => {
             >
               <span
                 style={{
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   fontSize: "0.8rem",
                   fontWeight: 600,
                   color: lesson.color,

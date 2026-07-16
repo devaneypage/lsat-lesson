@@ -61,7 +61,7 @@ const QuickNavigation: React.FC = () => {
     >
       <h3
         style={{
-          fontFamily: "'Archivo', sans-serif",
+          fontFamily: "'Space Grotesk', sans-serif",
           fontSize: "0.75rem",
           fontWeight: 600,
           letterSpacing: "0.05em",
@@ -84,7 +84,7 @@ const QuickNavigation: React.FC = () => {
               color: action.color,
               border: `1.5px solid ${action.color}`,
               borderRadius: "0.25rem",
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.85rem",
               fontWeight: 600,
               letterSpacing: "0.02em",

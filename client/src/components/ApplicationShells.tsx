@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { PageFrame, PageHeader, StatePanel } from "@/components/PagePrimitives";
 import { getLoginUrl } from "@/const";
 import {
   ADMIN_NAV_ROUTES,
@@ -428,71 +429,47 @@ export function AdminWorkspacePlaceholder({
   status: string;
 }) {
   return (
-    <div className="container py-10 sm:py-14">
-      <div className="max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--nexus-teal)]">Administrator workspace</p>
-        <h1 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{description}</p>
-      </div>
-      <section className="mt-8 max-w-3xl border border-border bg-card p-6 shadow-sm" aria-labelledby="workspace-status-title">
-        <div className="flex items-start gap-4">
-          <Settings2 className="mt-1 h-5 w-5 shrink-0 text-[var(--nexus-amber)]" aria-hidden="true" />
-          <div>
-            <h2 id="workspace-status-title" className="font-display text-lg font-black">Current release status</h2>
-            <p className="mt-2 leading-7 text-muted-foreground">{status}</p>
-          </div>
-        </div>
-      </section>
-    </div>
+    <PageFrame>
+      <PageHeader eyebrow="Administrator workspace" title={title} description={description} />
+      <StatePanel
+        icon={Settings2}
+        eyebrow="Current release status"
+        title="Workspace migration in progress"
+        description={status}
+        tone="warning"
+        className="max-w-3xl"
+      />
+    </PageFrame>
   );
 }
 
 export function ReviewUnavailablePage() {
   return (
-    <div className="container py-10 sm:py-14">
-      <div className="max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--nexus-teal)]">Review</p>
-        <h1 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">Your review queue is not ready yet</h1>
-        <p className="mt-4 text-base leading-7 text-muted-foreground">
-          LSAT Nexus will add questions here only after a server-authoritative practice attempt creates evidence that a question should be reviewed. No due items are inferred or fabricated.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href={ROUTE_BY_ID.practice.path}>Start evidence-producing practice</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href={ROUTE_BY_ID.learn.path}>Continue learning</Link>
-          </Button>
-        </div>
-      </div>
-    </div>
+    <PageFrame width="reading">
+      <StatePanel
+        icon={ListChecks}
+        eyebrow="Review"
+        title="Your review queue is not ready yet"
+        description="LSAT Nexus will add questions here only after a server-authoritative practice attempt creates evidence that a question should be reviewed. No due items are inferred or fabricated."
+        tone="info"
+        action={<Button asChild><Link href={ROUTE_BY_ID.practice.path}>Start evidence-producing practice</Link></Button>}
+        secondaryAction={<Button asChild variant="outline"><Link href={ROUTE_BY_ID.learn.path}>Continue learning</Link></Button>}
+      />
+    </PageFrame>
   );
 }
 
 export function ProgressEvidencePage() {
   return (
-    <div className="container py-10 sm:py-14">
-      <div className="max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--nexus-teal)]">Progress</p>
-        <h1 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">Not enough evidence yet</h1>
-        <p className="mt-4 text-base leading-7 text-muted-foreground">
-          Progress will report only observed practice attempts, active timing, confidence calibration, review completion, and mapped skill evidence. Score gains, percentiles, and mastery estimates are withheld until their evidence thresholds are met.
-        </p>
-      </div>
-      <section className="mt-8 max-w-3xl border border-border bg-card p-6 shadow-sm" aria-labelledby="progress-next-step-title">
-        <div className="flex items-start gap-4">
-          <BarChart3 className="mt-1 h-5 w-5 shrink-0 text-[var(--nexus-amber)]" aria-hidden="true" />
-          <div>
-            <h2 id="progress-next-step-title" className="font-display text-lg font-black">How progress evidence begins</h2>
-            <p className="mt-2 leading-7 text-muted-foreground">
-              Complete an evidence-producing practice session after the new attempt workflow is released. Historical local-only activity is not presented as authoritative performance data.
-            </p>
-            <Button asChild className="mt-5">
-              <Link href={ROUTE_BY_ID.practice.path}>Open practice</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-    </div>
+    <PageFrame width="reading">
+      <StatePanel
+        icon={BarChart3}
+        eyebrow="Progress"
+        title="Not enough evidence yet"
+        description={<>Progress reports only observed practice attempts, active timing, confidence calibration, review completion, and mapped skill evidence. Score gains, percentiles, and mastery estimates remain withheld until their evidence thresholds are met.<span className="mt-4 block">Complete an evidence-producing practice session after the new attempt workflow is released. Historical local-only activity is not presented as authoritative performance data.</span></>}
+        tone="info"
+        action={<Button asChild><Link href={ROUTE_BY_ID.practice.path}>Open practice</Link></Button>}
+      />
+    </PageFrame>
   );
 }

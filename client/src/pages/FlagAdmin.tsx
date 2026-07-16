@@ -235,7 +235,7 @@ export default function FlagAdmin() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
         <Shield size={48} className="text-muted-foreground" />
-        <h1 className="text-2xl font-bold" style={{ fontFamily: "'Archivo Black', sans-serif" }}>
+        <h1 className="text-2xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
           Admin Access Required
         </h1>
         <p className="text-muted-foreground max-w-sm">
@@ -290,7 +290,7 @@ export default function FlagAdmin() {
               <div>
                 <h1
                   style={{
-                    fontFamily: "'Archivo Black', sans-serif",
+                    fontFamily: "'Space Grotesk', sans-serif",
                     fontWeight: 900,
                     fontSize: "1.4rem",
                     color: "var(--foreground)",
@@ -360,7 +360,7 @@ export default function FlagAdmin() {
               border: "1.5px solid var(--border)",
               borderRadius: "0.25rem",
               color: "var(--foreground)",
-              fontFamily: "'Archivo', sans-serif",
+              fontFamily: "'Space Grotesk', sans-serif",
               outline: "none",
             }}
             onFocus={(e) => { e.currentTarget.style.borderColor = "#1AABBC"; }}
@@ -397,7 +397,7 @@ export default function FlagAdmin() {
                     : "rgba(17,17,17,0.06)"
                     : "transparent",
                   color: isActive ? catColor : "var(--muted-foreground)",
-                  fontFamily: "'Archivo', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   letterSpacing: "0.02em",
                   textTransform: "uppercase",
                   fontSize: "0.75rem",
@@ -422,7 +422,7 @@ export default function FlagAdmin() {
           {(searchQuery || activeCategory !== "all") && (
             <span
               className="ml-auto text-xs"
-              style={{ color: "var(--muted-foreground)", fontFamily: "'Archivo', sans-serif" }}
+              style={{ color: "var(--muted-foreground)", fontFamily: "'Space Grotesk', sans-serif" }}
             >
               {filteredFlags.length} of {flags?.length ?? 0} flags
             </span>
@@ -443,7 +443,7 @@ export default function FlagAdmin() {
             className="flex flex-col items-center justify-center py-24 gap-3 text-center"
           >
             <Search size={36} style={{ color: "var(--muted-foreground)", opacity: 0.5 }} />
-            <p style={{ fontFamily: "'Archivo', sans-serif", color: "var(--muted-foreground)", fontSize: "0.95rem" }}>
+            <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--muted-foreground)", fontSize: "0.95rem" }}>
               No flags match{searchQuery ? ` "${searchQuery}"` : ""}{activeCategory !== "all" ? ` in ${CATEGORY_LABELS[activeCategory]}` : ""}.
             </p>
             <button
@@ -492,7 +492,7 @@ export default function FlagAdmin() {
                             <h3
                               className="font-bold"
                               style={{
-                                fontFamily: "'Archivo Black', sans-serif",
+                                fontFamily: "'Space Grotesk', sans-serif",
                                 fontSize: "0.95rem",
                                 color: "var(--foreground)",
                               }}
@@ -532,7 +532,7 @@ export default function FlagAdmin() {
                       <div>
                         <p
                           className="text-xs font-semibold uppercase tracking-wide mb-2"
-                          style={{ color: "var(--muted-foreground)", fontFamily: "'Archivo', sans-serif" }}
+                          style={{ color: "var(--muted-foreground)", fontFamily: "'Space Grotesk', sans-serif" }}
                         >
                           Rollout Percentage
                         </p>
@@ -556,7 +556,7 @@ export default function FlagAdmin() {
                               color: colors.accent,
                               border: `1px solid ${colors.border}`,
                               borderRadius: "0.25rem",
-                              fontFamily: "'Archivo', sans-serif",
+                              fontFamily: "'Space Grotesk', sans-serif",
                             }}
                           >
                             Apply

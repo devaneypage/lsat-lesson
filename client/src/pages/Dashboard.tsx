@@ -37,7 +37,7 @@ export default function Dashboard() {
       >
         <div
           style={{
-            fontFamily: "'Archivo', sans-serif",
+            fontFamily: "'Space Grotesk', sans-serif",
             fontSize: "0.9rem",
             color: "var(--muted-foreground)",
             letterSpacing: "0.05em",
