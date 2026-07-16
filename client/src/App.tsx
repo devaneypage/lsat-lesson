@@ -29,6 +29,12 @@ import MainNavigationBar from "./components/MainNavigationBar";
 import About from "@/pages/About";
 import Booking from "@/pages/Booking";
 import FlagAdmin from "@/pages/FlagAdmin";
+import { useLegacyProgressImport } from "@/hooks/useLegacyProgressImport";
+
+function LearnerStateBridge() {
+  useLegacyProgressImport();
+  return null;
+}
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -84,6 +90,7 @@ function App() {
         <PathProvider>
           <TooltipProvider>
             <Toaster />
+            <LearnerStateBridge />
             <Router />
           </TooltipProvider>
         </PathProvider>

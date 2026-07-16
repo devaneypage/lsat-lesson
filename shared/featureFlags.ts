@@ -9,6 +9,16 @@ export const FEATURE_FLAG_KEYS = [
   "lesson_grid",
   "concept_map",
   "score_card",
+  "learner_dashboard_v2",
+  "adaptive_review_queue",
+  "question_confidence_tracking",
+  "unified_command_search",
+  "skill_mastery_map",
+  "persistent_study_plans",
+  "mistake_journal",
+  "accessibility_controls",
+  "contextual_orientation",
+  "feature_usage_analytics",
 ] as const;
 
 export type FeatureFlagKey = (typeof FEATURE_FLAG_KEYS)[number];

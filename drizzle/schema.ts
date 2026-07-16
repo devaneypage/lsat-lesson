@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { index, int, json, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -125,3 +125,204 @@ export const featureFlags = mysqlTable("featureFlags", {
 
 export type FeatureFlag = typeof featureFlags.$inferSelect;
 export type InsertFeatureFlag = typeof featureFlags.$inferInsert;
+
+/** Durable learner profile data used for study recommendations. */
+export const learnerProfiles = mysqlTable("learnerProfiles", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  timezone: varchar("timezone", { length: 64 }).default("UTC").notNull(),
+  targetTestDate: timestamp("targetTestDate"),
+  weeklyStudyMinutes: int("weeklyStudyMinutes").default(300).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [uniqueIndex("learnerProfiles_userId_unique").on(table.userId)]);
+
+/** Reading and interaction preferences. */
+export const learnerPreferences = mysqlTable("learnerPreferences", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  textScale: mysqlEnum("textScale", ["default", "large", "extra_large"]).default("default").notNull(),
+  readingWidth: mysqlEnum("readingWidth", ["comfortable", "wide", "full"]).default("comfortable").notNull(),
+  contrast: mysqlEnum("contrast", ["default", "high"]).default("default").notNull(),
+  motion: mysqlEnum("motion", ["system", "reduced"]).default("system").notNull(),
+  passageFocus: mysqlEnum("passageFocus", ["off", "on"]).default("off").notNull(),
+  keyboardShortcuts: mysqlEnum("keyboardShortcuts", ["off", "on"]).default("on").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [uniqueIndex("learnerPreferences_userId_unique").on(table.userId)]);
+
+/** Canonical curriculum skill registry persisted for reporting and mappings. */
+export const curriculumSkills = mysqlTable("curriculumSkills", {
+  id: int("id").autoincrement().primaryKey(),
+  skillId: varchar("skillId", { length: 64 }).notNull(),
+  title: varchar("title", { length: 160 }).notNull(),
+  section: mysqlEnum("section", ["LR", "RC", "Logic"]).notNull(),
+  description: text("description").notNull(),
+  prerequisites: json("prerequisites").$type<string[]>().notNull(),
+  registryVersion: int("registryVersion").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [uniqueIndex("curriculumSkills_skillId_unique").on(table.skillId)]);
+
+/** Explicit question-to-skill evidence mapping. */
+export const questionSkills = mysqlTable("questionSkills", {
+  id: int("id").autoincrement().primaryKey(),
+  questionId: int("questionId").notNull(),
+  skillId: varchar("skillId", { length: 64 }).notNull(),
+  weight: int("weight").default(100).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [
+  uniqueIndex("questionSkills_question_skill_unique").on(table.questionId, table.skillId),
+  index("questionSkills_skill_idx").on(table.skillId),
+]);
+
+/** Server-authoritative lesson progress. */
+export const lessonProgress = mysqlTable("lessonProgress", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  lessonId: varchar("lessonId", { length: 64 }).notNull(),
+  status: mysqlEnum("status", ["not_started", "in_progress", "completed"]).default("not_started").notNull(),
+  step: int("step").default(0).notNull(),
+  percentComplete: int("percentComplete").default(0).notNull(),
+  source: mysqlEnum("source", ["server", "legacy_import"]).default("server").notNull(),
+  lastAccessedAt: timestamp("lastAccessedAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  uniqueIndex("lessonProgress_user_lesson_unique").on(table.userId, table.lessonId),
+  index("lessonProgress_user_status_idx").on(table.userId, table.status),
+]);
+
+/** Immutable question evidence with idempotent submission keys. */
+export const questionAttempts = mysqlTable("questionAttempts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  questionId: int("questionId").notNull(),
+  idempotencyKey: varchar("idempotencyKey", { length: 64 }).notNull(),
+  selectedAnswer: varchar("selectedAnswer", { length: 1 }).notNull(),
+  isCorrect: int("isCorrect").notNull(),
+  confidence: mysqlEnum("confidence", ["certain", "unsure", "guessed"]).notNull(),
+  activeTimeMs: int("activeTimeMs").notNull(),
+  context: mysqlEnum("context", ["practice", "review", "lesson", "diagnostic"]).default("practice").notNull(),
+  submittedAt: timestamp("submittedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [
+  uniqueIndex("questionAttempts_user_idempotency_unique").on(table.userId, table.idempotencyKey),
+  index("questionAttempts_user_submitted_idx").on(table.userId, table.submittedAt),
+  index("questionAttempts_question_idx").on(table.questionId),
+]);
+
+/** One deterministic spaced-review state record per learner and question. */
+export const reviewItems = mysqlTable("reviewItems", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  questionId: int("questionId").notNull(),
+  stage: int("stage").default(0).notNull(),
+  status: mysqlEnum("status", ["active", "mastered", "snoozed", "archived"]).default("active").notNull(),
+  dueAt: timestamp("dueAt").notNull(),
+  snoozedUntil: timestamp("snoozedUntil"),
+  lastAttemptId: int("lastAttemptId"),
+  reason: varchar("reason", { length: 255 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  uniqueIndex("reviewItems_user_question_unique").on(table.userId, table.questionId),
+  index("reviewItems_user_due_idx").on(table.userId, table.dueAt),
+]);
+
+/** Private learner reflections attached to question evidence. */
+export const mistakeJournalEntries = mysqlTable("mistakeJournalEntries", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  questionId: int("questionId").notNull(),
+  attemptId: int("attemptId"),
+  category: mysqlEnum("category", ["misread_stem", "missed_conclusion", "conditional_logic", "causal_reasoning", "scope_shift", "quantifier_error", "unsupported_inference", "attractive_distractor", "timing_pressure", "other"]).notNull(),
+  temptingAnswer: varchar("temptingAnswer", { length: 1 }),
+  missedClue: text("missedClue"),
+  correctiveRule: text("correctiveRule"),
+  privateNotes: text("privateNotes"),
+  archivedAt: timestamp("archivedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("mistakeJournal_user_created_idx").on(table.userId, table.createdAt),
+  index("mistakeJournal_user_question_idx").on(table.userId, table.questionId),
+]);
+
+/** Explainable, versioned mastery snapshots derived from attempts. */
+export const skillMasterySnapshots = mysqlTable("skillMasterySnapshots", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  skillId: varchar("skillId", { length: 64 }).notNull(),
+  score: int("score").notNull(),
+  evidenceCount: int("evidenceCount").notNull(),
+  confidence: mysqlEnum("confidence", ["insufficient", "emerging", "developing", "established"]).notNull(),
+  formulaVersion: int("formulaVersion").default(1).notNull(),
+  calculatedAt: timestamp("calculatedAt").defaultNow().notNull(),
+}, table => [
+  uniqueIndex("skillMastery_user_skill_version_unique").on(table.userId, table.skillId, table.formulaVersion),
+  index("skillMastery_user_score_idx").on(table.userId, table.score),
+]);
+
+/** Versioned plans; only one active plan is enforced transactionally per learner. */
+export const studyPlans = mysqlTable("studyPlans", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  version: int("version").default(1).notNull(),
+  title: varchar("title", { length: 160 }).notNull(),
+  status: mysqlEnum("status", ["draft", "active", "archived"]).default("draft").notNull(),
+  targetTestDate: timestamp("targetTestDate"),
+  weeklyStudyMinutes: int("weeklyStudyMinutes").notNull(),
+  rationale: text("rationale"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("studyPlans_user_status_idx").on(table.userId, table.status),
+  uniqueIndex("studyPlans_user_version_unique").on(table.userId, table.version),
+]);
+
+export const studyPlanTasks = mysqlTable("studyPlanTasks", {
+  id: int("id").autoincrement().primaryKey(),
+  planId: int("planId").notNull(),
+  userId: int("userId").notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  itemType: mysqlEnum("itemType", ["lesson", "practice", "review", "reflection"]).notNull(),
+  lessonId: varchar("lessonId", { length: 64 }),
+  skillId: varchar("skillId", { length: 64 }),
+  dueAt: timestamp("dueAt"),
+  position: int("position").default(0).notNull(),
+  status: mysqlEnum("status", ["pending", "completed", "skipped"]).default("pending").notNull(),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("studyPlanTasks_plan_position_idx").on(table.planId, table.position),
+  index("studyPlanTasks_user_status_due_idx").on(table.userId, table.status, table.dueAt),
+]);
+
+/** Privacy-safe, allow-listed product events with finite-retention timestamps. */
+export const productEvents = mysqlTable("productEvents", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  anonymousId: varchar("anonymousId", { length: 64 }),
+  eventName: varchar("eventName", { length: 64 }).notNull(),
+  route: varchar("route", { length: 255 }),
+  metadata: json("metadata").$type<Record<string, string>>().notNull(),
+  occurredAt: timestamp("occurredAt").defaultNow().notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+}, table => [
+  index("productEvents_name_occurred_idx").on(table.eventName, table.occurredAt),
+  index("productEvents_expiry_idx").on(table.expiresAt),
+]);
+
+export type LearnerProfile = typeof learnerProfiles.$inferSelect;
+export type LearnerPreference = typeof learnerPreferences.$inferSelect;
+export type LessonProgress = typeof lessonProgress.$inferSelect;
+export type QuestionAttempt = typeof questionAttempts.$inferSelect;
+export type ReviewItem = typeof reviewItems.$inferSelect;
+export type MistakeJournalEntry = typeof mistakeJournalEntries.$inferSelect;
+export type SkillMasterySnapshot = typeof skillMasterySnapshots.$inferSelect;
+export type StudyPlan = typeof studyPlans.$inferSelect;
+export type StudyPlanTask = typeof studyPlanTasks.$inferSelect;
+export type ProductEvent = typeof productEvents.$inferSelect;

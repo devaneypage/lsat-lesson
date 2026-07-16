@@ -28,9 +28,23 @@ import {
 import { TRPCError } from "@trpc/server";
 import { evaluateFeatureFlags } from "../shared/featureFlags";
 import { invokeLLM } from "./_core/llm";
+import { learnerRouter } from "./routers/learner";
+import { preferencesRouter } from "./routers/preferences";
+import { practiceRouter } from "./routers/practice";
+import { reviewRouter } from "./routers/review";
+import { searchRouter } from "./routers/search";
+import { studyPlanRouter } from "./routers/studyPlan";
+import { analyticsRouter } from "./routers/analytics";
 
 export const appRouter = router({
   system: systemRouter,
+  learner: learnerRouter,
+  preferences: preferencesRouter,
+  practice: practiceRouter,
+  review: reviewRouter,
+  search: searchRouter,
+  studyPlan: studyPlanRouter,
+  analytics: analyticsRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
