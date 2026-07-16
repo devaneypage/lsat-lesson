@@ -1,215 +1,305 @@
 /**
  * DESIGN: Nexus Command Center — Concept Map
  * Component: ConceptMap
- * 
- * Visual representation of LSAT concept hierarchy with geometric shapes.
+ *
+ * Interactive visual representation of LSAT concept hierarchy.
  * Central hub connected to skill categories via lines.
+ * Each node is clickable and navigates to the corresponding lesson/section.
+ * Hover states: scale + glow shadow to signal interactivity.
+ *
+ * P2 fix: nodes are now interactive (hover + click-through navigation)
  */
 
-import React from "react";
+import React, { useState } from "react";
+import { useLocation } from "wouter";
+
+interface ConceptNode {
+  id: string;
+  label: string;
+  sublabel?: string;
+  shape: "rect" | "circle" | "diamond";
+  cx: number;
+  cy: number;
+  w?: number;
+  h?: number;
+  r?: number;
+  color: string;
+  textColor: string;
+  route: string;
+}
+
+const NODES: ConceptNode[] = [
+  {
+    id: "center",
+    label: "LSAT",
+    sublabel: "Core",
+    shape: "diamond",
+    cx: 400,
+    cy: 250,
+    w: 90,
+    h: 90,
+    color: "var(--nexus-forest)",
+    textColor: "#FFFDF8",
+    route: "/lessons",
+  },
+  {
+    id: "logical-reasoning",
+    label: "Logical",
+    sublabel: "Reasoning",
+    shape: "rect",
+    cx: 185,
+    cy: 140,
+    w: 110,
+    h: 58,
+    color: "var(--nexus-teal)",
+    textColor: "#FFFDF8",
+    route: "/lessons/necessary-assumptions",
+  },
+  {
+    id: "reading-comprehension",
+    label: "Reading",
+    sublabel: "Comprehension",
+    shape: "rect",
+    cx: 615,
+    cy: 140,
+    w: 120,
+    h: 58,
+    color: "var(--nexus-blue)",
+    textColor: "#FFFDF8",
+    route: "/lessons/reading-comprehension",
+  },
+  {
+    id: "assumptions",
+    label: "Assumptions",
+    shape: "circle",
+    cx: 185,
+    cy: 360,
+    r: 42,
+    color: "var(--nexus-amber)",
+    textColor: "#111111",
+    route: "/lessons/necessary-assumptions",
+  },
+  {
+    id: "flaws",
+    label: "Flaws &",
+    sublabel: "Reasoning",
+    shape: "circle",
+    cx: 615,
+    cy: 360,
+    r: 42,
+    color: "var(--nexus-terra)",
+    textColor: "#FFFDF8",
+    route: "/lessons/flaw-in-reasoning",
+  },
+  {
+    id: "formal-logic",
+    label: "Formal",
+    sublabel: "Logic",
+    shape: "rect",
+    cx: 400,
+    cy: 430,
+    w: 100,
+    h: 50,
+    color: "var(--nexus-purple)",
+    textColor: "#FFFDF8",
+    route: "/lessons/formal-logic",
+  },
+];
+
+// Connection lines: [fromId, toId]
+const CONNECTIONS: [string, string][] = [
+  ["center", "logical-reasoning"],
+  ["center", "reading-comprehension"],
+  ["center", "assumptions"],
+  ["center", "flaws"],
+  ["center", "formal-logic"],
+];
+
+function getNodeCenter(node: ConceptNode): { x: number; y: number } {
+  return { x: node.cx, y: node.cy };
+}
 
 const ConceptMap: React.FC = () => {
+  const [, navigate] = useLocation();
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const nodeMap = Object.fromEntries(NODES.map((n) => [n.id, n]));
+
+  const handleNodeClick = (route: string) => {
+    navigate(route);
+  };
+
+  const renderNode = (node: ConceptNode) => {
+    const isHovered = hoveredId === node.id;
+    const scale = isHovered ? 1.08 : 1;
+    const glowColor = node.color.startsWith("var(") ? "rgba(0,0,0,0.18)" : node.color + "55";
+
+    const commonProps = {
+      style: {
+        cursor: "pointer",
+        transition: "transform 0.18s ease, filter 0.18s ease",
+        transform: `scale(${scale})`,
+        transformOrigin: `${node.cx}px ${node.cy}px`,
+        filter: isHovered
+          ? `drop-shadow(0 4px 10px ${glowColor})`
+          : "none",
+      },
+      onClick: () => handleNodeClick(node.route),
+      onMouseEnter: () => setHoveredId(node.id),
+      onMouseLeave: () => setHoveredId(null),
+    };
+
+    const labelY = node.sublabel ? node.cy - 7 : node.cy + 5;
+    const sublabelY = node.cy + 10;
+
+    if (node.shape === "diamond") {
+      const hw = (node.w ?? 80) / 2;
+      const hh = (node.h ?? 80) / 2;
+      const points = `${node.cx},${node.cy - hh} ${node.cx + hw},${node.cy} ${node.cx},${node.cy + hh} ${node.cx - hw},${node.cy}`;
+      return (
+        <g key={node.id} {...commonProps}>
+          <polygon
+            points={points}
+            fill={node.color}
+            stroke="#111111"
+            strokeWidth="1.5"
+          />
+          <text
+            x={node.cx}
+            y={labelY}
+            textAnchor="middle"
+            fontSize="13"
+            fontWeight="900"
+            fontFamily="Archivo Black"
+            fill={node.textColor}
+          >
+            {node.label}
+          </text>
+          {node.sublabel && (
+            <text
+              x={node.cx}
+              y={sublabelY}
+              textAnchor="middle"
+              fontSize="11"
+              fontWeight="700"
+              fontFamily="Archivo"
+              fill={node.textColor}
+            >
+              {node.sublabel}
+            </text>
+          )}
+        </g>
+      );
+    }
+
+    if (node.shape === "rect") {
+      const hw = (node.w ?? 100) / 2;
+      const hh = (node.h ?? 50) / 2;
+      return (
+        <g key={node.id} {...commonProps}>
+          <rect
+            x={node.cx - hw}
+            y={node.cy - hh}
+            width={node.w}
+            height={node.h}
+            rx="3"
+            fill={node.color}
+            stroke="#111111"
+            strokeWidth="1.5"
+          />
+          <text
+            x={node.cx}
+            y={labelY}
+            textAnchor="middle"
+            fontSize="12"
+            fontWeight="700"
+            fontFamily="Archivo"
+            fill={node.textColor}
+          >
+            {node.label}
+          </text>
+          {node.sublabel && (
+            <text
+              x={node.cx}
+              y={sublabelY}
+              textAnchor="middle"
+              fontSize="12"
+              fontWeight="700"
+              fontFamily="Archivo"
+              fill={node.textColor}
+            >
+              {node.sublabel}
+            </text>
+          )}
+        </g>
+      );
+    }
+
+    if (node.shape === "circle") {
+      return (
+        <g key={node.id} {...commonProps}>
+          <circle
+            cx={node.cx}
+            cy={node.cy}
+            r={node.r ?? 40}
+            fill={node.color}
+            stroke="#111111"
+            strokeWidth="1.5"
+          />
+          <text
+            x={node.cx}
+            y={labelY}
+            textAnchor="middle"
+            fontSize="11"
+            fontWeight="700"
+            fontFamily="Archivo"
+            fill={node.textColor}
+          >
+            {node.label}
+          </text>
+          {node.sublabel && (
+            <text
+              x={node.cx}
+              y={sublabelY}
+              textAnchor="middle"
+              fontSize="11"
+              fontWeight="700"
+              fontFamily="Archivo"
+              fill={node.textColor}
+            >
+              {node.sublabel}
+            </text>
+          )}
+        </g>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div
-      className="card p-8"
+      className="card p-6"
       style={{
         background: "var(--card)",
         border: "1.5px solid var(--border)",
         borderRadius: "0.25rem",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-        minHeight: "500px",
+        minHeight: "520px",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
+        flexDirection: "column",
       }}
     >
-      {/* SVG Container for Concept Map */}
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 800 500"
-        style={{ position: "absolute", top: 0, left: 0 }}
-      >
-        {/* Connection Lines */}
-        <line
-          x1="400"
-          y1="250"
-          x2="200"
-          y2="150"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <line
-          x1="400"
-          y1="250"
-          x2="600"
-          y2="150"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <line
-          x1="400"
-          y1="250"
-          x2="200"
-          y2="350"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <line
-          x1="400"
-          y1="250"
-          x2="600"
-          y2="350"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-
-        {/* Center Hub - Diamond */}
-        <polygon
-          points="400,200 450,250 400,300 350,250"
-          fill="var(--nexus-forest)"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <text
-          x="400"
-          y="260"
-          textAnchor="middle"
-          fontSize="14"
-          fontWeight="700"
-          fontFamily="Archivo Black"
-          fill="#FFFDF8"
-        >
-          Main Point
-        </text>
-
-        {/* Top Left - Square */}
-        <rect
-          x="150"
-          y="120"
-          width="100"
-          height="60"
-          fill="var(--nexus-teal)"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <text
-          x="200"
-          y="155"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fontFamily="Archivo"
-          fill="#FFFDF8"
-        >
-          Logical
-        </text>
-        <text
-          x="200"
-          y="170"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fontFamily="Archivo"
-          fill="#FFFDF8"
-        >
-          Reasoning
-        </text>
-
-        {/* Top Right - Square */}
-        <rect
-          x="550"
-          y="120"
-          width="100"
-          height="60"
-          fill="var(--nexus-amber)"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <text
-          x="600"
-          y="155"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fontFamily="Archivo"
-          fill="#111111"
-        >
-          Reading
-        </text>
-        <text
-          x="600"
-          y="170"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fontFamily="Archivo"
-          fill="#111111"
-        >
-          Comprehension
-        </text>
-
-        {/* Bottom Left - Circle */}
-        <circle
-          cx="200"
-          cy="350"
-          r="35"
-          fill="var(--nexus-terra)"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <text
-          x="200"
-          y="360"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fontFamily="Archivo"
-          fill="#FFFDF8"
-        >
-          Assumptions
-        </text>
-
-        {/* Bottom Right - Circle */}
-        <circle
-          cx="600"
-          cy="350"
-          r="35"
-          fill="var(--nexus-lime)"
-          stroke="#111111"
-          strokeWidth="1.5"
-        />
-        <text
-          x="600"
-          y="360"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fontFamily="Archivo"
-          fill="#111111"
-        >
-          Flaws
-        </text>
-      </svg>
-
-      {/* Content Overlay */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 10,
-          textAlign: "center",
-          pointerEvents: "none",
-        }}
-      >
+      {/* Card header */}
+      <div style={{ marginBottom: "1rem" }}>
         <h2
           style={{
             fontFamily: "'Archivo Black', sans-serif",
-            fontSize: "1.5rem",
+            fontSize: "1.25rem",
             fontWeight: 900,
             letterSpacing: "0.02em",
             color: "var(--foreground)",
-            marginBottom: "0.5rem",
+            margin: 0,
           }}
         >
           LSAT Concept Map
@@ -217,13 +307,68 @@ const ConceptMap: React.FC = () => {
         <p
           style={{
             fontFamily: "'Archivo', sans-serif",
-            fontSize: "0.9rem",
-            color: "rgba(17, 17, 17, 0.6)",
+            fontSize: "0.8rem",
+            color: "var(--muted-foreground)",
+            margin: "0.25rem 0 0 0",
           }}
         >
-          Navigate your learning journey through connected concepts
+          Click any node to navigate to that topic
         </p>
       </div>
+
+      {/* Interactive SVG */}
+      <div style={{ flex: 1, position: "relative" }}>
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 800 520"
+          style={{ display: "block", minHeight: "380px" }}
+          aria-label="LSAT concept map — click a node to navigate"
+        >
+          {/* Connection lines */}
+          {CONNECTIONS.map(([fromId, toId]) => {
+            const from = getNodeCenter(nodeMap[fromId]);
+            const to = getNodeCenter(nodeMap[toId]);
+            return (
+              <line
+                key={`${fromId}-${toId}`}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+                stroke="#111111"
+                strokeWidth="1.5"
+                strokeOpacity="0.35"
+              />
+            );
+          })}
+
+          {/* Nodes */}
+          {NODES.map(renderNode)}
+        </svg>
+      </div>
+
+      {/* Hover hint */}
+      {hoveredId && hoveredId !== "center" && (
+        <div
+          style={{
+            marginTop: "0.75rem",
+            padding: "0.5rem 0.75rem",
+            background: "var(--muted)",
+            borderRadius: "0.25rem",
+            fontFamily: "'Archivo', sans-serif",
+            fontSize: "0.78rem",
+            color: "var(--muted-foreground)",
+            letterSpacing: "0.02em",
+          }}
+        >
+          Click to open:{" "}
+          <strong style={{ color: "var(--foreground)" }}>
+            {NODES.find((n) => n.id === hoveredId)?.label}{" "}
+            {NODES.find((n) => n.id === hoveredId)?.sublabel ?? ""}
+          </strong>
+        </div>
+      )}
     </div>
   );
 };

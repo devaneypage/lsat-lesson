@@ -94,8 +94,10 @@
   --nexus-teal: #1AABBC;
   --nexus-forest: #2A6B58;
   --nexus-amber: #EFA01C;
-  --nexus-lime: #79C53E;
+  --nexus-lime: #4A8A1A;  /* darkened from #79C53E to pass WCAG AA (P3) */
   --nexus-sky: #4BB8D8;
+  --nexus-blue: #2E86C1;  /* Reading Comprehension lesson (P0) */
+  --nexus-purple: #7B5EA7; /* Formal Logic lesson (P0) */
   
   /* Spacing & Radius */
   --radius: 0.25rem;

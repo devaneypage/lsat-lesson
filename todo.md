@@ -433,3 +433,9 @@
 - [x] Nav bar: replace amber diamond submark with distinctive N-mark SVG (amber square + N letterform)
 - [x] LessonPlanGenerator: convert from dark scheme (#1C1F26) to light scheme matching site palette
 - [x] LessonPlanGenerator: replace plain date input with official LSAC 2026-2027 date dropdown (9 dates with reg deadline + score release metadata)
+
+## UX Critique Fixes (P0–P3)
+- [x] P0: Define --nexus-blue and --nexus-purple in index.css
+- [x] P1: Add dashboard page header (title, date, horizontal rule)
+- [x] P2: Make ConceptMap nodes interactive (hover + click-through)
+- [x] P3: Darken --nexus-lime to pass WCAG AA contrast
