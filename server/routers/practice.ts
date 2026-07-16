@@ -1,7 +1,49 @@
-import { router } from "../_core/trpc";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { CONFIDENCE_LEVELS } from "../../shared/learnerDomain";
+import {
+  ANSWER_LETTERS,
+  MAX_ACTIVE_TIME_MS,
+  PRACTICE_CONTEXTS,
+} from "../../shared/practiceEvidence";
+import { protectedProcedure, router } from "../_core/trpc";
+import { practiceRepository } from "../repositories/practice";
 
-/**
- * Practice capability boundary. Attempt capture and confidence procedures are
- * added here so question CRUD remains independent from learner evidence.
- */
-export const practiceRouter = router({});
+const routeContextSchema = z.object({
+  route: z.string().trim().min(1).max(255).default("/practice"),
+  surface: z.string().trim().min(1).max(64).default("practice"),
+});
+
+export const practiceRouter = router({
+  start: protectedProcedure
+    .input(routeContextSchema.extend({
+      questionId: z.number().int().positive(),
+    }))
+    .mutation(async ({ ctx, input }) => ({
+      recorded: await practiceRepository.recordQuestionStarted({
+        userId: ctx.user.id,
+        ...input,
+      }),
+    })),
+
+  submit: protectedProcedure
+    .input(routeContextSchema.extend({
+      questionId: z.number().int().positive(),
+      idempotencyKey: z.string().uuid().max(64),
+      selectedAnswer: z.enum(ANSWER_LETTERS),
+      confidence: z.enum(CONFIDENCE_LEVELS),
+      activeTimeMs: z.number().int().min(0).max(MAX_ACTIVE_TIME_MS),
+      context: z.enum(PRACTICE_CONTEXTS).default("practice"),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await practiceRepository.submitPracticeAttempt({
+        userId: ctx.user.id,
+        ...input,
+      });
+
+      if (!result) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Question not found" });
+      }
+      return result;
+    }),
+});

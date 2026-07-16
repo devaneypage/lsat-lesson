@@ -3,7 +3,7 @@
  * Displays all imported LSAT questions with filtering and search
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,11 @@ import {
 import { trpc } from "@/lib/trpc";
 import { motion } from "framer-motion";
 import { useSearch } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
+import { useFeatureFlag } from "@/lib/flags";
+import type { ConfidenceLevel } from "../../../shared/learnerDomain";
+import type { AnswerLetter } from "../../../shared/practiceEvidence";
 
 const QUESTIONS_PER_PAGE = 200;
 
@@ -50,6 +55,10 @@ export default function QuestionBank() {
   const moduleName = params.get("moduleName");
   const linkedQuestionId = Number(params.get("question")) || null;
   const [page, setPage] = useState(0);
+  const { isAuthenticated } = useAuth();
+  const { enabled: confidenceTrackingEnabled } = useFeatureFlag("question_confidence_tracking");
+  const activeStartedAtRef = useRef<number | null>(null);
+  const accumulatedActiveMsRef = useRef(0);
 
   // Fetch a bounded page for browsing and one explicit item for deep links.
   const { data: questionsData, isLoading } = trpc.questions.list.useQuery({
@@ -71,9 +80,14 @@ export default function QuestionBank() {
   const [selectedSource, setSelectedSource] = useState<string | "all">("all");
   const [viewMode, setViewMode] = useState<"grid" | "practice" | "stats" | string>("grid");
   const [selectedQuestion, setSelectedQuestion] = useState<typeof questions[0] | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<AnswerLetter | null>(null);
+  const [confidence, setConfidence] = useState<ConfidenceLevel | null>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
   const [showExplanation, setShowExplanation] = useState(false);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
+  const startMutation = trpc.practice.start.useMutation();
+  const submitMutation = trpc.practice.submit.useMutation();
+  const submissionResult = submitMutation.data;
 
   // Fetch tags for the filter dropdown
   const { data: tagsWithCounts = [] } = trpc.tags.listWithCounts.useQuery();
@@ -143,25 +157,81 @@ export default function QuestionBank() {
     ];
   }, [filteredQuestions]);
 
+  const resetAttemptState = () => {
+    setSelectedAnswer(null);
+    setConfidence(null);
+    setIdempotencyKey(crypto.randomUUID());
+    setShowExplanation(false);
+    submitMutation.reset();
+    accumulatedActiveMsRef.current = 0;
+    activeStartedAtRef.current = Date.now();
+  };
+
   const handlePracticeMode = (question: typeof questions[0]) => {
     setSelectedQuestion(question);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
+    resetAttemptState();
     setViewMode("practice");
   };
 
   useEffect(() => {
     if (!linkedQuestion) return;
     setSelectedQuestion(linkedQuestion);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
+    resetAttemptState();
     setViewMode("practice");
   }, [linkedQuestion]);
 
-  const handleSubmitAnswer = () => {
-    if (selectedAnswer) {
-      setShowExplanation(true);
+  useEffect(() => {
+    if (viewMode !== "practice" || !selectedQuestion) return;
+    accumulatedActiveMsRef.current = 0;
+    activeStartedAtRef.current = document.visibilityState === "visible" ? Date.now() : null;
+
+    if (isAuthenticated) {
+      startMutation.mutate({
+        questionId: selectedQuestion.id,
+        route: "/practice",
+        surface: "question_bank",
+      });
     }
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden" && activeStartedAtRef.current !== null) {
+        accumulatedActiveMsRef.current += Date.now() - activeStartedAtRef.current;
+        activeStartedAtRef.current = null;
+      } else if (document.visibilityState === "visible" && activeStartedAtRef.current === null) {
+        activeStartedAtRef.current = Date.now();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      if (activeStartedAtRef.current !== null) {
+        accumulatedActiveMsRef.current += Date.now() - activeStartedAtRef.current;
+        activeStartedAtRef.current = null;
+      }
+    };
+  }, [isAuthenticated, selectedQuestion?.id, viewMode]);
+
+  const handleSubmitAnswer = async () => {
+    const effectiveConfidence = confidenceTrackingEnabled ? confidence : "unsure";
+    if (!selectedQuestion || !selectedAnswer || !effectiveConfidence || !isAuthenticated) return;
+    const activeTimeMs = Math.min(
+      30 * 60 * 1_000,
+      accumulatedActiveMsRef.current + (activeStartedAtRef.current === null ? 0 : Date.now() - activeStartedAtRef.current),
+    );
+    activeStartedAtRef.current = null;
+
+    await submitMutation.mutateAsync({
+      questionId: selectedQuestion.id,
+      idempotencyKey,
+      selectedAnswer,
+      confidence: effectiveConfidence,
+      activeTimeMs: Math.max(0, Math.round(activeTimeMs)),
+      context: "practice",
+      route: "/practice",
+      surface: "question_bank",
+    });
+    setShowExplanation(true);
   };
 
   // Loading state
@@ -180,7 +250,14 @@ export default function QuestionBank() {
 
   // Practice Mode View
   if (viewMode === "practice" && selectedQuestion) {
-    const isCorrect = selectedAnswer === selectedQuestion.correctAnswer;
+    const isCorrect = submissionResult?.isCorrect ?? false;
+    const answerOptions: Array<{ label: AnswerLetter; value: string }> = [
+      { label: "A", value: selectedQuestion.optionA },
+      { label: "B", value: selectedQuestion.optionB },
+      { label: "C", value: selectedQuestion.optionC },
+      { label: "D", value: selectedQuestion.optionD },
+      ...(selectedQuestion.optionE ? [{ label: "E" as const, value: selectedQuestion.optionE }] : []),
+    ];
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#F5F3F0] to-[#FFFBF8] py-8 px-4">
@@ -220,15 +297,7 @@ export default function QuestionBank() {
 
             {/* Answer Options */}
             <div className="space-y-3 mb-6">
-              {[
-                { label: "A", value: selectedQuestion.optionA },
-                { label: "B", value: selectedQuestion.optionB },
-                { label: "C", value: selectedQuestion.optionC },
-                { label: "D", value: selectedQuestion.optionD },
-                ...(selectedQuestion.optionE
-                  ? [{ label: "E", value: selectedQuestion.optionE }]
-                  : []),
-              ].map((option) => (
+              {answerOptions.map((option) => (
                 <button
                   key={option.label}
                   onClick={() =>
@@ -239,8 +308,8 @@ export default function QuestionBank() {
                       ? "border-[#0052CC] bg-blue-50"
                       : "border-[#E8E6E1] hover:border-[#0052CC]"
                   } ${
-                    showExplanation
-                      ? option.label === selectedQuestion.correctAnswer
+                    showExplanation && submissionResult
+                      ? option.label === submissionResult.correctAnswer
                         ? "border-green-500 bg-green-50"
                         : selectedAnswer === option.label
                           ? "border-red-500 bg-red-50"
@@ -267,16 +336,54 @@ export default function QuestionBank() {
               ))}
             </div>
 
+            {!showExplanation && confidenceTrackingEnabled && (
+              <fieldset className="mb-6 rounded-sm border border-border bg-muted/35 p-4">
+                <legend className="px-2 font-display text-sm font-bold text-foreground">Before you submit, how confident are you?</legend>
+                <p className="mb-3 text-sm leading-6 text-muted-foreground">Choose the state that best describes your reasoning. This is recorded before correctness is revealed.</p>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {([
+                    ["certain", "Certain"],
+                    ["unsure", "Unsure"],
+                    ["guessed", "Guessed"],
+                  ] as const).map(([value, label]) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      variant={confidence === value ? "default" : "outline"}
+                      aria-pressed={confidence === value}
+                      onClick={() => setConfidence(value)}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+
+            {!isAuthenticated && !showExplanation && (
+              <div className="mb-4 rounded-sm border border-[var(--nexus-amber)]/60 bg-[var(--nexus-amber)]/10 p-4" role="status">
+                <p className="font-display font-bold text-foreground">Sign in to submit and preserve this attempt.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Correctness, timing, and confidence are stored privately in your learner record.</p>
+                <Button className="mt-3" onClick={() => window.location.assign(getLoginUrl())}>Sign in</Button>
+              </div>
+            )}
+
+            {submitMutation.isError && (
+              <p className="mb-4 rounded-sm border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
+                Your answer was not recorded. Review your connection and submit again; the same attempt key prevents duplicates.
+              </p>
+            )}
+
             {/* Action Buttons */}
             {!showExplanation ? (
               <Button
                 onClick={handleSubmitAnswer}
-                disabled={!selectedAnswer}
-                className="w-full bg-[#0052CC] text-white hover:bg-[#003D99]"
+                disabled={!selectedAnswer || (confidenceTrackingEnabled && !confidence) || !isAuthenticated || submitMutation.isPending}
+                className="w-full"
               >
-                Submit Answer
+                {submitMutation.isPending ? "Recording attempt…" : "Submit answer"}
               </Button>
-            ) : (
+            ) : submissionResult ? (
               <div className="space-y-4">
                 <div
                   className={`p-4 rounded-lg ${
@@ -294,7 +401,10 @@ export default function QuestionBank() {
                   </p>
                   <p className="text-[#2D3561] mb-3">
                     <strong>Explanation:</strong>{" "}
-                    {selectedQuestion.explanation || "No explanation available."}
+                    {submissionResult.explanation || "No explanation is available for this question yet."}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Confidence: <strong className="text-foreground">{submissionResult.confidence}</strong> · Calibration: <strong className="text-foreground">{submissionResult.calibration.replaceAll("_", " ")}</strong> · Active time: <strong className="text-foreground">{Math.max(1, Math.round(submissionResult.activeTimeMs / 1000))}s</strong>
                   </p>
                 </div>
 
@@ -305,7 +415,7 @@ export default function QuestionBank() {
                   Back to Questions
                 </Button>
               </div>
-            )}
+            ) : null}
           </Card>
         </div>
       </div>

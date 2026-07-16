@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { questionRepository } from "../repositories/questions";
+import { toBrowseSafeQuestion } from "../../shared/practiceEvidence";
 
 const importedQuestionSchema = z.object({
   question_id: z.string().trim().min(1).max(128),
@@ -86,12 +87,15 @@ export const questionsRouter = router({
       questionRepository.list(input.limit, input.offset),
       questionRepository.count(),
     ]);
-    return { questions, total };
+    return { questions: questions.map(toBrowseSafeQuestion), total };
   }),
 
   getById: publicProcedure
     .input(z.object({ questionId: z.number().int().positive() }))
-    .query(({ input }) => questionRepository.getById(input.questionId)),
+    .query(async ({ input }) => {
+      const question = await questionRepository.getById(input.questionId);
+      return question ? toBrowseSafeQuestion(question) : null;
+    }),
 
   count: publicProcedure.query(() => questionRepository.count()),
 });
