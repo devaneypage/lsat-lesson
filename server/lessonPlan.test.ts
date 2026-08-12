@@ -16,9 +16,20 @@ vi.mock("./_core/llm", () => ({
   }),
 }));
 
-function createPublicContext(): TrpcContext {
+function createAuthenticatedContext(): TrpcContext {
+  const now = new Date("2026-07-16T00:00:00.000Z");
   return {
-    user: null,
+    user: {
+      id: 2,
+      openId: "learner-open-id",
+      email: "learner@example.com",
+      name: "Learner",
+      loginMethod: "manus",
+      role: "user",
+      createdAt: now,
+      updatedAt: now,
+      lastSignedIn: now,
+    },
     req: { protocol: "https", headers: {} } as TrpcContext["req"],
     res: {
       clearCookie: vi.fn(),
@@ -32,7 +43,7 @@ describe("lessonPlan.generate", () => {
   });
 
   it("generates a plan with valid inputs (with diagnostic score)", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.lessonPlan.generate({
@@ -51,7 +62,7 @@ describe("lessonPlan.generate", () => {
   });
 
   it("generates a plan with untested score", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.lessonPlan.generate({
@@ -68,7 +79,7 @@ describe("lessonPlan.generate", () => {
   });
 
   it("calculates weeks until test correctly", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     // 4 weeks from now
@@ -87,7 +98,7 @@ describe("lessonPlan.generate", () => {
   });
 
   it("rejects empty weakAreas array", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     await expect(
@@ -102,7 +113,7 @@ describe("lessonPlan.generate", () => {
   });
 
   it("rejects score below 120", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     await expect(
@@ -117,7 +128,7 @@ describe("lessonPlan.generate", () => {
   });
 
   it("rejects target score above 180", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     await expect(
@@ -135,7 +146,7 @@ describe("lessonPlan.generate", () => {
     const { invokeLLM } = await import("./_core/llm");
     vi.mocked(invokeLLM).mockResolvedValueOnce({ choices: [{ message: { content: "" } }] } as any);
 
-    const ctx = createPublicContext();
+    const ctx = createAuthenticatedContext();
     const caller = appRouter.createCaller(ctx);
 
     await expect(

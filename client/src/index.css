@@ -82,57 +82,83 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --font-sans: "Space Grotesk", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Lora", serif;
 }
 
 :root {
-  /* LSAT Mastery Design System */
-  
-  /* Primary Colors */
-  --background: #F9F8F6;
-  --foreground: #2D1B69;
-  
-  /* Accent Colors */
-  --primary: #0066FF;
+  /* LSAT Nexus — Academic Light: warm parchment, indigo ink, surgical color. */
+  --background: #F7F4EF;
+  --foreground: #1E2130;
+  --card: #FFFDF8;
+  --card-foreground: #1E2130;
+  --popover: #FFFDF8;
+  --popover-foreground: #1E2130;
+  --muted: #EDE8DF;
+  --muted-foreground: #5B6072;
+  --border: #CFC7BA;
+  --input: #B8B0A3;
+  --ring: #0052CC;
+
+  --primary: #0052CC;
   --primary-foreground: #FFFFFF;
-  --secondary: #FFB81C;
-  --secondary-foreground: #2D1B69;
-  --accent: #FF6B35;
+  --secondary: #C8860A;
+  --secondary-foreground: #1E2130;
+  --accent: #C94D12;
   --accent-foreground: #FFFFFF;
-  
-  /* Semantic Colors */
-  --destructive: #DC2626;
+  --destructive: #B84030;
   --destructive-foreground: #FFFFFF;
-  
-  /* Neutral Colors */
-  --card: #FFFFFF;
-  --card-foreground: #2D1B69;
-  --popover: #FFFFFF;
-  --popover-foreground: #2D1B69;
-  --muted: rgba(45, 27, 105, 0.1);
-  --muted-foreground: rgba(45, 27, 105, 0.7);
-  --border: rgba(45, 27, 105, 0.15);
-  --input: #FFFFFF;
-  --ring: #0066FF;
-  
-  /* Sidebar */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #2D1B69;
-  --sidebar-primary: #0066FF;
+  --success: #2E7D52;
+  --success-foreground: #FFFFFF;
+  --warning: #E7B62A;
+  --warning-foreground: #3A2A00;
+  --info: #5B4A8A;
+  --info-foreground: #FFFFFF;
+
+  --sidebar: #FFFDF8;
+  --sidebar-foreground: #1E2130;
+  --sidebar-primary: #1E2130;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FFB81C;
-  --sidebar-accent-foreground: #2D1B69;
-  --sidebar-border: rgba(45, 27, 105, 0.15);
-  --sidebar-ring: #0066FF;
-  
-  /* Chart Colors */
-  --chart-1: #0066FF;
-  --chart-2: #FFB81C;
-  --chart-3: #FF6B35;
-  --chart-4: #2D1B69;
-  --chart-5: rgba(45, 27, 105, 0.5);
-  
-  /* Spacing & Radius */
-  --radius: 0.5rem;
+  --sidebar-accent: #EDE8DF;
+  --sidebar-accent-foreground: #1E2130;
+  --sidebar-border: #CFC7BA;
+  --sidebar-ring: #0052CC;
+
+  --chart-1: #0052CC;
+  --chart-2: #C8860A;
+  --chart-3: #C94D12;
+  --chart-4: #2E7D52;
+  --chart-5: #5B4A8A;
+
+  --nexus-navy: #1E2130;
+  --nexus-terra: #B84030;
+  --nexus-teal: #087F8C;
+  --nexus-forest: #2E7D52;
+  --nexus-amber: #C8860A;
+  --nexus-lime: #4A7A2A;
+  --nexus-sky: #2E86C1;
+  --nexus-blue: #0052CC;
+  --nexus-purple: #5B4A8A;
+  --nexus-orange: #C94D12;
+
+  /* Section-specific color mapping requested by user */
+  --section-lr: #D32F2F;        /* Logical Reasoning: Red */
+  --section-rc: #1976D2;        /* Reading Comprehension: Blue */
+  --section-logic: #F57C00;     /* Formal Logic: Gold / Amber */
+  --section-strategy: #388E3C;  /* Test Strategy: Green */
+
+  --shadow-card: 0 1px 2px rgba(30, 33, 48, 0.06), 0 10px 28px rgba(30, 33, 48, 0.05);
+  --shadow-raised: 0 3px 8px rgba(30, 33, 48, 0.10), 0 18px 42px rgba(30, 33, 48, 0.08);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --radius: 0.25rem;
 }
 
 @layer base {
@@ -140,18 +166,46 @@
     @apply border-border outline-ring/50;
   }
   
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    min-width: 320px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    background-image:
+      radial-gradient(circle at 12% -10%, color-mix(in oklab, var(--secondary) 7%, transparent) 0, transparent 30rem),
+      linear-gradient(180deg, #F7F4EF 0%, #F4F0E9 100%);
+    background-attachment: fixed;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Space Grotesk", sans-serif;
     font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  :where(p, li) {
+    text-wrap: pretty;
+  }
+
+  :where(.lesson-content, .reading-passage, blockquote) {
+    font-family: "Lora", serif;
+  }
+
+  :focus-visible {
+    outline: 3px solid color-mix(in oklab, var(--ring) 78%, white);
+    outline-offset: 3px;
   }
   
   code, pre {
     font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
   }
   
   button:not(:disabled),
@@ -181,79 +235,118 @@
     min-width: 0;
   }
 
+  .academic-surface {
+    background-color: var(--card);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 2.2rem,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 2.2rem,
+      color-mix(in oklab, var(--foreground) 5%, transparent) calc(2.2rem + 1px)
+    );
+    border-left: 3px solid color-mix(in oklab, var(--secondary) 72%, var(--border));
+  }
+
   /* Button Styles */
   .btn-primary {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-[transform,background-color,box-shadow] duration-150;
     background-color: var(--primary);
     color: var(--primary-foreground);
-    box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+    border: 1.5px solid var(--primary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
   }
   
   .btn-primary:hover {
-    background-color: #0052CC;
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+    background-color: #003D99;
+    border-color: #003D99;
+    box-shadow: var(--shadow-raised);
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-accent:active,
+  .btn-outline:active,
+  button:not(:disabled):active {
+    transform: scale(0.97);
   }
   
   .btn-secondary {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: var(--secondary);
     color: var(--secondary-foreground);
-    box-shadow: 0 2px 8px rgba(255, 184, 28, 0.2);
+    border: 1.5px solid var(--secondary);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .btn-secondary:hover {
-    background-color: #E6A500;
-    box-shadow: 0 4px 12px rgba(255, 184, 28, 0.3);
+    background-color: #A96F05;
+    border-color: #A96F05;
+    box-shadow: var(--shadow-raised);
   }
   
   .btn-accent {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: var(--accent);
     color: var(--accent-foreground);
-    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .btn-accent:hover {
-    background-color: #E55A24;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    background-color: #A83D0D;
+    border-color: #A83D0D;
+    box-shadow: var(--shadow-raised);
   }
   
   .btn-outline {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 font-semibold transition-all duration-200;
     background-color: transparent;
     color: var(--foreground);
-    border: 2px solid var(--foreground);
+    border: 1.5px solid var(--foreground);
+    border-radius: var(--radius);
   }
   
   .btn-outline:hover {
-    background-color: rgba(45, 27, 105, 0.05);
+    background-color: rgba(17, 17, 17, 0.05);
+    border-color: var(--foreground);
   }
   
   /* Card Styles */
   .card {
-    @apply rounded-lg p-6 transition-all duration-200;
+    @apply p-6 transition-all duration-200;
     background-color: var(--card);
     color: var(--card-foreground);
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(45, 27, 105, 0.12);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
   
   .card:hover {
-    box-shadow: 0 4px 16px rgba(45, 27, 105, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
   
   /* Input Styles */
   input, textarea, select {
-    @apply px-3 py-2 rounded-lg transition-all duration-200;
-    background-color: var(--input);
+    @apply px-3 py-2 transition-[border-color,box-shadow,background-color] duration-150;
+    background-color: var(--card);
     color: var(--foreground);
-    border: 1px solid var(--border);
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.9;
   }
   
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent);
   }
 
   @media (min-width: 640px) {
@@ -269,5 +362,65 @@
       padding-right: 2rem;
       max-width: 1280px;
     }
+  }
+}
+
+/* Learner accessibility preferences — applied only while the release flag is enabled. */
+html[data-text-scale="large"] {
+  font-size: 112.5%;
+}
+
+html[data-text-scale="extra_large"] {
+  font-size: 125%;
+}
+
+html[data-reading-width="comfortable"] :where(article, .lesson-content, .reading-passage) {
+  max-width: 72ch;
+  margin-inline: auto;
+}
+
+html[data-reading-width="wide"] :where(article, .lesson-content, .reading-passage) {
+  max-width: 92ch;
+  margin-inline: auto;
+}
+
+html[data-reading-width="full"] :where(article, .lesson-content, .reading-passage) {
+  max-width: none;
+}
+
+html[data-contrast="high"] {
+  --background: #FFFDF8;
+  --foreground: #080A12;
+  --card: #FFFFFF;
+  --card-foreground: #080A12;
+  --muted: #E5E1D9;
+  --muted-foreground: #242735;
+  --border: #373A46;
+  --input: #373A46;
+  --primary: #003D99;
+  --ring: #003D99;
+}
+
+html[data-passage-focus="on"] .reading-passage {
+  background: var(--card);
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 0.35rem color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

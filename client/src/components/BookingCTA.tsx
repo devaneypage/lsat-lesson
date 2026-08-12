@@ -1,12 +1,16 @@
 /**
  * BookingCTA — Reusable "Book a Session" call-to-action block
  * Used at the end of each lesson's recap section.
- * Design: Warm Parchment / Academic Light theme
+ * Design: Nexus Balanced & Refined theme
+ *
+ * Feature Flags:
+ *   booking_cta — if disabled, renders nothing (null)
  */
 
 import { motion } from "framer-motion";
 import { Calendar, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
+import { useFeatureFlag } from "@/lib/flags";
 
 interface BookingCTAProps {
   /** Optional animation delay in seconds */
@@ -17,26 +21,31 @@ interface BookingCTAProps {
 
 export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAProps) {
   const [, navigate] = useLocation();
+  const { enabled: showBookingCta } = useFeatureFlag("booking_cta");
+
+  // Kill switch: hide entirely if booking_cta flag is disabled
+  if (!showBookingCta) return null;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className={`rounded-2xl p-7 text-center ${className}`}
+      className={`p-7 text-center ${className}`}
       style={{
-        background:
-          "linear-gradient(135deg, rgba(91,74,138,0.07) 0%, rgba(123,94,167,0.05) 100%)",
-        border: "1px solid rgba(91,74,138,0.18)",
+        background: "var(--card)",
+        border: "1.5px solid var(--nexus-amber)",
+        borderRadius: "0.25rem",
+        boxShadow: "0 1px 4px rgba(239, 160, 28, 0.1)",
       }}
     >
       <p
         style={{
           fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 700,
-          fontSize: "0.75rem",
-          color: "#5B4A8A",
-          letterSpacing: "0.1em",
+          fontSize: "0.7rem",
+          color: "var(--nexus-amber)",
+          letterSpacing: "0.12em",
           textTransform: "uppercase",
           marginBottom: "0.5rem",
         }}
@@ -47,10 +56,11 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
       <h3
         style={{
           fontFamily: "'Space Grotesk', sans-serif",
-          fontWeight: 700,
-          fontSize: "1.2rem",
-          color: "#1E2130",
+          fontWeight: 900,
+          fontSize: "1.15rem",
+          color: "var(--foreground)",
           marginBottom: "0.6rem",
+          letterSpacing: "0.01em",
         }}
       >
         Work one-on-one with Devaney
@@ -58,10 +68,10 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
 
       <p
         style={{
-          fontFamily: "'Lora', serif",
-          fontSize: "0.92rem",
-          color: "rgba(30,33,48,0.6)",
-          lineHeight: 1.75,
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: "0.88rem",
+          color: "rgba(17, 17, 17, 0.65)",
+          lineHeight: 1.7,
           marginBottom: "1.25rem",
           maxWidth: "420px",
           margin: "0 auto 1.25rem",
@@ -73,19 +83,26 @@ export default function BookingCTA({ delay = 0.55, className = "" }: BookingCTAP
 
       <button
         onClick={() => navigate("/booking")}
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200"
+        className="inline-flex items-center gap-2 px-6 py-3 font-semibold transition-all duration-200"
         style={{
-          background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
-          color: "white",
+          background: "var(--nexus-amber)",
+          color: "#111111",
           fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: "0.9rem",
-          boxShadow: "0 3px 12px rgba(91,74,138,0.35)",
+          fontSize: "0.85rem",
+          fontWeight: 700,
+          letterSpacing: "0.02em",
+          textTransform: "uppercase",
+          border: "1.5px solid var(--nexus-amber)",
+          borderRadius: "0.25rem",
+          boxShadow: "0 2px 6px rgba(239, 160, 28, 0.2)",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.opacity = "0.9";
+          e.currentTarget.style.background = "#d98a0b";
+          e.currentTarget.style.borderColor = "#d98a0b";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.opacity = "1";
+          e.currentTarget.style.background = "var(--nexus-amber)";
+          e.currentTarget.style.borderColor = "var(--nexus-amber)";
         }}
       >
         <Calendar size={16} />

@@ -13,6 +13,9 @@ import {
   errorLogEntries,
   InsertErrorLogEntry,
   ErrorLogEntry,
+  questionCategories,
+  questionDifficulties,
+  questionSources,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -131,7 +134,32 @@ export async function getQuestions(limit = 100, offset = 0) {
   }
 
   try {
-    const result = await db.select().from(questions).limit(limit).offset(offset);
+    const result = await db.select({
+      id: questions.id,
+      questionId: questions.questionId,
+      questionText: questions.questionText,
+      optionA: questions.optionA,
+      optionB: questions.optionB,
+      optionC: questions.optionC,
+      optionD: questions.optionD,
+      optionE: questions.optionE,
+      correctAnswer: questions.correctAnswer,
+      explanation: questions.explanation,
+      categoryId: questions.categoryId,
+      difficultyId: questions.difficultyId,
+      sourceId: questions.sourceId,
+      createdAt: questions.createdAt,
+      updatedAt: questions.updatedAt,
+      category: questionCategories.name,
+      difficulty: questionDifficulties.name,
+      source: questionSources.name,
+    })
+    .from(questions)
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+    .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
+    .limit(limit)
+    .offset(offset);
     return result;
   } catch (error) {
     console.error("[Database] Failed to get questions:", error);
@@ -142,6 +170,47 @@ export async function getQuestions(limit = 100, offset = 0) {
 /**
  * Get total question count
  */
+export async function getQuestionById(questionId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get question: database not available");
+    return null;
+  }
+
+  try {
+    const result = await db.select({
+      id: questions.id,
+      questionId: questions.questionId,
+      questionText: questions.questionText,
+      optionA: questions.optionA,
+      optionB: questions.optionB,
+      optionC: questions.optionC,
+      optionD: questions.optionD,
+      optionE: questions.optionE,
+      correctAnswer: questions.correctAnswer,
+      explanation: questions.explanation,
+      categoryId: questions.categoryId,
+      difficultyId: questions.difficultyId,
+      sourceId: questions.sourceId,
+      createdAt: questions.createdAt,
+      updatedAt: questions.updatedAt,
+      category: questionCategories.name,
+      difficulty: questionDifficulties.name,
+      source: questionSources.name,
+    })
+    .from(questions)
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+    .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
+    .where(eq(questions.id, questionId))
+    .limit(1);
+    return result[0] ?? null;
+  } catch (error) {
+    console.error("[Database] Failed to get question:", error);
+    return null;
+  }
+}
+
 export async function getQuestionCount(): Promise<number> {
   const db = await getDb();
   if (!db) {
@@ -444,8 +513,20 @@ export async function getQuestionsWithTags(limit = 200, offset = 0) {
       tagsByQuestion.get(ta.questionId)!.push(ta);
     }
 
+    const categoryNames = await db.select({ id: questionCategories.id, name: questionCategories.name }).from(questionCategories);
+    const categoryMap = new Map(categoryNames.map(c => [c.id, c.name]));
+
+    const difficultyNames = await db.select({ id: questionDifficulties.id, name: questionDifficulties.name }).from(questionDifficulties);
+    const difficultyMap = new Map(difficultyNames.map(d => [d.id, d.name]));
+
+    const sourceNames = await db.select({ id: questionSources.id, name: questionSources.name }).from(questionSources);
+    const sourceMap = new Map(sourceNames.map(s => [s.id, s.name]));
+
     return qs.map((q) => ({
       ...q,
+      category: q.categoryId ? categoryMap.get(q.categoryId) : null,
+      difficulty: q.difficultyId ? difficultyMap.get(q.difficultyId) : null,
+      source: q.sourceId ? sourceMap.get(q.sourceId) : null,
       tags: (tagsByQuestion.get(q.id) ?? []).map((t) => ({
         id: t.tagId,
         name: t.tagName,
@@ -476,7 +557,12 @@ export async function getQuestionsFilteredByTags(
     let allQs = await db.select().from(questions);
 
     if (category) {
-      allQs = allQs.filter((q) => q.category === category);
+      const categoryResult = await db.select({ id: questionCategories.id }).from(questionCategories).where(eq(questionCategories.name, category)).limit(1);
+      if (categoryResult.length > 0) {
+        allQs = allQs.filter((q) => q.categoryId === categoryResult[0].id);
+      } else {
+        return { questions: [], total: 0 };
+      }
     }
 
     if (search) {
@@ -553,6 +639,112 @@ const DEFAULT_FLAGS: InsertFeatureFlag[] = [
     enabled: 1,
     rolloutPercentage: 100,
   },
+  // ── Nexus UX Flags ──────────────────────────────────────────────────────────
+  {
+    key: "nexus_dashboard",
+    name: "Nexus Dashboard",
+    description: "Enable the Nexus command-center dashboard (two-column layout with ScoreCard, MasteryOverview, ConceptMap). Disable to revert to the legacy PathSelector landing page.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "booking_cta",
+    name: "Booking CTA",
+    description: "Show the 'Book a Session' CTA button in the navigation bar and lesson recap sections.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "lesson_grid",
+    name: "Lesson Grid",
+    description: "Show the Nexus-style lesson grid on the /lessons page. Disable to revert to the legacy lesson card list.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "concept_map",
+    name: "Concept Map",
+    description: "Show the interactive concept map on the dashboard. Disable to show a simple lesson list instead.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "score_card",
+    name: "Score Card",
+    description: "Show the score card widget (current score + percentile) in the dashboard sidebar.",
+    enabled: 1,
+    rolloutPercentage: 100,
+  },
+  {
+    key: "learner_dashboard_v2",
+    name: "Continue Learning Dashboard",
+    description: "Use server-derived learner state to recommend one primary next action and accurate supporting metrics.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "adaptive_review_queue",
+    name: "Adaptive Review Queue",
+    description: "Schedule and surface due question reviews with deterministic spaced intervals.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "question_confidence_tracking",
+    name: "Question Confidence Tracking",
+    description: "Require a pre-answer confidence judgment and persist calibrated attempt evidence.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "unified_command_search",
+    name: "Unified Command Search",
+    description: "Enable the keyboard-accessible global command palette across curriculum and question content.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "skill_mastery_map",
+    name: "Skill Mastery Map",
+    description: "Replace static progress displays with explainable evidence-based skill mastery.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "persistent_study_plans",
+    name: "Persistent Study Plans",
+    description: "Save, version, edit, activate, and complete structured study plans and tasks.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "mistake_journal",
+    name: "Mistake Journal",
+    description: "Let learners create private, taxonomy-based reflection records from question attempts.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "accessibility_controls",
+    name: "Accessibility Controls",
+    description: "Persist reading, contrast, motion, focus, and keyboard preferences across the application.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "contextual_orientation",
+    name: "Contextual Orientation",
+    description: "Show consistent breadcrumbs, purpose, prerequisites, estimates, status, and next actions.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
+  {
+    key: "feature_usage_analytics",
+    name: "Feature Usage Analytics",
+    description: "Capture allow-listed, privacy-safe product events and expose administrator-only aggregates.",
+    enabled: 0,
+    rolloutPercentage: 0,
+  },
 ];
 
 /**
@@ -563,17 +755,18 @@ async function seedAndGetFlags(): Promise<FeatureFlag[]> {
   if (!db) return [];
   try {
     const existing = await db.select().from(featureFlags);
-    if (existing.length === 0) {
-      for (const flag of DEFAULT_FLAGS) {
+    const existingKeys = new Set(existing.map((f) => f.key));
+    // Insert any DEFAULT_FLAGS that are missing from the table (handles new flags added after initial seed)
+    for (const flag of DEFAULT_FLAGS) {
+      if (!existingKeys.has(flag.key)) {
         try {
           await db.insert(featureFlags).values(flag);
         } catch {
           // skip if already exists (race condition)
         }
       }
-      return db.select().from(featureFlags);
     }
-    return existing;
+    return db.select().from(featureFlags);
   } catch (error) {
     console.error("[Database] Failed to seed/get flags:", error);
     return [];

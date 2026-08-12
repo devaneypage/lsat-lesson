@@ -18,13 +18,15 @@ const OG_IMAGE =
 interface PageMetaProps {
   title: string;
   description: string;
+  /** Optional comma-separated keywords (max 8) */
+  keywords?: string[];
   /** Optional canonical URL — defaults to current href */
   canonical?: string;
   /** Optional per-page OG image — falls back to the shared site banner */
   image?: string;
 }
 
-export default function PageMeta({ title, description, canonical, image }: PageMetaProps) {
+export default function PageMeta({ title, description, keywords, canonical, image }: PageMetaProps) {
   const url = canonical ?? (typeof window !== "undefined" ? window.location.href : "");
   const ogImage = image ?? OG_IMAGE;
 
@@ -32,6 +34,9 @@ export default function PageMeta({ title, description, canonical, image }: PageM
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
+      {keywords && keywords.length > 0 && (
+        <meta name="keywords" content={keywords.slice(0, 8).join(", ")} />
+      )}
       {url && <link rel="canonical" href={url} />}
 
       {/* Open Graph */}

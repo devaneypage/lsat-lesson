@@ -1,70 +1,72 @@
-/**
- * Feature Flag System
- *
- * Self-hosted feature flags backed by the database.
- * Flags are seeded with defaults on first access and can be toggled
- * from the /admin/flags panel without redeployment.
- *
- * Usage:
- *   const { enabled, loading } = useFeatureFlag('lesson_progress_bar')
- *   if (enabled) return <ProgressBar />
- *
- * Available flag keys (defined in server/db.ts DEFAULT_FLAGS):
- *   - lesson_progress_bar
- *   - assumption_family_arc_cta
- *   - about_testimonials
- *   - ai_lesson_plan_generator
- *   - question_bank
- */
-
 import { trpc } from "@/lib/trpc";
-import { useMemo } from "react";
+import type { FeatureFlagKey } from "@shared/featureFlags";
+import { useMemo, useState } from "react";
 
-export type FlagKey =
-  | "lesson_progress_bar"
-  | "assumption_family_arc_cta"
-  | "about_testimonials"
-  | "ai_lesson_plan_generator"
-  | "question_bank";
+export type FlagKey = FeatureFlagKey;
 
-/**
- * Read a single feature flag.
- * Returns { enabled: boolean, loading: boolean }.
- * Falls back to `enabled: false` while loading or on error.
- */
-export function useFeatureFlag(key: FlagKey): { enabled: boolean; loading: boolean } {
-  const { data, isLoading } = trpc.flags.list.useQuery(undefined, {
-    staleTime: 60_000, // cache for 60 s — flags don't change often
-    refetchOnWindowFocus: false,
-  });
+const VISITOR_ID_STORAGE_KEY = "devasophy-feature-flag-visitor-id";
 
-  const enabled = useMemo(() => {
-    if (!data) return false;
-    const flag = data.find((f) => f.key === key);
-    return flag?.enabled ?? false;
-  }, [data, key]);
+function createVisitorId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
 
-  return { enabled, loading: isLoading };
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
 
-/**
- * Read all feature flags as a key→boolean map.
- * Useful when a component needs to check multiple flags at once.
- */
+function getOrCreateVisitorId(): string {
+  if (typeof window === "undefined") return "server-render";
+
+  try {
+    const existing = window.localStorage.getItem(VISITOR_ID_STORAGE_KEY);
+    if (existing) return existing;
+
+    const created = createVisitorId();
+    window.localStorage.setItem(VISITOR_ID_STORAGE_KEY, created);
+    return created;
+  } catch {
+    return createVisitorId();
+  }
+}
+
 export function useAllFeatureFlags(): {
-  flags: Record<string, boolean>;
+  flags: Partial<Record<FlagKey, boolean>>;
   loading: boolean;
-  rawFlags: typeof data;
+  error: Error | null;
+  rawFlags: Array<{ key: string; enabled: boolean }> | undefined;
 } {
-  const { data, isLoading } = trpc.flags.list.useQuery(undefined, {
+  const [visitorId] = useState(getOrCreateVisitorId);
+  const queryInput = useMemo(() => ({ visitorId }), [visitorId]);
+  const { data, isLoading, error } = trpc.flags.evaluate.useQuery(queryInput, {
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   const flags = useMemo(() => {
-    if (!data) return {} as Record<string, boolean>;
-    return Object.fromEntries(data.map((f) => [f.key, f.enabled]));
+    if (!data) return {} as Partial<Record<FlagKey, boolean>>;
+    return Object.fromEntries(
+      data.map((decision) => [decision.key, decision.enabled])
+    ) as Partial<Record<FlagKey, boolean>>;
   }, [data]);
 
-  return { flags, loading: isLoading, rawFlags: data };
+  return {
+    flags,
+    loading: isLoading,
+    error: error instanceof Error ? error : null,
+    rawFlags: data,
+  };
+}
+
+/**
+ * Reads an evaluated feature decision. Unknown, loading, and error states fail
+ * closed so incomplete flag data never exposes a gated feature accidentally.
+ */
+export function useFeatureFlag(key: FlagKey): {
+  enabled: boolean;
+  loading: boolean;
+  error: Error | null;
+} {
+  const { flags, loading, error } = useAllFeatureFlags();
+  return { enabled: flags[key] ?? false, loading, error };
 }

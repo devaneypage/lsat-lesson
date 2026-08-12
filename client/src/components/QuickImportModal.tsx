@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
+import { normalizeImportedAnswer } from "@/lib/questionImport";
 import { toast } from "sonner";
 
 interface ImportPreview {
@@ -128,7 +129,7 @@ export default function QuickImportModal({
         option_c: row.option_c || "",
         option_d: row.option_d || "",
         option_e: row.option_e || undefined,
-        correct_answer: row.correct_answer || "A",
+        correct_answer: normalizeImportedAnswer(row.correct_answer),
         explanation: row.explanation || "",
         category: row.category || undefined,
         difficulty: row.difficulty || undefined,

@@ -1096,7 +1096,7 @@ function RecapStep() {
           where you'll learn to name the structural error the argument commits,
           completing the three-lesson Assumption Family arc.{" "}
           <button
-            onClick={() => navigate("/lessons")}
+            onClick={() => navigate("/learn")}
             style={{
               color: VIOLET,
               fontWeight: 700,
@@ -1121,7 +1121,7 @@ function RecapStep() {
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
-        onClick={() => navigate("/lessons")}
+        onClick={() => navigate("/learn")}
         className="flex items-center gap-2 px-7 py-3 rounded-xl font-semibold transition-all"
         style={{
           background: `${VIOLET}12`,
@@ -1146,7 +1146,7 @@ function ArcCTA({ navigate }: { navigate: (path: string) => void }) {
     <motion.button
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
-      onClick={() => navigate("/lessons/flaw-in-reasoning")}
+      onClick={() => navigate("/learn/flaw-in-reasoning")}
       className="flex items-center gap-2 px-7 py-3 rounded-xl font-semibold transition-all w-full justify-center"
       style={{
         background: `${AMBER}12`,
@@ -1192,7 +1192,7 @@ export default function LessonSufficientAssumptions() {
   };
 
   const handleBack = () => {
-    navigate("/lessons");
+    navigate("/learn");
   };
 
   return (

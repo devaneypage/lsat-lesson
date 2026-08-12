@@ -13,6 +13,34 @@
 - [x] Task 9: Animations & Transitions (75 min)
 - [x] Task 10: Accessibility & Testing (60 min)
 
+## UX Overhaul - Balanced & Refined Aesthetic
+
+### Task 1: Design System Foundation
+- [x] Step 1.1: Define Color Palette and CSS Variables
+- [x] Step 1.2: Define Typography and Load Fonts
+- [x] Step 1.3: Configure Tailwind for Design System
+
+### Task 2: Rebuild Main Navigation
+- [x] Step 2.1: Update Navigation Bar Structure and Styling
+
+### Task 3: Redesign Homepage as Nexus Dashboard
+- [x] Step 3.1: Create NexusDashboardLayout Component
+- [x] Step 3.2: Implement ScoreCard, MasteryOverview, and QuickNavigation Components
+- [x] Step 3.3: Rebuild Homepage (Home.tsx) using NexusDashboardLayout
+
+### Task 4: Integrate Lessons as Reference Modules
+- [x] Step 4.1: Update Lesson Page Styling (inherited from design system)
+- [x] Step 4.2: Implement Dashboard-to-Lesson Navigation (LessonGrid component + Lessons page)
+
+### Task 5: Update Core UI Components
+- [x] Step 5.1: Refine shadcn/ui Components (via design system CSS variables)
+- [x] Step 5.2: Update Custom Components (via design system CSS variables)
+
+### Task 6: Final Verification & Testing
+- [x] Step 6.1: TypeScript compilation check
+- [x] Step 6.2: Dev server health check
+- [x] Step 6.3: Visual verification of Nexus aesthetic
+
 ## Final Verification
 
 - [x] All tasks marked complete
@@ -382,3 +410,42 @@
 - [x] Add BookingCTA to LessonFlawInReasoning recap section
 - [x] Add /booking to sitemap.xml
 - [x] TypeScript: 0 errors
+
+## Feature Flag System (/feature-flag-system skill)
+
+- [x] Audit existing flag infrastructure (flags.json, flags.ts, FlagAdmin, server/db.ts)
+- [x] Expand flags.json with 5 new Nexus UX flags (nexus_dashboard, booking_cta, lesson_grid, concept_map, score_card)
+- [x] Extend FlagKey type in client/src/lib/flags.ts to include all 10 flags
+- [x] Add 5 new DEFAULT_FLAGS entries to server/db.ts
+- [x] Update FlagAdmin color map with Nexus palette colors for new flags
+- [x] Wire nexus_dashboard flag to Dashboard.tsx (kill switch → PathSelector fallback)
+- [x] Wire concept_map flag to Dashboard.tsx (fallback → LessonGrid)
+- [x] Wire score_card flag to Dashboard.tsx (conditional sidebar widget)
+- [x] Wire lesson_grid flag to Lessons.tsx (kill switch → PathSelector fallback)
+- [x] Wire booking_cta flag to MainNavigationBar.tsx (conditional Book button)
+- [x] Wire booking_cta flag to BookingCTA.tsx (returns null if disabled)
+- [x] Write Vitest tests for feature flag system (14 tests, all passing)
+- [x] TypeScript check passed (0 errors)
+
+## Visual Editor Fixes (2026-07-03)
+
+- [x] Nav bar: reduce link font size to 0.72rem, tighten padding so all 8 links fit cleanly on one line
+- [x] Nav bar: replace amber diamond submark with distinctive N-mark SVG (amber square + N letterform)
+- [x] LessonPlanGenerator: convert from dark scheme (#1C1F26) to light scheme matching site palette
+- [x] LessonPlanGenerator: replace plain date input with official LSAC 2026-2027 date dropdown (9 dates with reg deadline + score release metadata)
+
+## UX Critique Fixes (P0–P3)
+- [x] P0: Define --nexus-blue and --nexus-purple in index.css
+- [x] P1: Add dashboard page header (title, date, horizontal rule)
+- [x] P2: Make ConceptMap nodes interactive (hover + click-through)
+- [x] P3: Darken --nexus-lime to pass WCAG AA contrast
+
+## UX Critique Fixes (P4–P11)
+- [x] P4: Reorder sidebar — QuickNavigation first, then ScoreCard, then MasteryOverview
+- [x] P5: Add Lessons Hub page header (title + subtitle + rule) to Lessons.tsx
+- [x] P6: Add sequence numbers / "Start Here" badge to lesson cards in LessonGrid
+- [x] P7: Reorganize ConceptMap into LR/RC semantic clusters with grouping zones
+- [x] P8: Rename "Review Mistakes" → "Analyze Errors" in QuickNavigation + reassign terra → amber
+- [x] P9: Replace rgba(17,17,17,0.6/0.7) with var(--muted-foreground) across dashboard components
+- [x] P10: Consolidate lesson card colors to 3–4 semantic groups (LR/RC/Logic/terra)
+- [x] P11: Increase dashboard gap to gap-6 and outer padding to p-6 md:p-8

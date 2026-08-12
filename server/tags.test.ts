@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { NOT_ADMIN_ERR_MSG } from "@shared/const";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -83,7 +84,7 @@ describe("tags router", () => {
       expect.fail("Should have thrown FORBIDDEN error");
     } catch (error: any) {
       expect(error.code).toBe("FORBIDDEN");
-      expect(error.message).toContain("Only admins can create tags");
+      expect(error.message).toContain(NOT_ADMIN_ERR_MSG);
     }
   });
 
@@ -158,7 +159,7 @@ describe("tags router", () => {
       expect.fail("Should have thrown FORBIDDEN error");
     } catch (error: any) {
       expect(error.code).toBe("FORBIDDEN");
-      expect(error.message).toContain("Only admins can tag questions");
+      expect(error.message).toContain(NOT_ADMIN_ERR_MSG);
     }
   });
 
@@ -186,7 +187,7 @@ describe("tags router", () => {
       expect.fail("Should have thrown FORBIDDEN error");
     } catch (error: any) {
       expect(error.code).toBe("FORBIDDEN");
-      expect(error.message).toContain("Only admins can remove tags");
+      expect(error.message).toContain(NOT_ADMIN_ERR_MSG);
     }
   });
 

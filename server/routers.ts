@@ -1,5 +1,3 @@
-import { COOKIE_NAME } from "@shared/const";
-import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
@@ -545,6 +543,34 @@ Generate a complete study plan with:
         return { success: true } as const;
       }),
   }),
+import { router } from "./_core/trpc";
+import { analyticsRouter } from "./routers/analytics";
+import { authRouter } from "./routers/auth";
+import { flagsRouter } from "./routers/flags";
+import { learnerRouter } from "./routers/learner";
+import { lessonPlanRouter } from "./routers/lessonPlan";
+import { practiceRouter } from "./routers/practice";
+import { preferencesRouter } from "./routers/preferences";
+import { questionsRouter } from "./routers/questions";
+import { reviewRouter } from "./routers/review";
+import { searchRouter } from "./routers/search";
+import { studyPlanRouter } from "./routers/studyPlan";
+import { taxonomyRouter } from "./routers/taxonomy";
+
+export const appRouter = router({
+  system: systemRouter,
+  auth: authRouter,
+  learner: learnerRouter,
+  preferences: preferencesRouter,
+  practice: practiceRouter,
+  review: reviewRouter,
+  search: searchRouter,
+  studyPlan: studyPlanRouter,
+  analytics: analyticsRouter,
+  questions: questionsRouter,
+  tags: taxonomyRouter,
+  flags: flagsRouter,
+  lessonPlan: lessonPlanRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -1,9 +1,9 @@
 /**
- * DESIGN: High Contrast, Bold & Distinctive
+ * DESIGN: Nexus Command Center — Balanced & Refined
  * Component: Main Navigation Bar
  * 
- * Top navigation bar with links to Dashboard, Lessons, Question Bank,
- * Curriculum Guide, and CSV Import Manager. Responsive with mobile menu.
+ * Dark navy navigation bar with geometric amber logo, uppercase letter-spaced tabs,
+ * minimal borders, and clear active state indicators. Responsive with mobile menu.
  */
 
 import { useState } from "react";
@@ -25,6 +25,7 @@ import {
   Compass,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
+import { useFeatureFlag } from "@/lib/flags";
 
 interface NavItem {
   label: string;
@@ -94,6 +95,7 @@ export default function MainNavigationBar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const { enabled: showBookingCta } = useFeatureFlag("booking_cta");
 
   const isActive = (route: string) => {
     return location.startsWith(route.split("/").slice(0, 2).join("/"));
@@ -103,88 +105,98 @@ export default function MainNavigationBar() {
     <>
       {/* Desktop Navigation Bar */}
       <nav
-        className="hidden md:flex sticky top-0 z-50 h-16 items-center justify-between px-6 border-b shadow-sm"
+        className="hidden md:flex sticky top-0 z-50 h-16 items-center justify-between px-6 border-b"
         style={{
-          background: "var(--card)",
-          borderColor: "var(--border)",
+          background: "#1F1F1F",
+          borderColor: "#111111",
+          borderWidth: "1.5px",
         }}
       >
-        {/* Logo/Brand */}
-        <div className="flex items-center gap-2">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white"
-            style={{ background: "var(--primary)" }}
+        {/* Logo/Brand — N-mark submark */}
+        <div className="flex items-center gap-2.5">
+          {/* Distinctive N-mark: two vertical bars connected by a diagonal — monogram submark */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="LSAT Nexus logo mark"
           >
-            L
-          </div>
+            {/* Outer square border */}
+            <rect x="1" y="1" width="26" height="26" rx="2" fill="#EFA01C" />
+            {/* N letterform: left vertical, diagonal, right vertical — white on amber */}
+            <path
+              d="M7 21V7L21 21V7"
+              stroke="#111111"
+              strokeWidth="2.8"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              fill="none"
+            />
+          </svg>
           <span
             style={{
-              fontFamily: "'Poppins', sans-serif",
-              fontWeight: 700,
-              fontSize: "1rem",
-              color: "var(--foreground)",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 900,
+              fontSize: "0.9rem",
+              color: "var(--nexus-amber)",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
             }}
           >
-            LSAT Mastery
+            LSAT Nexus
           </span>
         </div>
 
         {/* Desktop Navigation Links */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.route);
             return (
               <Link
                 key={item.route}
                 href={item.route}
-                className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 relative group"
+                className="px-2.5 py-2 flex items-center gap-1.5 transition-all duration-200 relative group whitespace-nowrap"
                 style={{
-                  color: active ? "var(--primary)" : "var(--foreground)",
-                  background: active ? "rgba(0, 102, 255, 0.1)" : "transparent",
+                  color: active ? "var(--nexus-amber)" : "#CCCCCC",
+                  fontSize: "0.72rem",
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontWeight: active ? 700 : 500,
+                  letterSpacing: "0.03em",
+                  textTransform: "uppercase",
+                  borderBottom: active ? "2.5px solid var(--nexus-amber)" : "2.5px solid transparent",
+                  cursor: "pointer",
                 }}
                 onMouseEnter={(e) => {
                   if (!active) {
-                    e.currentTarget.style.background = "rgba(45, 27, 105, 0.05)";
+                    e.currentTarget.style.color = "#FFFFFF";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!active) {
-                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "#CCCCCC";
                   }
                 }}
               >
-                <span style={{ color: active ? "var(--primary)" : "inherit" }}>
-                  {item.icon}
+                <span style={{ color: "inherit", display: "flex", alignItems: "center" }}>
+                  {item.icon && <span style={{ transform: "scale(0.85)", display: "inline-flex" }}>{item.icon}</span>}
                 </span>
-                <span
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "0.9rem",
-                    fontWeight: active ? 600 : 500,
-                  }}
-                >
-                  {item.label}
-                </span>
-                {active && (
-                  <motion.div
-                    layoutId="activeIndicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
-                    style={{ background: "var(--primary)" }}
-                  />
-                )}
+                <span>{item.label}</span>
 
                 {/* Tooltip on hover */}
                 {item.description && (
                   <div
                     className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
                     style={{
-                      background: "var(--foreground)",
-                      color: "var(--background)",
+                      background: "#111111",
+                      color: "var(--nexus-amber)",
                       padding: "0.5rem 0.75rem",
-                      borderRadius: "0.5rem",
-                      fontSize: "0.75rem",
-                      fontFamily: "'Inter', sans-serif",
+                      borderRadius: "0.25rem",
+                      fontSize: "0.7rem",
+                      fontFamily: "'Space Grotesk', sans-serif",
                       whiteSpace: "nowrap",
+                      border: "1px solid var(--nexus-amber)",
                     }}
                   >
                     {item.description}
@@ -196,125 +208,119 @@ export default function MainNavigationBar() {
         </div>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-2">
-          {/* Book a Session CTA */}
-          <Link
+        <div className="flex items-center gap-3">
+          {/* Book a Session CTA — gated by booking_cta feature flag */}
+          {showBookingCta && (<Link
             href="/booking"
-            className="px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 font-semibold"
+            className="px-4 py-2 flex items-center gap-2 transition-all duration-200 font-semibold"
             style={{
-              background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
-              color: "white",
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "0.875rem",
-              boxShadow: "0 2px 8px rgba(91,74,138,0.35)",
+              background: "var(--nexus-amber)",
+              color: "#111111",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: "0.85rem",
+              letterSpacing: "0.02em",
+              textTransform: "uppercase",
+              border: "1.5px solid var(--nexus-amber)",
+              borderRadius: "0.25rem",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.9";
-              e.currentTarget.style.boxShadow = "0 4px 14px rgba(91,74,138,0.45)";
+              e.currentTarget.style.background = "#d98a0b";
+              e.currentTarget.style.borderColor = "#d98a0b";
+              e.currentTarget.style.boxShadow = "0 2px 6px rgba(239, 160, 28, 0.2)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
-              e.currentTarget.style.boxShadow = "0 2px 8px rgba(91,74,138,0.35)";
+              e.currentTarget.style.background = "var(--nexus-amber)";
+              e.currentTarget.style.borderColor = "var(--nexus-amber)";
+              e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)";
             }}
           >
             <Calendar size={16} />
-            Book a Session
-          </Link>
+            Book
+          </Link>)}
           <button
             onClick={() => setIsImportModalOpen(true)}
-            className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
+            className="px-3 py-2 flex items-center gap-2 transition-all duration-200"
             style={{
-              color: "white",
-              background: "var(--primary)",
+              color: "#111111",
+              background: "var(--nexus-teal)",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              textTransform: "uppercase",
+              border: "1.5px solid var(--nexus-teal)",
+              borderRadius: "0.25rem",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.9";
+              e.currentTarget.style.background = "#158a99";
+              e.currentTarget.style.borderColor = "#158a99";
+              e.currentTarget.style.boxShadow = "0 2px 6px rgba(26, 171, 188, 0.2)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.background = "var(--nexus-teal)";
+              e.currentTarget.style.borderColor = "var(--nexus-teal)";
+              e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)";
             }}
           >
-            <Upload size={18} />
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "0.9rem",
-                fontWeight: 600,
-              }}
-            >
-              Import CSV
-            </span>
+            <Upload size={16} />
+            Import
           </button>
-          <Link
-            href="/progress"
-            className="px-3 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
-            style={{
-              color: "var(--foreground)",
-              background: "rgba(45, 27, 105, 0.05)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(45, 27, 105, 0.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(45, 27, 105, 0.05)";
-            }}
-          >
-            <Zap size={18} />
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
-            >
-              Progress
-            </span>
-          </Link>
         </div>
       </nav>
 
       {/* Mobile Navigation Bar */}
       <nav
-        className="md:hidden sticky top-0 z-50 h-14 flex items-center justify-between px-4 border-b shadow-sm"
+        className="md:hidden sticky top-0 z-50 h-14 flex items-center justify-between px-4 border-b"
         style={{
-          background: "var(--card)",
-          borderColor: "var(--border)",
+          background: "#1F1F1F",
+          borderColor: "#111111",
+          borderWidth: "1.5px",
         }}
       >
-        {/* Logo */}
         <div className="flex items-center gap-2">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-sm"
-            style={{ background: "var(--primary)" }}
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 28 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="LSAT Nexus logo mark"
           >
-            L
-          </div>
+            <rect x="1" y="1" width="26" height="26" rx="2" fill="#EFA01C" />
+            <path
+              d="M7 21V7L21 21V7"
+              stroke="#111111"
+              strokeWidth="2.8"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              fill="none"
+            />
+          </svg>
           <span
             style={{
-              fontFamily: "'Poppins', sans-serif",
-              fontWeight: 700,
-              fontSize: "0.9rem",
-              color: "var(--foreground)",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 900,
+              fontSize: "0.85rem",
+              color: "var(--nexus-amber)",
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
             }}
           >
-            LSAT
+            LSAT Nexus
           </span>
         </div>
 
-        {/* Mobile Menu Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-lg transition-all duration-200"
-          style={{
-            color: "var(--foreground)",
-            background: "rgba(45, 27, 105, 0.05)",
-          }}
+          style={{ color: "var(--nexus-amber)" }}
         >
-          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -322,141 +328,62 @@ export default function MainNavigationBar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed top-14 left-0 right-0 z-40 border-b shadow-lg"
+            className="md:hidden fixed top-14 left-0 right-0 z-40 border-b"
             style={{
-              background: "var(--card)",
-              borderColor: "var(--border)",
+              background: "#1F1F1F",
+              borderColor: "#111111",
+              borderWidth: "1.5px",
             }}
           >
             <div className="flex flex-col">
-              {NAV_ITEMS.map((item, idx) => {
+              {NAV_ITEMS.map((item) => {
                 const active = isActive(item.route);
                 return (
                   <Link
                     key={item.route}
                     href={item.route}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="px-4 py-3 flex items-center gap-3 border-b transition-all duration-200"
+                    className="px-4 py-3 flex items-center gap-3 transition-all duration-200 border-b"
                     style={{
-                      borderColor: "var(--border)",
-                      background: active ? "rgba(0, 102, 255, 0.1)" : "transparent",
-                      color: active ? "var(--primary)" : "var(--foreground)",
+                      color: active ? "var(--nexus-amber)" : "#CCCCCC",
+                      background: active ? "rgba(239, 160, 28, 0.1)" : "transparent",
+                      borderColor: "#333333",
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "0.9rem",
+                      fontWeight: active ? 600 : 500,
+                      letterSpacing: "0.02em",
                     }}
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span style={{ color: active ? "var(--primary)" : "inherit" }}>
-                      {item.icon}
-                    </span>
-                    <div className="flex-1">
-                      <div
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: "0.9rem",
-                          fontWeight: active ? 600 : 500,
-                        }}
-                      >
-                        {item.label}
-                      </div>
-                      {item.description && (
-                        <div
-                          style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: "0.75rem",
-                            color: "var(--muted-foreground)",
-                            marginTop: "0.25rem",
-                          }}
-                        >
-                          {item.description}
-                        </div>
-                      )}
-                    </div>
+                    <span style={{ color: "inherit" }}>{item.icon}</span>
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
-
-              {/* Import CSV Button in Mobile Menu */}
-              <motion.button
-                onClick={() => {
-                  setIsImportModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, delay: NAV_ITEMS.length * 0.05 }}
-                className="w-full px-4 py-3 flex items-center gap-3 transition-all duration-200 border-b"
-                style={{
-                  background: "var(--primary)",
-                  color: "white",
-                  borderColor: "var(--border)",
-                }}
-              >
-                <Upload size={18} />
-                <div
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  Quick Import
-                </div>
-              </motion.button>
-
-              {/* Book a Session — Mobile */}
               <Link
                 href="/booking"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 flex items-center gap-3 transition-all duration-200 border-b"
-                style={{
-                  background: "linear-gradient(135deg, #5B4A8A 0%, #7B5EA7 100%)",
-                  color: "white",
-                  borderColor: "var(--border)",
-                }}
-              >
-                <Calendar size={18} />
-                <div
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "0.9rem",
-                    fontWeight: 700,
-                  }}
-                >
-                  Book a Session
-                </div>
-              </Link>
-
-              {/* Progress Link in Mobile Menu */}
-              <Link
-                href="/progress"
-                onClick={() => setIsMobileMenuOpen(false)}
                 className="px-4 py-3 flex items-center gap-3 transition-all duration-200"
                 style={{
-                  background: "rgba(45, 27, 105, 0.05)",
-                  color: "var(--foreground)",
+                  background: "var(--nexus-amber)",
+                  color: "#111111",
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: "0.9rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.02em",
+                  textTransform: "uppercase",
                 }}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Zap size={18} />
-                <div
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "0.9rem",
-                    fontWeight: 500,
-                  }}
-                >
-                  Progress Tracker
-                </div>
+                <Calendar size={18} />
+                Book a Session
               </Link>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Quick Import Modal */}
       <QuickImportModal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
-        onImportSuccess={(count) => {
-          console.log("Successfully imported", count, "questions");
-        }}
       />
     </>
   );
