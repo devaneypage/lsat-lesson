@@ -104,5 +104,5 @@
 - [x] Run Vitest, type/build, runtime, responsive, and accessibility verification; resolve root causes for failures introduced or blocking the rollout. Verified 110 Vitest tests, typecheck, production build, desktop/mobile rendering, and no fresh console errors.
 - [x] Run protected-route accessibility checks for keyboard focus order, accessible names, and sign-in-shell controls on Today and Resources.
 - [ ] Run authenticated learner-flow accessibility verification for Today and Resources with a dedicated test session, covering keyboard traversal, focus order, breadcrumb/orientation landmarks, and accessible names.
-- [ ] Generate the content-gap strategy presentation and publish a checkpoint with the completed implementation.
+- [x] Generate the content-gap strategy presentation and publish a checkpoint with the completed implementation. Deck is available as a rendered slides deliverable; learner-experience milestone is published in checkpoint `7b68f8f7`.
 - [ ] Deliver the strategy deck, guide brief, and implementation summary.
