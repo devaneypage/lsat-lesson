@@ -449,3 +449,13 @@
 - [x] P9: Replace rgba(17,17,17,0.6/0.7) with var(--muted-foreground) across dashboard components
 - [x] P10: Consolidate lesson card colors to 3–4 semantic groups (LR/RC/Logic/terra)
 - [x] P11: Increase dashboard gap to gap-6 and outer padding to p-6 md:p-8
+
+## Question Bank Foundation — Initial LR Sample Set
+
+- [x] Audit the existing question schema, router, and Question Bank page for the current contract
+- [x] Add an idempotent seed path for original sample Logical Reasoning questions
+- [x] Create five original, five-choice Logical Reasoning questions with answer explanations
+- [x] Ensure Question Bank browsing, search, and filters render the sample set
+- [x] Add and run focused Vitest coverage for seed/content validation
+- [x] Restore an ES2015+ TypeScript target so existing Set iteration compiles during verification
+- [x] Verify the public Question Bank API returns all five seeded originals and save a checkpoint

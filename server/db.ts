@@ -15,6 +15,11 @@ import {
   questionSources,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
+import {
+  SAMPLE_LOGICAL_REASONING_QUESTIONS,
+  SAMPLE_LOGICAL_REASONING_SOURCE,
+  validateSampleLogicalReasoningQuestions,
+} from "./sampleData/logicalReasoning";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -118,6 +123,76 @@ export async function insertQuestions(questionsData: InsertQuestion[]): Promise<
     console.error("[Database] Failed to insert questions:", error);
     throw error;
   }
+}
+
+/**
+ * Idempotently seeds five original LSAT-style Logical Reasoning items for a
+ * fresh Question Bank. Existing questions are never modified or duplicated.
+ */
+export async function seedOriginalLogicalReasoningSamples(): Promise<{ inserted: number; total: number }> {
+  validateSampleLogicalReasoningQuestions();
+
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const categoryNames = [...new Set(SAMPLE_LOGICAL_REASONING_QUESTIONS.map((question) => question.category))];
+  const difficultyNames = [...new Set(SAMPLE_LOGICAL_REASONING_QUESTIONS.map((question) => question.difficulty))];
+
+  await db
+    .insert(questionCategories)
+    .values(categoryNames.map((name) => ({ name })))
+    .onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
+  await db
+    .insert(questionDifficulties)
+    .values(difficultyNames.map((name) => ({ name })))
+    .onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
+  await db
+    .insert(questionSources)
+    .values({ name: SAMPLE_LOGICAL_REASONING_SOURCE })
+    .onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
+
+  const [categoryRows, difficultyRows, sourceRows, existingRows] = await Promise.all([
+    db.select().from(questionCategories).where(inArray(questionCategories.name, categoryNames)),
+    db.select().from(questionDifficulties).where(inArray(questionDifficulties.name, difficultyNames)),
+    db.select().from(questionSources).where(eq(questionSources.name, SAMPLE_LOGICAL_REASONING_SOURCE)).limit(1),
+    db
+      .select({ questionId: questions.questionId })
+      .from(questions)
+      .where(inArray(questions.questionId, SAMPLE_LOGICAL_REASONING_QUESTIONS.map((question) => question.questionId))),
+  ]);
+
+  const categoryByName = new Map(categoryRows.map((category) => [category.name, category.id]));
+  const difficultyByName = new Map(difficultyRows.map((difficulty) => [difficulty.name, difficulty.id]));
+  const sourceId = sourceRows[0]?.id;
+  if (!sourceId) {
+    throw new Error("Unable to resolve the Question Bank sample source.");
+  }
+
+  const existingQuestionIds = new Set(existingRows.map((question) => question.questionId));
+  const missingQuestions = SAMPLE_LOGICAL_REASONING_QUESTIONS
+    .filter((question) => !existingQuestionIds.has(question.questionId))
+    .map((question) => ({
+      questionId: question.questionId,
+      questionText: question.questionText,
+      optionA: question.optionA,
+      optionB: question.optionB,
+      optionC: question.optionC,
+      optionD: question.optionD,
+      optionE: question.optionE,
+      correctAnswer: question.correctAnswer,
+      explanation: question.explanation,
+      categoryId: categoryByName.get(question.category) ?? null,
+      difficultyId: difficultyByName.get(question.difficulty) ?? null,
+      sourceId,
+    }));
+
+  if (missingQuestions.length > 0) {
+    await db.insert(questions).values(missingQuestions);
+  }
+
+  return { inserted: missingQuestions.length, total: SAMPLE_LOGICAL_REASONING_QUESTIONS.length };
 }
 
 /**

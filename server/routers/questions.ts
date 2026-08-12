@@ -86,6 +86,25 @@ export const questionsRouter = router({
       }
     }),
 
+  seedOriginalSamples: adminProcedure.mutation(async () => {
+    try {
+      const result = await questionRepository.seedOriginalSamples();
+      return {
+        success: true,
+        ...result,
+        message: result.inserted > 0
+          ? `Seeded ${result.inserted} original Logical Reasoning sample questions.`
+          : "The original Logical Reasoning sample set is already present.",
+      };
+    } catch (error) {
+      console.error("[Question Bank] Failed to seed original samples:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to seed the original Question Bank sample set",
+      });
+    }
+  }),
+
   list: publicProcedure.input(paginationSchema).query(async ({ input }) => {
     const [questions, total] = await Promise.all([
       questionRepository.list(input.limit, input.offset),

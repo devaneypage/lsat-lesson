@@ -5,6 +5,7 @@ import {
   getQuestionCount as getQuestionCountLegacy,
   getQuestions as getQuestionsLegacy,
   insertQuestions as insertQuestionsLegacy,
+  seedOriginalLogicalReasoningSamples as seedOriginalLogicalReasoningSamplesLegacy,
 } from "../db";
 
 /**
@@ -33,6 +34,10 @@ export const questionRepository = {
 
   recordImport(data: InsertImportHistory) {
     return createImportHistoryLegacy(data);
+  },
+
+  seedOriginalSamples() {
+    return seedOriginalLogicalReasoningSamplesLegacy();
   },
 };
 
