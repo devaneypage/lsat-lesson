@@ -103,6 +103,9 @@
 - [x] Refine and verify the reusable contextual orientation header for breadcrumbs, purpose, prerequisites, estimate, status, and next action.
 - [x] Run Vitest, type/build, runtime, responsive, and accessibility verification; resolve root causes for failures introduced or blocking the rollout. Verified 110 Vitest tests, typecheck, production build, desktop/mobile rendering, and no fresh console errors.
 - [x] Run protected-route accessibility checks for keyboard focus order, accessible names, and sign-in-shell controls on Today and Resources.
-- [ ] Run authenticated learner-flow accessibility verification for Today and Resources with a dedicated test session, covering keyboard traversal, focus order, breadcrumb/orientation landmarks, and accessible names.
+- [x] Run the initial authenticated learner-flow accessibility probe for Today and Resources. The published routes exposed a visible skip link as the first tab stop, named navigation and controls, and expected orientation content without mutating learner data.
+- [x] Verify authenticated keyboard entry, skip-link activation, visible orientation controls, named contextual actions, and direct breadcrumb/orientation semantics for Today and Resources.
+- [x] Capture an authenticated manual focus-order probe for Today and Resources, with visible focus-ring and semantic-target evidence.
+- [ ] Add a dedicated authenticated automation check that records `document.activeElement` after each Tab through the Today and Resources focus sequence.
 - [x] Generate the content-gap strategy presentation and publish a checkpoint with the completed implementation. Deck is available as a rendered slides deliverable; learner-experience milestone is published in checkpoint `7b68f8f7`.
 - [ ] Deliver the strategy deck, guide brief, and implementation summary.
