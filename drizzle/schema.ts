@@ -27,6 +27,39 @@ export type InsertUser = typeof users.$inferInsert;
 
 // TODO: Add your tables here
 /**
+ * Lookup table for question categories
+ */
+export const questionCategories = mysqlTable("questionCategories", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+});
+
+export type QuestionCategory = typeof questionCategories.$inferSelect;
+export type InsertQuestionCategory = typeof questionCategories.$inferInsert;
+
+/**
+ * Lookup table for question difficulties
+ */
+export const questionDifficulties = mysqlTable("questionDifficulties", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+});
+
+export type QuestionDifficulty = typeof questionDifficulties.$inferSelect;
+export type InsertQuestionDifficulty = typeof questionDifficulties.$inferInsert;
+
+/**
+ * Lookup table for question sources
+ */
+export const questionSources = mysqlTable("questionSources", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+});
+
+export type QuestionSource = typeof questionSources.$inferSelect;
+export type InsertQuestionSource = typeof questionSources.$inferInsert;
+
+/**
  * Questions table for storing LSAT practice questions
  */
 export const questions = mysqlTable("questions", {
@@ -40,11 +73,17 @@ export const questions = mysqlTable("questions", {
   optionE: text("optionE"),
   correctAnswer: varchar("correctAnswer", { length: 1 }).notNull(),
   explanation: text("explanation").notNull(),
-  category: varchar("category", { length: 64 }),
-  difficulty: varchar("difficulty", { length: 20 }),
-  source: varchar("source", { length: 255 }),
+  categoryId: int("categoryId").references(() => questionCategories.id),
+  difficultyId: int("difficultyId").references(() => questionDifficulties.id),
+  sourceId: int("sourceId").references(() => questionSources.id),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => {
+  return {
+    categoryIdIdx: index("questions_categoryId_idx").on(table.categoryId),
+    difficultyIdIdx: index("questions_difficultyId_idx").on(table.difficultyId),
+    sourceIdIdx: index("questions_sourceId_idx").on(table.sourceId),
+  };
 });
 
 export type Question = typeof questions.$inferSelect;
@@ -156,7 +195,7 @@ export const curriculumSkills = mysqlTable("curriculumSkills", {
   id: int("id").autoincrement().primaryKey(),
   skillId: varchar("skillId", { length: 64 }).notNull(),
   title: varchar("title", { length: 160 }).notNull(),
-  section: mysqlEnum("section", ["LR", "RC", "Logic"]).notNull(),
+  section: mysqlEnum("section", ["LR", "RC", "Logic", "Strategy"]).notNull(),
   description: text("description").notNull(),
   prerequisites: json("prerequisites").$type<string[]>().notNull(),
   registryVersion: int("registryVersion").default(1).notNull(),
@@ -301,7 +340,7 @@ export const studyPlanTasks = mysqlTable("studyPlanTasks", {
   index("studyPlanTasks_user_status_due_idx").on(table.userId, table.status, table.dueAt),
 ]);
 
-/** Privacy-safe, allow-listed product events with finite-retention timestamps. */
+/** Privacy-safe product analytics events. */
 export const productEvents = mysqlTable("productEvents", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId"),
@@ -311,18 +350,7 @@ export const productEvents = mysqlTable("productEvents", {
   metadata: json("metadata").$type<Record<string, string>>().notNull(),
   occurredAt: timestamp("occurredAt").defaultNow().notNull(),
   expiresAt: timestamp("expiresAt").notNull(),
-}, table => [
-  index("productEvents_name_occurred_idx").on(table.eventName, table.occurredAt),
-  index("productEvents_expiry_idx").on(table.expiresAt),
-]);
+});
 
-export type LearnerProfile = typeof learnerProfiles.$inferSelect;
-export type LearnerPreference = typeof learnerPreferences.$inferSelect;
-export type LessonProgress = typeof lessonProgress.$inferSelect;
-export type QuestionAttempt = typeof questionAttempts.$inferSelect;
-export type ReviewItem = typeof reviewItems.$inferSelect;
-export type MistakeJournalEntry = typeof mistakeJournalEntries.$inferSelect;
-export type SkillMasterySnapshot = typeof skillMasterySnapshots.$inferSelect;
-export type StudyPlan = typeof studyPlans.$inferSelect;
-export type StudyPlanTask = typeof studyPlanTasks.$inferSelect;
 export type ProductEvent = typeof productEvents.$inferSelect;
+export type InsertProductEvent = typeof productEvents.$inferInsert;

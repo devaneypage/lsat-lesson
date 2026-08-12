@@ -10,6 +10,9 @@ import {
   InsertTag,
   tags,
   questionTags,
+  questionCategories,
+  questionDifficulties,
+  questionSources,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -128,7 +131,32 @@ export async function getQuestions(limit = 100, offset = 0) {
   }
 
   try {
-    const result = await db.select().from(questions).limit(limit).offset(offset);
+    const result = await db.select({
+      id: questions.id,
+      questionId: questions.questionId,
+      questionText: questions.questionText,
+      optionA: questions.optionA,
+      optionB: questions.optionB,
+      optionC: questions.optionC,
+      optionD: questions.optionD,
+      optionE: questions.optionE,
+      correctAnswer: questions.correctAnswer,
+      explanation: questions.explanation,
+      categoryId: questions.categoryId,
+      difficultyId: questions.difficultyId,
+      sourceId: questions.sourceId,
+      createdAt: questions.createdAt,
+      updatedAt: questions.updatedAt,
+      category: questionCategories.name,
+      difficulty: questionDifficulties.name,
+      source: questionSources.name,
+    })
+    .from(questions)
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+    .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
+    .limit(limit)
+    .offset(offset);
     return result;
   } catch (error) {
     console.error("[Database] Failed to get questions:", error);
@@ -147,11 +175,32 @@ export async function getQuestionById(questionId: number) {
   }
 
   try {
-    const result = await db
-      .select()
-      .from(questions)
-      .where(eq(questions.id, questionId))
-      .limit(1);
+    const result = await db.select({
+      id: questions.id,
+      questionId: questions.questionId,
+      questionText: questions.questionText,
+      optionA: questions.optionA,
+      optionB: questions.optionB,
+      optionC: questions.optionC,
+      optionD: questions.optionD,
+      optionE: questions.optionE,
+      correctAnswer: questions.correctAnswer,
+      explanation: questions.explanation,
+      categoryId: questions.categoryId,
+      difficultyId: questions.difficultyId,
+      sourceId: questions.sourceId,
+      createdAt: questions.createdAt,
+      updatedAt: questions.updatedAt,
+      category: questionCategories.name,
+      difficulty: questionDifficulties.name,
+      source: questionSources.name,
+    })
+    .from(questions)
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+    .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
+    .where(eq(questions.id, questionId))
+    .limit(1);
     return result[0] ?? null;
   } catch (error) {
     console.error("[Database] Failed to get question:", error);
@@ -461,8 +510,20 @@ export async function getQuestionsWithTags(limit = 200, offset = 0) {
       tagsByQuestion.get(ta.questionId)!.push(ta);
     }
 
+    const categoryNames = await db.select({ id: questionCategories.id, name: questionCategories.name }).from(questionCategories);
+    const categoryMap = new Map(categoryNames.map(c => [c.id, c.name]));
+
+    const difficultyNames = await db.select({ id: questionDifficulties.id, name: questionDifficulties.name }).from(questionDifficulties);
+    const difficultyMap = new Map(difficultyNames.map(d => [d.id, d.name]));
+
+    const sourceNames = await db.select({ id: questionSources.id, name: questionSources.name }).from(questionSources);
+    const sourceMap = new Map(sourceNames.map(s => [s.id, s.name]));
+
     return qs.map((q) => ({
       ...q,
+      category: q.categoryId ? categoryMap.get(q.categoryId) : null,
+      difficulty: q.difficultyId ? difficultyMap.get(q.difficultyId) : null,
+      source: q.sourceId ? sourceMap.get(q.sourceId) : null,
       tags: (tagsByQuestion.get(q.id) ?? []).map((t) => ({
         id: t.tagId,
         name: t.tagName,
@@ -493,7 +554,12 @@ export async function getQuestionsFilteredByTags(
     let allQs = await db.select().from(questions);
 
     if (category) {
-      allQs = allQs.filter((q) => q.category === category);
+      const categoryResult = await db.select({ id: questionCategories.id }).from(questionCategories).where(eq(questionCategories.name, category)).limit(1);
+      if (categoryResult.length > 0) {
+        allQs = allQs.filter((q) => q.categoryId === categoryResult[0].id);
+      } else {
+        return { questions: [], total: 0 };
+      }
     }
 
     if (search) {

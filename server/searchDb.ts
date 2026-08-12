@@ -1,5 +1,5 @@
-import { asc, like, or, sql } from "drizzle-orm";
-import { questions } from "../drizzle/schema";
+import { asc, like, or, sql, eq } from "drizzle-orm";
+import { questions, questionCategories, questionDifficulties, questionSources } from "../drizzle/schema";
 import { getDb } from "./db";
 
 export function escapeSearchLikePattern(value: string) {
@@ -19,8 +19,9 @@ export async function searchQuestions(input: {
   const predicate = or(
     like(questions.questionId, pattern),
     like(questions.questionText, pattern),
-    like(questions.category, pattern),
-    like(questions.source, pattern),
+    like(questionCategories.name, pattern),
+    like(questionDifficulties.name, pattern),
+    like(questionSources.name, pattern),
   );
 
   const [items, countRows] = await Promise.all([
@@ -29,11 +30,14 @@ export async function searchQuestions(input: {
         id: questions.id,
         questionId: questions.questionId,
         questionText: questions.questionText,
-        category: questions.category,
-        difficulty: questions.difficulty,
-        source: questions.source,
+        category: questionCategories.name,
+        difficulty: questionDifficulties.name,
+        source: questionSources.name,
       })
       .from(questions)
+      .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+      .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+      .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
       .where(predicate)
       .orderBy(asc(questions.questionId), asc(questions.id))
       .limit(input.limit)
@@ -41,6 +45,9 @@ export async function searchQuestions(input: {
     db
       .select({ count: sql<number>`count(*)` })
       .from(questions)
+      .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+      .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+      .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
       .where(predicate),
   ]);
 

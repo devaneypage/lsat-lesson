@@ -1,4 +1,4 @@
-import type { InsertImportHistory, InsertQuestion } from "../../drizzle/schema";
+import type { InsertImportHistory, InsertQuestion, Question } from "../../drizzle/schema";
 import {
   createImportHistory as createImportHistoryLegacy,
   getQuestionById as getQuestionByIdLegacy,
@@ -19,11 +19,11 @@ export const questionRepository = {
     return insertQuestionsLegacy(questions);
   },
 
-  list(limit: number, offset: number) {
+  list(limit: number, offset: number): Promise<(Question & { category: string | null; difficulty: string | null; source: string | null })[]> {
     return getQuestionsLegacy(limit, offset);
   },
 
-  getById(questionId: number) {
+  getById(questionId: number): Promise<(Question & { category: string | null; difficulty: string | null; source: string | null }) | null> {
     return getQuestionByIdLegacy(questionId);
   },
 

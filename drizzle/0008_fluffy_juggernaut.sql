@@ -1,0 +1,1 @@
+ALTER TABLE `curriculumSkills` MODIFY COLUMN `section` enum('LR','RC','Logic','Strategy') NOT NULL;

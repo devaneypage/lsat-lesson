@@ -1,0 +1,16 @@
+{
+  "questionId": 30003,
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "assertions": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "cleanup": {
+    "removedAttempts": 0,
+    "removedEvents": 1
+  },
+  "status": "failed",
+  "error": "Locator.wait_for: Timeout 20000ms exceeded.\nCall log:\n  - waiting for get_by_role(\"heading\", name=re.compile(r\"Question #\")) to be visible\n"
+}

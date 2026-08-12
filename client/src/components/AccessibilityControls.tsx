@@ -56,7 +56,7 @@ export function AccessibilityControls() {
     onMutate: async next => {
       await utils.preferences.get.cancel();
       const previous = utils.preferences.get.getData();
-      utils.preferences.get.setData(undefined, current => current ? { ...current, ...next } : current);
+      utils.preferences.get.setData(undefined, (current: any) => current ? { ...current, ...next } : current);
       return { previous };
     },
     onError: (_error, _next, context) => {

@@ -100,7 +100,7 @@ export type LearnerFeatureFlagKey = (typeof FEATURE_RELEASES)[number]["key"];
 export type CurriculumSkill = {
   id: string;
   title: string;
-  section: "LR" | "RC" | "Logic";
+  section: "LR" | "RC" | "Logic" | "Strategy";
   description: string;
   prerequisites: string[];
 };

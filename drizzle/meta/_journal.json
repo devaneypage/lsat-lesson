@@ -36,6 +36,34 @@
       "when": 1784180117378,
       "tag": "0004_aromatic_moondragon",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1784206046490,
+      "tag": "0005_unusual_fantastic_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1784206580188,
+      "tag": "0006_puzzling_kate_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1784449811394,
+      "tag": "0007_cheerful_famine",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1786570248078,
+      "tag": "0008_fluffy_juggernaut",
+      "breakpoints": true
     }
   ]
 }

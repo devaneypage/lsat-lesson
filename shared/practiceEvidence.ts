@@ -11,11 +11,15 @@ export const MAX_ACTIVE_TIME_MS = 30 * 60 * 1_000;
 export const PRACTICE_DISCOVERY_BATCH_MAX = 50;
 export const PRACTICE_RECENT_WINDOW_MS = 7 * 24 * 60 * 60 * 1_000;
 
-export type BrowseSafeQuestion = Omit<Question, "correctAnswer" | "explanation">;
+export type BrowseSafeQuestion = Omit<Question, "correctAnswer" | "explanation" | "categoryId" | "difficultyId" | "sourceId"> & {
+  category: string | null;
+  difficulty: string | null;
+  source: string | null;
+};
 
-export function toBrowseSafeQuestion(question: Question): BrowseSafeQuestion {
-  const { correctAnswer: _correctAnswer, explanation: _explanation, ...safeQuestion } = question;
-  return safeQuestion;
+export function toBrowseSafeQuestion(question: Question & { category: string | null; difficulty: string | null; source: string | null }): BrowseSafeQuestion {
+  const { correctAnswer: _correctAnswer, explanation: _explanation, categoryId: _categoryId, difficultyId: _difficultyId, sourceId: _sourceId, ...safeQuestion } = question;
+  return { ...safeQuestion, category: question.category, difficulty: question.difficulty, source: question.source };
 }
 
 export function normalizeActiveTimeMs(value: number) {

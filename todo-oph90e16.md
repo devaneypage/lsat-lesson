@@ -74,3 +74,10 @@
 - [ ] Complete and verify persistent, versioned, editable study planning with validated AI drafts.
 - [ ] Complete and verify the administrator workspace and privacy-bounded aggregate analytics.
 - [ ] Complete migration checks, staged rollout controls, legacy retirement, full quality gates, documentation, and final published checkpoint.
+
+- [x] Audit and rebuild the practice-questions module and library.
+
+- [x] Address database schema inconsistencies for questions module
+- [ ] Implement color schema for sections (Logical Reasoning: red, Reading Comprehension: blue, Formal Logic: gold, Test Strategy: green)
+- [ ] Update frontend components to use new questions module structure and color schema
+- [ ] Verify functionality

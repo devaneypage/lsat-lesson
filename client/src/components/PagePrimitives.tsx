@@ -158,3 +158,21 @@ export function StatePanel({
     </section>
   );
 }
+
+export function SectionBadge({ section }: { section: "LR" | "RC" | "Logic" | "Strategy" | string }) {
+  const map: Record<string, { label: string; bg: string; text: string; border: string }> = {
+    LR: { label: "Logical Reasoning", bg: "rgba(211, 47, 47, 0.1)", text: "#D32F2F", border: "rgba(211, 47, 47, 0.3)" },
+    RC: { label: "Reading Comprehension", bg: "rgba(25, 118, 210, 0.1)", text: "#1976D2", border: "rgba(25, 118, 210, 0.3)" },
+    Logic: { label: "Formal Logic", bg: "rgba(245, 124, 0, 0.1)", text: "#F57C00", border: "rgba(245, 124, 0, 0.3)" },
+    Strategy: { label: "Test Strategy", bg: "rgba(56, 142, 60, 0.1)", text: "#388E3C", border: "rgba(56, 142, 60, 0.3)" },
+  };
+  const cfg = map[section] ?? { label: section, bg: "rgba(100,100,100,0.1)", text: "var(--foreground)", border: "var(--border)" };
+  return (
+    <span
+      className="inline-flex items-center rounded-sm px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider"
+      style={{ backgroundColor: cfg.bg, color: cfg.text, border: `1px solid ${cfg.border}` }}
+    >
+      {cfg.label}
+    </span>
+  );
+}

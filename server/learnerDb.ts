@@ -4,9 +4,9 @@ import {
   learnerPreferences,
   learnerProfiles,
   lessonProgress,
-  type LearnerPreference,
-  type LearnerProfile,
-  type LessonProgress,
+  type QuestionCategory,
+  type QuestionDifficulty,
+  type QuestionSource,
 } from "../drizzle/schema";
 import {
   CURRICULUM_LESSONS,
@@ -18,6 +18,10 @@ import {
 } from "../shared/learnerDomain";
 import { getDb } from "./db";
 import { getTodaySignals, type TodayPlanTaskSignal, type TodayReviewSignal } from "./repositories/today";
+
+export type LearnerPreference = typeof learnerPreferences.$inferSelect;
+export type LearnerProfile = typeof learnerProfiles.$inferSelect;
+export type LessonProgress = typeof lessonProgress.$inferSelect;
 
 export type LegacyProgressInput = {
   lessonId: string;

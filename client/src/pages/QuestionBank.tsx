@@ -133,7 +133,9 @@ export default function QuestionBank() {
     return questions.filter((q) => {
       const matchesSearch =
         q.questionText.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.category?.toLowerCase().includes(searchQuery.toLowerCase());
+        q.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.difficulty?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.source?.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesDifficulty =
         selectedDifficulty === "all" || q.difficulty === selectedDifficulty;
@@ -152,11 +154,19 @@ export default function QuestionBank() {
   }, [questions, searchQuery, selectedDifficulty, selectedCategory, selectedSource, selectedTagId, taggedQuestionIds]);
 
   // Get unique categories and sources
-  const categories = Array.from(
+      const categories = Array.from(
     new Set(
       questions
         .map((q) => q.category)
         .filter((c) => c !== null && c !== undefined)
+    )
+  ).sort() as string[];
+
+  const difficulties = Array.from(
+    new Set(
+      questions
+        .map((q) => q.difficulty)
+        .filter((d) => d !== null && d !== undefined)
     )
   ).sort() as string[];
 
@@ -335,6 +345,9 @@ export default function QuestionBank() {
                 {selectedQuestion.category && (
                   <Badge variant="outline">{selectedQuestion.category}</Badge>
                 )}
+                {selectedQuestion.source && (
+                  <Badge variant="outline">{selectedQuestion.source}</Badge>
+                )}
               </div>
               <h2 className="text-2xl font-bold text-[#2D3561] mb-4">
                 {selectedQuestion.questionText}
@@ -342,10 +355,13 @@ export default function QuestionBank() {
             </div>
 
             {/* Answer Options */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3 mb-6" role="group" aria-label="Answer choices">
               {answerOptions.map((option) => (
                 <button
                   key={option.label}
+                  type="button"
+                  aria-label={`Answer ${option.label}: ${option.value}`}
+                  aria-pressed={selectedAnswer === option.label}
                   onClick={() =>
                     !showExplanation && setSelectedAnswer(option.label)
                   }
@@ -684,14 +700,31 @@ export default function QuestionBank() {
             <SelectTrigger className="bg-white border-[#E8E6E1]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
+        <SelectContent>
+          <SelectItem value="all">All Categories</SelectItem>
+          {categories.map((category) => (
+            <SelectItem key={category} value={category}>
+              {category}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={selectedDifficulty}
+        onValueChange={setSelectedDifficulty}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Difficulty" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Difficulties</SelectItem>
+          {difficulties.map((difficulty) => (
+            <SelectItem key={difficulty} value={difficulty}>
+              {difficulty}
+            </SelectItem>
+          ))}
+        </SelectContent>
           </Select>
 
           {/* Difficulty Filter */}
@@ -745,14 +778,31 @@ export default function QuestionBank() {
             <SelectTrigger className="bg-white border-[#E8E6E1]">
               <SelectValue placeholder="Source" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sources</SelectItem>
-              {sources.map((src) => (
-                <SelectItem key={src} value={src}>
-                  {src}
-                </SelectItem>
-              ))}
-            </SelectContent>
+        <SelectContent>
+          <SelectItem value="all">All Sources</SelectItem>
+          {sources.map((source) => (
+            <SelectItem key={source} value={source}>
+              {source}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={selectedTagId === null ? "all" : selectedTagId.toString()}
+        onValueChange={(value) => setSelectedTagId(value === "all" ? null : Number(value))}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Tags" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Tags</SelectItem>
+          {tagsWithCounts.map((tag) => (
+            <SelectItem key={tag.id} value={tag.id.toString()}>
+              {tag.name} ({tag.questionCount})
+            </SelectItem>
+          ))}
+        </SelectContent>
           </Select>
         </div>
 

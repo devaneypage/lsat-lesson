@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, publicProcedure, router } from "../_core/trpc";
+import { questionCategories, questionDifficulties, questionSources } from "../../drizzle/schema";
 import { questionRepository } from "../repositories/questions";
 import { toBrowseSafeQuestion } from "../../shared/practiceEvidence";
 
@@ -17,6 +18,9 @@ const importedQuestionSchema = z.object({
   category: z.string().trim().max(128).optional(),
   difficulty: z.string().trim().max(64).optional(),
   source: z.string().trim().max(256).optional(),
+  categoryId: z.number().int().optional(),
+  difficultyId: z.number().int().optional(),
+  sourceId: z.number().int().optional(),
 });
 
 const paginationSchema = z.object({
@@ -44,9 +48,9 @@ export const questionsRouter = router({
           optionE: question.option_e ?? null,
           correctAnswer: question.correct_answer,
           explanation: question.explanation,
-          category: question.category ?? null,
-          difficulty: question.difficulty ?? null,
-          source: question.source ?? null,
+          categoryId: question.categoryId ?? null,
+          difficultyId: question.difficultyId ?? null,
+          sourceId: question.sourceId ?? null,
         }));
 
         const importedCount = await questionRepository.insertMany(questionsData);
