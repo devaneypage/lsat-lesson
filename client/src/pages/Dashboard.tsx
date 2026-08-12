@@ -74,12 +74,7 @@ export default function Dashboard() {
       </section>
     </>
   );
-  const sidebarContent = flags.learner_dashboard_v2 ? (
-    <>
-      <ContinueLearningSidebar />
-      <QuickNavigation />
-    </>
-  ) : legacySidebar;
+  const sidebarContent = flags.learner_dashboard_v2 ? <ContinueLearningSidebar /> : legacySidebar;
 
   return (
     <NexusDashboardLayout

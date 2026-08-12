@@ -81,3 +81,28 @@
 - [ ] Implement color schema for sections (Logical Reasoning: red, Reading Comprehension: blue, Formal Logic: gold, Test Strategy: green)
 - [ ] Update frontend components to use new questions module structure and color schema
 - [ ] Verify functionality
+
+# Content Gap Analysis — Devasophy Blog
+
+- [x] Inventory public Devasophy Blog content and define the organic-search scope.
+- [x] Discover representative organic competitors and collect public SERP evidence.
+- [x] Assess topic, depth, buyer-journey, freshness, and content-velocity gaps.
+- [x] Produce a prioritized content-gap workbook and cited decision-ready report.
+- [x] Benchmark public content velocity with fallback-safe indexed/resource-page counts by domain and page type.
+- [x] Expand the freshness assessment with live date, byline, update-signal, and structured-data evidence.
+- [x] Deliver the evidence caveats and recommended editorial next actions.
+
+# Content Strategy and Learner Experience Rollout
+
+- [x] Audit the existing Continue Learning aggregation, dashboard-v2 flag integration, orientation-header coverage, and current typecheck/runtime failures.
+- [x] Draft the Necessary Assumption / Negation Test™ guide outline and key argument brief.
+- [x] Prepare the cited content-gap strategy presentation outline and visual plan.
+- [x] Create the content-gap deck visual system: theme, color/typography direction, chart treatment, section dividers, and layout rules.
+- [x] Complete any missing server-authoritative Continue Learning contract behavior and deterministic-priority regressions. Existing protected `learner.continueLearning` aggregation and priority tests already satisfy this requirement; no duplicate server contract was added.
+- [x] Replace static learner dashboard metrics and actions with the aggregated response behind `learner_dashboard_v2`.
+- [x] Refine and verify the reusable contextual orientation header for breadcrumbs, purpose, prerequisites, estimate, status, and next action.
+- [x] Run Vitest, type/build, runtime, responsive, and accessibility verification; resolve root causes for failures introduced or blocking the rollout. Verified 110 Vitest tests, typecheck, production build, desktop/mobile rendering, and no fresh console errors.
+- [x] Run protected-route accessibility checks for keyboard focus order, accessible names, and sign-in-shell controls on Today and Resources.
+- [ ] Run authenticated learner-flow accessibility verification for Today and Resources with a dedicated test session, covering keyboard traversal, focus order, breadcrumb/orientation landmarks, and accessible names.
+- [ ] Generate the content-gap strategy presentation and publish a checkpoint with the completed implementation.
+- [ ] Deliver the strategy deck, guide brief, and implementation summary.

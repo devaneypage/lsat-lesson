@@ -1,0 +1,39 @@
+{
+  "results": [
+    {
+      "route": "/today",
+      "authenticated_view": false,
+      "protected_sign_in_shell": true,
+      "orientation_landmark_count": 0,
+      "breadcrumb_count": 0,
+      "heading_count": 0,
+      "unnamed_interactives": [],
+      "tab_stops": [
+        "A:LSAT Nexus home",
+        "BUTTON:Sign in to LSAT Nexus",
+        "A:Return to the public site",
+        "BUTTON:Open accessibility preferences",
+        "BUTTON:Open search and command palette"
+      ],
+      "console_errors": []
+    },
+    {
+      "route": "/resources",
+      "authenticated_view": false,
+      "protected_sign_in_shell": true,
+      "orientation_landmark_count": 0,
+      "breadcrumb_count": 0,
+      "heading_count": 0,
+      "unnamed_interactives": [],
+      "tab_stops": [
+        "A:LSAT Nexus home",
+        "BUTTON:Sign in to LSAT Nexus",
+        "A:Return to the public site",
+        "BUTTON:Open accessibility preferences",
+        "BUTTON:Open search and command palette"
+      ],
+      "console_errors": []
+    }
+  ],
+  "failures": []
+}

@@ -98,6 +98,12 @@ export function ContinueLearningSidebar() {
   const { data } = trpc.learner.continueLearning.useQuery(undefined, { enabled: isAuthenticated, retry: false });
   if (!data) return null;
 
+  const evidenceMessage = data.summary.dueReviewCount > 0
+    ? `${data.summary.dueReviewCount} question${data.summary.dueReviewCount === 1 ? " is" : "s are"} due for retrieval practice.`
+    : data.summary.hasActivePlanTask
+      ? "Your active study plan has a pending task."
+      : "No due review or plan task is waiting.";
+
   return (
     <section className="rounded-sm border border-border bg-card p-4 text-card-foreground" aria-labelledby="learning-summary-title">
       <h2 id="learning-summary-title" className="font-display font-bold text-lg">Learning summary</h2>
@@ -107,6 +113,15 @@ export function ContinueLearningSidebar() {
         <Metric label="Active" value={data.summary.inProgressLessons} />
         <Metric label="Remaining" value={data.summary.remainingLessons} />
       </div>
+      <div className="mt-4 border-t border-border pt-4" aria-label="Current study evidence">
+        <p className="font-mono text-[0.68rem] font-bold uppercase tracking-[0.14em] text-muted-foreground">Current evidence</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{evidenceMessage}</p>
+      </div>
+      {data.primaryAction && (
+        <Link href={data.primaryAction?.route} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-sm border border-primary px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          {data.primaryAction.label}<ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+      )}
     </section>
   );
 }

@@ -64,7 +64,7 @@ export async function recordQuestionsDiscovered(input: {
 }) {
   const db = await requireDb();
   const now = input.now ?? new Date();
-  const uniqueIds = [...new Set(input.questionIds)].slice(0, PRACTICE_DISCOVERY_BATCH_MAX);
+  const uniqueIds = Array.from(new Set(input.questionIds)).slice(0, PRACTICE_DISCOVERY_BATCH_MAX);
   if (uniqueIds.length === 0) return 0;
 
   const existing = await db

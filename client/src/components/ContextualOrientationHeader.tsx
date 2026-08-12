@@ -147,6 +147,14 @@ export function RouteOrientation() {
       statusLabel: "Editable",
       nextAction: { label: "Return to Today", href: ROUTE_BY_ID.today.path },
     },
+    resources: {
+      breadcrumb: [{ label: ROUTE_BY_ID.today.label, href: ROUTE_BY_ID.today.path }, { label: ROUTE_BY_ID.resources.label }],
+      title: ROUTE_BY_ID.resources.label,
+      purpose: ROUTE_BY_ID.resources.description,
+      estimate: "Supporting references",
+      statusLabel: "Available",
+      nextAction: { label: "Return to Today", href: ROUTE_BY_ID.today.path },
+    },
   };
   const routeEntry = Object.entries(ROUTE_BY_ID).find(([, route]) => route.path === canonicalLocation);
   const orientation = routeEntry ? routeOrientations[routeEntry[0] as keyof typeof ROUTE_BY_ID] : undefined;

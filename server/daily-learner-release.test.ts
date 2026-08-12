@@ -81,8 +81,18 @@ describe("daily learner release contracts", () => {
   it("provides orientation metadata for every canonical learner surface", () => {
     const source = readFileSync(resolve(process.cwd(), "client/src/components/ContextualOrientationHeader.tsx"), "utf8");
 
-    for (const routeId of ["today", "learn", "practice", "review", "progress", "plan"]) {
+    for (const routeId of ["today", "learn", "practice", "review", "progress", "plan", "resources"]) {
       expect(source).toContain(`${routeId}: {`);
     }
+  });
+
+  it("keeps dashboard-v2 actions and evidence summary driven by the aggregated Continue Learning response", () => {
+    const dashboardSource = readFileSync(resolve(process.cwd(), "client/src/pages/Dashboard.tsx"), "utf8");
+    const continueLearningSource = readFileSync(resolve(process.cwd(), "client/src/components/ContinueLearningDashboard.tsx"), "utf8");
+
+    expect(dashboardSource).not.toContain("<ContinueLearningSidebar />\n      <QuickNavigation />");
+    expect(continueLearningSource).toContain("data.summary.dueReviewCount");
+    expect(continueLearningSource).toContain("data.summary.hasActivePlanTask");
+    expect(continueLearningSource).toContain("data.primaryAction?.route");
   });
 });
