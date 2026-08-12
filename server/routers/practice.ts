@@ -41,6 +41,10 @@ export const practiceRouter = router({
   summary: protectedProcedure.query(({ ctx }) =>
     practiceRepository.getPracticeSummary(ctx.user.id)),
 
+  outcomes: protectedProcedure
+    .input(z.object({ limit: z.number().int().min(1).max(50).default(12) }).default({ limit: 12 }))
+    .query(({ ctx, input }) => practiceRepository.getQuestionOutcomes(ctx.user.id, input.limit)),
+
   submit: protectedProcedure
     .input(routeContextSchema.extend({
       questionId: z.number().int().positive(),

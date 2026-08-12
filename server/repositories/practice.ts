@@ -1,5 +1,5 @@
-import { and, eq, inArray } from "drizzle-orm";
-import { productEvents, questionAttempts, questions } from "../../drizzle/schema";
+import { and, desc, eq, inArray } from "drizzle-orm";
+import { productEvents, questionAttempts, questionCategories, questionDifficulties, questionSources, questions } from "../../drizzle/schema";
 import { sanitizeProductEventMetadata, type ConfidenceLevel } from "../../shared/learnerDomain";
 import {
   PRACTICE_DISCOVERY_BATCH_MAX,
@@ -10,6 +10,7 @@ import {
   type PracticeSummary,
 } from "../../shared/practiceEvidence";
 import { getDb } from "../db";
+import { summarizeLatestQuestionOutcomes } from "../../shared/questionProgress";
 
 const EVENT_RETENTION_MS = 90 * 24 * 60 * 60 * 1_000;
 
@@ -122,6 +123,43 @@ export async function getPracticeSummary(userId: number, now: Date = new Date())
     })),
     now,
   );
+}
+
+/** Returns the latest recorded outcome for each attempted question, newest first. */
+export async function getQuestionOutcomes(userId: number, limit = 12) {
+  const db = await requireDb();
+  const rows = await db
+    .select({
+      attemptId: questionAttempts.id,
+      questionId: questions.id,
+      questionKey: questions.questionId,
+      category: questionCategories.name,
+      difficulty: questionDifficulties.name,
+      source: questionSources.name,
+      selectedAnswer: questionAttempts.selectedAnswer,
+      isCorrect: questionAttempts.isCorrect,
+      confidence: questionAttempts.confidence,
+      activeTimeMs: questionAttempts.activeTimeMs,
+      submittedAt: questionAttempts.submittedAt,
+    })
+    .from(questionAttempts)
+    .innerJoin(questions, eq(questionAttempts.questionId, questions.id))
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+    .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
+    .where(eq(questionAttempts.userId, userId))
+    .orderBy(desc(questionAttempts.submittedAt), desc(questionAttempts.id));
+
+  const outcomes = summarizeLatestQuestionOutcomes(rows.map((row) => ({
+    ...row,
+    selectedAnswer: row.selectedAnswer as AnswerLetter,
+    isCorrect: row.isCorrect === 1,
+  })));
+
+  return {
+    uniqueQuestionsAttempted: outcomes.length,
+    outcomes: outcomes.slice(0, Math.max(1, Math.min(limit, 50))),
+  };
 }
 
 export async function submitPracticeAttempt(input: {
@@ -256,5 +294,6 @@ export const practiceRepository = {
   recordQuestionStarted,
   recordQuestionsDiscovered,
   getPracticeSummary,
+  getQuestionOutcomes,
   submitPracticeAttempt,
 };

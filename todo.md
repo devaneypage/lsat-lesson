@@ -459,3 +459,12 @@
 - [x] Add and run focused Vitest coverage for seed/content validation
 - [x] Restore an ES2015+ TypeScript target so existing Set iteration compiles during verification
 - [x] Verify the public Question Bank API returns all five seeded originals and save a checkpoint
+
+## Question Bank — Learner Progress & Sample Explanations
+
+- [x] Audit the existing practice-attempt data flow and Question Bank answer experience
+- [x] Add learner-facing attempted-question and outcome summaries to the Question Bank
+- [x] Add an attempted-question outcome list with correct/incorrect result and latest selection
+- [x] Add a detailed explanation view for each original Logical Reasoning sample question
+- [x] Add and run focused Vitest coverage for progress aggregation and sample explanations
+- [x] Verify protected API contracts, type check, production build, and save a checkpoint

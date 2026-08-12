@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Tag } from "lucide-react";
+import { BookMarked, CheckCircle2, CircleHelp, Tag, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,6 +104,7 @@ export default function QuestionBank() {
   const [confidence, setConfidence] = useState<ConfidenceLevel | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showStudyExplanation, setShowStudyExplanation] = useState(false);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const startMutation = trpc.practice.start.useMutation();
   const submitMutation = trpc.practice.submit.useMutation();
@@ -127,6 +128,18 @@ export default function QuestionBank() {
   const practiceSummaryQuery = trpc.practice.summary.useQuery(undefined, {
     enabled: isAuthenticated && confidenceTrackingEnabled && viewMode === "stats",
   });
+  const outcomesQuery = trpc.practice.outcomes.useQuery(
+    { limit: 12 },
+    { enabled: isAuthenticated },
+  );
+  const sampleExplanationQuery = trpc.questions.sampleExplanation.useQuery(
+    { questionId: selectedQuestion?.id ?? 0 },
+    { enabled: selectedQuestion?.questionId.startsWith("nexus-lr-sample-") ?? false },
+  );
+  const outcomesByQuestionId = useMemo(
+    () => new Map((outcomesQuery.data?.outcomes ?? []).map((outcome) => [outcome.questionId, outcome])),
+    [outcomesQuery.data?.outcomes],
+  );
 
   // Filter and search logic
   const filteredQuestions = useMemo(() => {
@@ -198,6 +211,7 @@ export default function QuestionBank() {
     setConfidence(null);
     setIdempotencyKey(crypto.randomUUID());
     setShowExplanation(false);
+    setShowStudyExplanation(false);
     submitMutation.reset();
     accumulatedActiveMsRef.current = 0;
     activeStartedAtRef.current = Date.now();
@@ -307,6 +321,7 @@ export default function QuestionBank() {
   // Practice Mode View
   if (viewMode === "practice" && selectedQuestion) {
     const isCorrect = submissionResult?.isCorrect ?? false;
+    const sampleExplanation = sampleExplanationQuery.data;
     const answerOptions: Array<{ label: AnswerLetter; value: string }> = [
       { label: "A", value: selectedQuestion.optionA },
       { label: "B", value: selectedQuestion.optionB },
@@ -438,13 +453,26 @@ export default function QuestionBank() {
 
             {/* Action Buttons */}
             {!showExplanation ? (
-              <Button
-                onClick={handleSubmitAnswer}
-                disabled={!selectedAnswer || (confidenceTrackingEnabled && !confidence) || !isAuthenticated || submitMutation.isPending}
-                className="w-full"
-              >
-                {submitMutation.isPending ? "Recording attempt…" : "Submit answer"}
-              </Button>
+              <div className="space-y-3">
+                {sampleExplanation && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowStudyExplanation((shown) => !shown)}
+                    className="w-full"
+                  >
+                    <BookMarked className="mr-2 h-4 w-4" />
+                    {showStudyExplanation ? "Hide detailed explanation" : "Study detailed explanation"}
+                  </Button>
+                )}
+                <Button
+                  onClick={handleSubmitAnswer}
+                  disabled={!selectedAnswer || (confidenceTrackingEnabled && !confidence) || !isAuthenticated || submitMutation.isPending}
+                  className="w-full"
+                >
+                  {submitMutation.isPending ? "Recording attempt…" : "Submit answer"}
+                </Button>
+              </div>
             ) : submissionResult ? (
               <div className="space-y-4">
                 <div
@@ -478,6 +506,24 @@ export default function QuestionBank() {
                 </Button>
               </div>
             ) : null}
+
+            {(showStudyExplanation || showExplanation) && sampleExplanation && (
+              <section className="mt-6 space-y-4 rounded-sm border border-[var(--nexus-teal)]/35 bg-[var(--nexus-teal)]/5 p-5" aria-labelledby="sample-explanation-heading">
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--nexus-teal)]">Original sample walkthrough</p>
+                  <h3 id="sample-explanation-heading" className="mt-1 font-display text-xl font-bold text-foreground">How to reason through this question</h3>
+                  <p className="mt-2 leading-6 text-muted-foreground">{sampleExplanation.reasoningStrategy}</p>
+                </div>
+                <div className="space-y-2">
+                  {(["A", "B", "C", "D", "E"] as const).map((answer) => (
+                    <div key={answer} className={`grid grid-cols-[32px_1fr] gap-3 border px-3 py-3 ${answer === sampleExplanation.correctAnswer ? "border-emerald-500/50 bg-emerald-50" : "border-border bg-background"}`}>
+                      <span className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${answer === sampleExplanation.correctAnswer ? "bg-emerald-600 text-white" : "bg-muted text-foreground"}`}>{answer}</span>
+                      <p className="pt-0.5 text-sm leading-6 text-foreground">{sampleExplanation.answerAnalysis[answer]}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </Card>
         </div>
       </div>
@@ -645,6 +691,32 @@ export default function QuestionBank() {
                       </table>
                     </Card>
                   </div>
+                  <Card className="mt-6 p-6 bg-white">
+                    <div className="mb-4 flex items-center justify-between gap-4">
+                      <div>
+                        <h3 className="font-bold text-[#2D3561]">Latest question outcomes</h3>
+                        <p className="mt-1 text-sm text-[#4A5578]">Your most recent recorded result for each attempted question.</p>
+                      </div>
+                      <Badge variant="outline">{outcomesQuery.data?.uniqueQuestionsAttempted ?? 0} attempted</Badge>
+                    </div>
+                    {outcomesQuery.isLoading ? (
+                      <p className="text-sm text-[#4A5578]">Loading outcomes…</p>
+                    ) : outcomesQuery.data?.outcomes.length ? (
+                      <ul className="divide-y divide-[#E8E6E1]">
+                        {outcomesQuery.data.outcomes.map((outcome) => (
+                          <li key={outcome.questionId} className="flex items-center justify-between gap-4 py-3">
+                            <div className="min-w-0">
+                              <p className="truncate font-medium text-[#2D3561]">{questions.find((question) => question.id === outcome.questionId)?.questionText ?? outcome.questionKey}</p>
+                              <p className="mt-1 text-xs text-[#4A5578]">Selected {outcome.selectedAnswer} · {outcome.attemptCount} {outcome.attemptCount === 1 ? "attempt" : "attempts"}</p>
+                            </div>
+                            <Badge className={outcome.isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}>{outcome.isCorrect ? "Correct" : "Review"}</Badge>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-[#4A5578]">No question outcomes are available yet.</p>
+                    )}
+                  </Card>
                 </>
               )}
             </section>
@@ -673,6 +745,12 @@ export default function QuestionBank() {
           <p className="text-[#4A5578]">
             {filteredQuestions.length} questions available
           </p>
+          {isAuthenticated && outcomesQuery.data && (
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[#4A5578]">
+              <span className="inline-flex items-center gap-1.5"><CircleHelp className="h-4 w-4" /> {outcomesQuery.data.uniqueQuestionsAttempted} questions attempted</span>
+              <span>Open <strong className="text-[#2D3561]">Statistics</strong> to review your latest outcomes.</span>
+            </div>
+          )}
         </div>
 
         {/* Controls */}
@@ -875,6 +953,12 @@ export default function QuestionBank() {
                         </>
                       )}
                     </Badge>
+                    {outcomesByQuestionId.get(question.id) && (
+                      <Badge className={outcomesByQuestionId.get(question.id)?.isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}>
+                        {outcomesByQuestionId.get(question.id)?.isCorrect ? <CheckCircle2 className="mr-1 h-3 w-3" /> : <XCircle className="mr-1 h-3 w-3" />}
+                        {outcomesByQuestionId.get(question.id)?.isCorrect ? "Correct" : "Review"}
+                      </Badge>
+                    )}
                   </div>
                   {question.category && (
                     <Badge variant="outline" className="mb-3">

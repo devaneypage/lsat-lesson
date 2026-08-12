@@ -4,6 +4,7 @@ import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { questionCategories, questionDifficulties, questionSources } from "../../drizzle/schema";
 import { questionRepository } from "../repositories/questions";
 import { toBrowseSafeQuestion } from "../../shared/practiceEvidence";
+import { getSampleLogicalReasoningExplanation } from "../sampleData/logicalReasoningExplanations";
 
 const importedQuestionSchema = z.object({
   question_id: z.string().trim().min(1).max(128),
@@ -118,6 +119,23 @@ export const questionsRouter = router({
     .query(async ({ input }) => {
       const question = await questionRepository.getById(input.questionId);
       return question ? toBrowseSafeQuestion(question) : null;
+    }),
+
+  sampleExplanation: publicProcedure
+    .input(z.object({ questionId: z.number().int().positive() }))
+    .query(async ({ input }) => {
+      const question = await questionRepository.getById(input.questionId);
+      if (!question) return null;
+      const detail = getSampleLogicalReasoningExplanation(question.questionId);
+      if (!detail) return null;
+      return {
+        questionId: question.id,
+        questionKey: question.questionId,
+        questionText: question.questionText,
+        correctAnswer: question.correctAnswer,
+        explanation: question.explanation,
+        ...detail,
+      };
     }),
 
   count: publicProcedure.query(() => questionRepository.count()),
