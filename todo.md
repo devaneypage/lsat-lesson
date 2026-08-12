@@ -468,3 +468,10 @@
 - [x] Add a detailed explanation view for each original Logical Reasoning sample question
 - [x] Add and run focused Vitest coverage for progress aggregation and sample explanations
 - [x] Verify protected API contracts, type check, production build, and save a checkpoint
+
+## Plan Validation & Browser Verification
+
+- [x] Compare the uploaded UX overhaul and development-review claims against current code and routes
+- [x] Run browser-based verification of public and learner-gated primary flows
+- [x] Record current, evidence-based feature status and unresolved gaps
+- [x] Create a prioritized implementation and verification roadmap for the next sprint

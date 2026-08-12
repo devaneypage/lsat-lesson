@@ -1,0 +1,40 @@
+{
+  "baseUrl": "https://3000-ik9piw1hyhy8iknm1c68z-cc398852.us2.manus.computer",
+  "results": [
+    {
+      "flow": "public landing page",
+      "path": "/",
+      "status": "passed",
+      "title": "LSAT Prep & Tutoring | Devaney M. Page, JD"
+    },
+    {
+      "flow": "public instructor page",
+      "path": "/about",
+      "status": "passed",
+      "title": "About Devaney M. Page, JD | LSAT Mastery"
+    },
+    {
+      "flow": "public booking page",
+      "path": "/booking",
+      "status": "passed",
+      "title": "Book a Session \u2014 Devaney M. Page, JD | LSAT Tutor"
+    },
+    {
+      "flow": "protected dashboard guard",
+      "path": "/dashboard",
+      "status": "passed",
+      "title": "LSAT Prep & Tutoring | Devaney M. Page, JD"
+    },
+    {
+      "flow": "protected practice guard",
+      "path": "/question-bank",
+      "status": "passed",
+      "title": "LSAT Prep & Tutoring | Devaney M. Page, JD"
+    },
+    {
+      "flow": "Question Bank sample catalog",
+      "path": "/api/trpc/questions.list",
+      "status": "passed"
+    }
+  ]
+}
