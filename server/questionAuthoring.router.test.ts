@@ -8,6 +8,9 @@ const repository = {
   updateDraft: vi.fn(),
   transition: vi.fn(),
   publish: vi.fn(),
+  listSkills: vi.fn(),
+  listReviewers: vi.fn(),
+  assignReviewer: vi.fn(),
 };
 
 vi.mock("./repositories/questionSubmissions", () => ({ questionSubmissionRepository: repository }));
@@ -47,6 +50,21 @@ const validDraft = {
   rightsConfirmed: true as const,
 };
 
+const csvRow = {
+  internal_title: validDraft.internalTitle,
+  question_text: validDraft.questionText,
+  option_a: validDraft.optionA,
+  option_b: validDraft.optionB,
+  option_c: validDraft.optionC,
+  option_d: validDraft.optionD,
+  correct_answer: validDraft.correctAnswer,
+  explanation: validDraft.explanation,
+  category: validDraft.category,
+  difficulty: validDraft.difficulty,
+  source: validDraft.source,
+  skill_ids: "lr-assumptions",
+};
+
 describe("questionAuthoring router", () => {
   it("denies authoring access to non-administrators before a repository call", async () => {
     const caller = questionAuthoringRouter.createCaller(createContext("user"));
@@ -72,5 +90,29 @@ describe("questionAuthoring router", () => {
     const caller = questionAuthoringRouter.createCaller(createContext("admin"));
     await expect(caller.publish({ submissionKey: "submission-1" })).resolves.toMatchObject({ status: "published", publishedQuestionId: 42 });
     expect(repository.publish).toHaveBeenCalledWith("submission-1");
+  });
+
+  it("assigns only active administrators and records an editorial due date", async () => {
+    repository.listReviewers.mockResolvedValueOnce([{ id: 9, name: "Reviewer", email: "reviewer@example.com" }]);
+    repository.assignReviewer.mockResolvedValueOnce({ submissionKey: "submission-1", assignedReviewerId: 9, editorialDueAt: new Date("2026-09-01T12:00:00Z") });
+    const caller = questionAuthoringRouter.createCaller(createContext("admin"));
+    await expect(caller.assignReviewer({ submissionKey: "submission-1", assignedReviewerId: 9, editorialDueAt: new Date("2026-09-01T12:00:00Z") })).resolves.toMatchObject({ assignedReviewerId: 9 });
+    expect(repository.assignReviewer).toHaveBeenCalledWith("submission-1", 9, new Date("2026-09-01T12:00:00Z"));
+  });
+
+  it("returns row-level CSV preview issues when a proposed skill is outside the curriculum registry", async () => {
+    repository.listSkills.mockResolvedValueOnce([{ skillId: "lr-assumptions" }]);
+    const caller = questionAuthoringRouter.createCaller(createContext("admin"));
+    const preview = await caller.previewDraftImport({ rows: [{ ...csvRow, skill_ids: "lr-assumptions;unknown-skill" }] });
+    expect(preview[0]).toMatchObject({ isValid: false, skillIds: ["lr-assumptions", "unknown-skill"] });
+    expect(preview[0]?.issues.join(" ")).toContain("Unknown curriculum skill: unknown-skill");
+  });
+
+  it("preserves malformed CSV rows for row-level preview feedback instead of rejecting the complete preview request", async () => {
+    repository.listSkills.mockResolvedValueOnce([{ skillId: "lr-assumptions" }]);
+    const caller = questionAuthoringRouter.createCaller(createContext("admin"));
+    const preview = await caller.previewDraftImport({ rows: [{ ...csvRow, correct_answer: "Z", difficulty: "advanced" }] });
+    expect(preview[0]?.isValid).toBe(false);
+    expect(preview[0]?.issues.length).toBeGreaterThan(0);
   });
 });

@@ -113,7 +113,9 @@ export const questionSubmissions = mysqlTable("questionSubmissions", {
   authorNotes: text("authorNotes"),
   reviewNotes: text("reviewNotes"),
   authorId: int("authorId").notNull().references(() => users.id),
+  assignedReviewerId: int("assignedReviewerId").references(() => users.id),
   reviewerId: int("reviewerId").references(() => users.id),
+  editorialDueAt: timestamp("editorialDueAt"),
   submittedAt: timestamp("submittedAt"),
   reviewedAt: timestamp("reviewedAt"),
   publishedQuestionId: int("publishedQuestionId").references(() => questions.id),
@@ -122,12 +124,29 @@ export const questionSubmissions = mysqlTable("questionSubmissions", {
 }, table => [
   index("questionSubmissions_status_idx").on(table.status),
   index("questionSubmissions_author_idx").on(table.authorId, table.status),
+  index("questionSubmissions_assignedReviewer_idx").on(table.assignedReviewerId, table.status),
   index("questionSubmissions_reviewer_idx").on(table.reviewerId),
+  index("questionSubmissions_due_idx").on(table.editorialDueAt),
   index("questionSubmissions_publishedQuestion_idx").on(table.publishedQuestionId),
 ]);
 
 export type QuestionSubmission = typeof questionSubmissions.$inferSelect;
 export type InsertQuestionSubmission = typeof questionSubmissions.$inferInsert;
+
+/** Skill mappings selected during authoring, copied to question evidence at publication. */
+export const questionSubmissionSkills = mysqlTable("questionSubmissionSkills", {
+  id: int("id").autoincrement().primaryKey(),
+  submissionId: int("submissionId").notNull().references(() => questionSubmissions.id),
+  skillId: varchar("skillId", { length: 64 }).notNull(),
+  weight: int("weight").default(100).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [
+  uniqueIndex("questionSubmissionSkills_submission_skill_unique").on(table.submissionId, table.skillId),
+  index("questionSubmissionSkills_skill_idx").on(table.skillId),
+]);
+
+export type QuestionSubmissionSkill = typeof questionSubmissionSkills.$inferSelect;
+export type InsertQuestionSubmissionSkill = typeof questionSubmissionSkills.$inferInsert;
 
 /**
  * Import history table for tracking CSV imports

@@ -46,3 +46,10 @@
 - [x] Authoring workflow — allow authors to reopen and edit existing draft, revision-requested, and rejected submissions.
 - [x] Authoring workflow — add router-level authorization, input-validation, and publication-isolation contract tests.
 - [x] Authoring workflow — verify the learner contract never queries private submissions and publishes only approved records into the Question Bank.
+- [x] Authoring extensions — map authoring submissions to curriculum skills and preserve mappings through publication.
+- [x] Authoring extensions — add validated CSV draft-import preview without committing rows until explicitly confirmed.
+- [x] Authoring extensions — add reviewer assignment and editorial due dates with protected administrative controls.
+- [x] Authoring extensions — expand the administrator interface for mappings, preview remediation, reviewer ownership, and due-date visibility.
+- [x] Authoring extensions — add focused tests, responsive verification, documentation, and a final checkpoint.
+- [x] Authoring extensions — support row removal and re-preview as an explicit CSV remediation path for invalid drafts.
+- [x] Authoring extensions — verify malformed CSV rows return issues instead of failing before preview.

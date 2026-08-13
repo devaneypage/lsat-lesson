@@ -16,7 +16,7 @@ describe("original-question publication isolation contract", () => {
   it("copies only an approved submission into the learner-visible questions collection before marking it published", () => {
     expect(authoringRepository).toContain('if (submission.status !== "approved") throw new Error("Only approved submissions can be published")');
     expect(authoringRepository).toContain("await tx.insert(questions).values");
-    expect(authoringRepository).toContain('set({ status: "published", publishedQuestionId: insertId })');
+    expect(authoringRepository).toContain("await tx.insert(questionSkills).values");
     expect(authoringRepository).toContain('set({ status: "published", publishedQuestionId })');
   });
 });

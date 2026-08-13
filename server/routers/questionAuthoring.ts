@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { adminProcedure, router } from "../_core/trpc";
+import { authoringCsvRowSchema, previewAuthoringDraftRows } from "../authoringImport";
 import { canTransitionQuestionSubmission, requireReviewNotes, type AuthoringStatus } from "../questionAuthoring";
 import { questionSubmissionRepository } from "../repositories/questionSubmissions";
 
@@ -20,6 +21,7 @@ const contentSchema = z.object({
   source: z.string().trim().min(3).max(256).default("LSAT Nexus Original"),
   rightsConfirmed: z.literal(true),
   authorNotes: z.string().trim().max(8_000).optional(),
+  skillMappings: z.array(z.object({ skillId: z.string().trim().min(1).max(64), weight: z.number().int().min(1).max(100) })).max(5).default([]),
 }).refine((value) => value.correctAnswer !== "E" || Boolean(value.optionE), {
   message: "An E answer requires an E option.",
   path: ["correctAnswer"],
@@ -34,6 +36,8 @@ function requireRecord<T>(record: T | null): T {
 
 export const questionAuthoringRouter = router({
   list: adminProcedure.input(z.object({ status: statusSchema.optional() })).query(({ input }) => questionSubmissionRepository.list(input.status)),
+  listSkills: adminProcedure.query(() => questionSubmissionRepository.listSkills()),
+  listReviewers: adminProcedure.query(() => questionSubmissionRepository.listReviewers()),
 
   createDraft: adminProcedure.input(contentSchema).mutation(async ({ ctx, input }) => {
     const record = await questionSubmissionRepository.create({
@@ -60,6 +64,34 @@ export const questionAuthoringRouter = router({
       throw new TRPCError({ code: "BAD_REQUEST", message: "This submission cannot be sent for review." });
     }
     return requireRecord(await questionSubmissionRepository.transition(input.submissionKey, "submitted", { submittedAt: new Date() }));
+  }),
+
+  assignReviewer: adminProcedure.input(z.object({ submissionKey: z.string().min(1).max(64), assignedReviewerId: z.number().int().positive().nullable(), editorialDueAt: z.coerce.date().nullable() })).mutation(async ({ input }) => {
+    if (input.assignedReviewerId !== null) {
+      const reviewers = await questionSubmissionRepository.listReviewers();
+      if (!reviewers.some((reviewer) => reviewer.id === input.assignedReviewerId)) throw new TRPCError({ code: "BAD_REQUEST", message: "Select an active administrator as reviewer." });
+    }
+    return requireRecord(await questionSubmissionRepository.assignReviewer(input.submissionKey, input.assignedReviewerId, input.editorialDueAt));
+  }),
+
+  previewDraftImport: adminProcedure.input(z.object({ rows: z.array(z.record(z.string(), z.string())).min(1).max(100) })).mutation(async ({ input }) => {
+    const skills = await questionSubmissionRepository.listSkills();
+    return previewAuthoringDraftRows(input.rows, skills.map((skill) => skill.skillId));
+  }),
+
+  commitDraftImport: adminProcedure.input(z.object({ rows: z.array(authoringCsvRowSchema).min(1).max(100), rightsConfirmed: z.literal(true) })).mutation(async ({ ctx, input }) => {
+    const skills = await questionSubmissionRepository.listSkills();
+    const preview = previewAuthoringDraftRows(input.rows, skills.map((skill) => skill.skillId));
+    const invalid = preview.filter((row) => !row.isValid);
+    if (invalid.length) throw new TRPCError({ code: "BAD_REQUEST", message: `Fix ${invalid.length} invalid CSV row${invalid.length === 1 ? "" : "s"} before saving drafts.` });
+    const created = [] as string[];
+    for (const row of preview) {
+      if (!row.content) continue;
+      const submissionKey = `submission-${nanoid(16)}`;
+      await questionSubmissionRepository.create({ ...row.content, rightsConfirmed: true, authorId: ctx.user.id, submissionKey });
+      created.push(submissionKey);
+    }
+    return { createdCount: created.length, submissionKeys: created };
   }),
 
   review: adminProcedure.input(z.object({ submissionKey: z.string().min(1).max(64), decision: z.enum(["needs_revision", "approved", "rejected"]), reviewNotes: z.string().trim().max(8_000).optional() })).mutation(async ({ ctx, input }) => {

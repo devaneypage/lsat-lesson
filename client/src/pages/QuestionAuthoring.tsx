@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { CsvDraftImportPanel, ReviewerAssignmentPanel, SkillMappingField } from "@/components/AuthoringExtensions";
 import { MetadataRow, PageFrame, SectionCard, StatePanel } from "@/components/PagePrimitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,9 +72,12 @@ export default function QuestionAuthoring() {
   const utils = trpc.useUtils();
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | "all">("all");
   const [form, setForm] = useState<AuthoringForm>(initialForm);
+  const [skillMappings, setSkillMappings] = useState<{ skillId: string; weight: number }[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
   const submissionsQuery = trpc.questionAuthoring.list.useQuery(statusFilter === "all" ? {} : { status: statusFilter });
+  const skillsQuery = trpc.questionAuthoring.listSkills.useQuery();
+  const reviewersQuery = trpc.questionAuthoring.listReviewers.useQuery();
 
   const refresh = async () => utils.questionAuthoring.list.invalidate();
   const createDraft = trpc.questionAuthoring.createDraft.useMutation({
@@ -81,6 +85,7 @@ export default function QuestionAuthoring() {
       await refresh();
       setSelectedKey(submission.submissionKey);
       setForm(initialForm);
+      setSkillMappings([]);
       toast.success("Original question saved as a private draft.");
     },
     onError: (error) => toast.error(error.message),
@@ -102,7 +107,7 @@ export default function QuestionAuthoring() {
   );
 
   const update = <K extends keyof AuthoringForm>(key: K, value: AuthoringForm[K]) => setForm((current) => ({ ...current, [key]: value }));
-  const canEditSelected = selected ? ["draft", "needs_revision", "rejected"].includes(selected.status) : false;
+  const canEditSelected = selected ? selected.authorId === user?.id && ["draft", "needs_revision", "rejected"].includes(selected.status) : false;
   const openSelectedForEditing = () => {
     if (!selected || !canEditSelected) return;
     setForm({
@@ -121,6 +126,7 @@ export default function QuestionAuthoring() {
       authorNotes: selected.authorNotes ?? "",
       rightsConfirmed: selected.rightsConfirmed === 1,
     });
+    setSkillMappings(selected.skillMappings.map((mapping) => ({ skillId: mapping.skillId, weight: mapping.weight })));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const isSaving = createDraft.isPending || updateDraft.isPending || submit.isPending || review.isPending || publish.isPending;
@@ -150,6 +156,8 @@ export default function QuestionAuthoring() {
         ]} />
       </SectionCard>
 
+      <CsvDraftImportPanel onCommitted={refresh} />
+
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(24rem,0.7fr)]">
         <SectionCard title={canEditSelected ? `Revise: ${selected?.internalTitle}` : "New original question"} description={canEditSelected ? "Revision resets the item to a private draft and preserves its original author and review history." : "All fields are required to preserve instructional quality and original-content provenance."}>
           <form className="space-y-5" onSubmit={(event) => {
@@ -158,7 +166,7 @@ export default function QuestionAuthoring() {
               toast.error("Confirm original-content rights before saving a draft.");
               return;
             }
-            const content = { ...form, rightsConfirmed: true as const, optionE: form.optionE || undefined, authorNotes: form.authorNotes || undefined };
+            const content = { ...form, rightsConfirmed: true as const, optionE: form.optionE || undefined, authorNotes: form.authorNotes || undefined, skillMappings };
             if (selected && canEditSelected) {
               updateDraft.mutate({ submissionKey: selected.submissionKey, content });
             } else {
@@ -178,6 +186,7 @@ export default function QuestionAuthoring() {
               <div className="space-y-2"><Label>Difficulty</Label><Select value={form.difficulty} onValueChange={(value) => update("difficulty", value as AuthoringForm["difficulty"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="easy">Easy</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="hard">Hard</SelectItem></SelectContent></Select></div>
               <div className="space-y-2"><Label htmlFor="source">Source label</Label><Input id="source" value={form.source} onChange={(event) => update("source", event.target.value)} required /></div>
             </div>
+            <SkillMappingField skills={skillsQuery.data ?? []} mappings={skillMappings} onChange={setSkillMappings} />
             <div className="space-y-2"><Label htmlFor="explanation">Instructional explanation</Label><Textarea id="explanation" value={form.explanation} onChange={(event) => update("explanation", event.target.value)} placeholder="Explain the credited response and the intended reasoning move." className="min-h-32" required /></div>
             <div className="space-y-2"><Label htmlFor="authorNotes">Author notes for reviewer (optional)</Label><Textarea id="authorNotes" value={form.authorNotes} onChange={(event) => update("authorNotes", event.target.value)} placeholder="Flag any intended distractor logic or review question." /></div>
             <label className="flex cursor-pointer items-start gap-3 rounded-sm border border-secondary/35 bg-secondary/10 p-4 text-sm leading-6 text-foreground"><Checkbox checked={form.rightsConfirmed} onCheckedChange={(checked) => update("rightsConfirmed", checked === true)} /><span>I attest that this question and its explanation are original work for LSAT Nexus, contain no proprietary LSAC material, and may be reviewed for publication.</span></label>
@@ -194,6 +203,7 @@ export default function QuestionAuthoring() {
           {selected && <SectionCard title="Review and release" description="Each decision is recorded against the selected private submission.">
             <div className="space-y-4">
               <div><div className="flex items-center justify-between gap-3"><h2 className="font-display text-lg font-bold text-foreground">{selected.internalTitle}</h2><Badge className={STATUS_TONES[selected.status]}>{STATUS_LABELS[selected.status]}</Badge></div><p className="mt-2 text-sm leading-6 text-muted-foreground">{selected.questionText}</p></div>
+              <ReviewerAssignmentPanel submissionKey={selected.submissionKey} assignedReviewerId={selected.assignedReviewerId} editorialDueAt={selected.editorialDueAt} reviewers={reviewersQuery.data ?? []} onAssigned={refresh} />
               <div className="space-y-2"><Label htmlFor="reviewNotes">Reviewer notes</Label><Textarea id="reviewNotes" value={reviewNotes} onChange={(event) => setReviewNotes(event.target.value)} placeholder="Required when requesting revision or rejecting an item." /></div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {canEditSelected && <Button type="button" variant="outline" onClick={openSelectedForEditing} disabled={isSaving}><FilePenLine className="mr-2 h-4 w-4" />Edit content</Button>}

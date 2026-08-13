@@ -34,3 +34,23 @@ The server test suite will cover input validation, administrator-only access, st
 The administrator workspace was reviewed at 1280px and 375px widths. At desktop size, the authoring form and queue establish a readable two-column editorial workspace. At mobile size, the protocol, form fields, rights attestation, save control, and empty queue stack without horizontal clipping. The management route remains visibly separated from learner navigation.
 
 The final review confirmed that the revised authoring form remains readable at both widths after adding the draft-revision path. A queued `draft`, `needs_revision`, or `rejected` item can now be reopened in the authoring form, edited, and returned to private-draft status before resubmission.
+
+### Authoring extensions review
+
+The skill-mapping and CSV draft-intake additions were verified at 1280px and 375px widths. The desktop workspace keeps the intake preview above the authoring form, retains a readable two-column skills checklist, and reserves the review queue alongside authoring. At the mobile width, the CSV upload/preview control, mapped-skill checklist, rights attestation, and draft action remain vertically ordered with no horizontal clipping. Reviewer assignment and editorial due-date controls appear only after an administrator selects a queue item, keeping the primary authoring path focused.
+
+## Authoring Extensions
+
+### Curriculum-skill mapping
+
+Authors can map up to five canonical curriculum skills to a question submission. The skills come from the existing registry, rather than from ad hoc labels, and the mappings remain private alongside the draft. At publication, the mappings are copied to the learner-visible question evidence relation, so subsequent attempts can contribute to the established mastery model.
+
+### CSV draft intake
+
+The intake panel parses a selected CSV locally, then asks the protected server procedure to preview every row. Preview checks the authoring field contract, credited-answer structure, maximum batch size, and each semicolon-delimited `skill_ids` entry against the curriculum registry. The preview commits nothing. Only a separate, rights-attested confirmation can create valid rows as private drafts; invalid rows must be corrected first.
+
+Malformed rows do not terminate the preview. Each row returns its own validation findings, including invalid answer choices, unsupported difficulty values, incomplete fields, and unknown skills. An administrator can remove an invalid row from the staged set and re-run the preview, or correct the source CSV and select it again. The confirmation action remains disabled until every remaining row validates.
+
+### Reviewer assignment and editorial due dates
+
+An administrator can assign a submitted item to an active administrator and record an editorial due date. Assignment is separate from the eventual reviewer decision, so the record distinguishes work ownership from the administrator who approves, rejects, or requests revision. Both properties remain on the private submission and never alter learner-facing question data.
