@@ -313,7 +313,7 @@ export default function QuestionBank() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#F5F3F0] to-[#FFFBF8] flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -355,10 +355,10 @@ export default function QuestionBank() {
                 <Badge
                   className={`${
                     selectedQuestion.difficulty === "easy"
-                      ? "bg-green-100 text-green-800"
+                      ? "bg-success/10 text-success"
                       : selectedQuestion.difficulty === "medium"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
+                        ? "bg-warning/20 text-warning-foreground"
+                        : "bg-destructive/10 text-destructive"
                   }`}
                 >
                   {selectedQuestion.difficulty?.toUpperCase()}
@@ -370,7 +370,7 @@ export default function QuestionBank() {
                   <Badge variant="outline">{selectedQuestion.source}</Badge>
                 )}
               </div>
-              <h2 className="text-2xl font-bold text-[#2D3561] mb-4">
+              <h2 className="text-2xl font-bold text-foreground mb-4">
                 {selectedQuestion.questionText}
               </h2>
             </div>
@@ -388,14 +388,14 @@ export default function QuestionBank() {
                   }
                   className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                     selectedAnswer === option.label
-                      ? "border-[#0052CC] bg-blue-50"
-                      : "border-[#E8E6E1] hover:border-[#0052CC]"
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary"
                   } ${
                     showExplanation && submissionResult
                       ? option.label === submissionResult.correctAnswer
-                        ? "border-green-500 bg-green-50"
+                        ? "border-success bg-success/10"
                         : selectedAnswer === option.label
-                          ? "border-red-500 bg-red-50"
+                          ? "border-destructive bg-destructive/10"
                           : ""
                       : ""
                   }`}
@@ -405,15 +405,15 @@ export default function QuestionBank() {
                     <div
                       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
                         selectedAnswer === option.label
-                          ? "border-[#0052CC] bg-[#0052CC]"
-                          : "border-[#D0CCC7]"
+                          ? "border-primary bg-primary"
+                          : "border-input"
                       }`}
                     >
                       {selectedAnswer === option.label && (
-                        <div className="w-2 h-2 bg-white rounded-full" />
+                        <div className="w-2 h-2 bg-card rounded-full" />
                       )}
                     </div>
-                    <span className="text-[#2D3561]">{option.value}</span>
+                    <span className="text-foreground">{option.value}</span>
                   </div>
                 </button>
               ))}
@@ -484,18 +484,18 @@ export default function QuestionBank() {
                 <div
                   className={`p-4 rounded-lg ${
                     isCorrect
-                      ? "bg-green-50 border border-green-200"
-                      : "bg-red-50 border border-red-200"
+                      ? "border border-success/40 bg-success/10"
+                      : "border border-destructive/40 bg-destructive/10"
                   }`}
                 >
                   <p
                     className={`font-bold mb-2 ${
-                      isCorrect ? "text-green-800" : "text-red-800"
+                      isCorrect ? "text-success" : "text-destructive"
                     }`}
                   >
                     {isCorrect ? "✓ Correct!" : "✗ Incorrect"}
                   </p>
-                  <p className="text-[#2D3561] mb-3">
+                  <p className="text-foreground mb-3">
                     <strong>Explanation:</strong>{" "}
                     {submissionResult.explanation || "No explanation is available for this question yet."}
                   </p>
@@ -506,7 +506,7 @@ export default function QuestionBank() {
 
                 <Button
                   onClick={() => setViewMode("grid")}
-                  className="w-full bg-[#0052CC] text-white hover:bg-[#003D99]"
+                  className="w-full bg-primary text-white hover:bg-primary/90"
                 >
                   Back to Questions
                 </Button>
@@ -522,8 +522,8 @@ export default function QuestionBank() {
                 </div>
                 <div className="space-y-2">
                   {(["A", "B", "C", "D", "E"] as const).map((answer) => (
-                    <div key={answer} className={`grid grid-cols-[32px_1fr] gap-3 border px-3 py-3 ${answer === sampleExplanation.correctAnswer ? "border-emerald-500/50 bg-emerald-50" : "border-border bg-background"}`}>
-                      <span className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${answer === sampleExplanation.correctAnswer ? "bg-emerald-600 text-white" : "bg-muted text-foreground"}`}>{answer}</span>
+                    <div key={answer} className={`grid grid-cols-[32px_1fr] gap-3 border px-3 py-3 ${answer === sampleExplanation.correctAnswer ? "border-success/50 bg-success/10" : "border-border bg-background"}`}>
+                      <span className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${answer === sampleExplanation.correctAnswer ? "bg-success text-success-foreground" : "bg-muted text-foreground"}`}>{answer}</span>
                       <p className="pt-0.5 text-sm leading-6 text-foreground">{sampleExplanation.answerAnalysis[answer]}</p>
                     </div>
                   ))}
@@ -551,12 +551,12 @@ export default function QuestionBank() {
             ← Back to Question Bank
           </Button>
 
-          <h1 className="text-3xl font-bold text-[#2D3561] mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-8">
             Question Statistics
           </h1>
 
           <Card className="academic-surface border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-card)]">
-            <h2 className="text-xl font-bold text-[#2D3561] mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-6">
               Questions by Difficulty
             </h2>
             <ResponsiveContainer width="100%" height={300}>
@@ -565,25 +565,25 @@ export default function QuestionBank() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="value" fill="#0052CC" />
+                <Bar dataKey="value" fill="var(--primary)" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <Card className="p-6 bg-white">
-              <p className="text-[#4A5578] text-sm mb-2">Total Questions</p>
-              <p className="text-3xl font-bold text-[#2D3561]">
+            <Card className="p-6 bg-card">
+              <p className="text-muted-foreground text-sm mb-2">Total Questions</p>
+              <p className="text-3xl font-bold text-foreground">
                 {filteredQuestions.length}
               </p>
             </Card>
-            <Card className="p-6 bg-white">
-              <p className="text-[#4A5578] text-sm mb-2">Categories</p>
-              <p className="text-3xl font-bold text-[#2D3561]">{categories.length}</p>
+            <Card className="p-6 bg-card">
+              <p className="text-muted-foreground text-sm mb-2">Categories</p>
+              <p className="text-3xl font-bold text-foreground">{categories.length}</p>
             </Card>
-            <Card className="p-6 bg-white">
-              <p className="text-[#4A5578] text-sm mb-2">Sources</p>
-              <p className="text-3xl font-bold text-[#2D3561]">{sources.length}</p>
+            <Card className="p-6 bg-card">
+              <p className="text-muted-foreground text-sm mb-2">Sources</p>
+              <p className="text-3xl font-bold text-foreground">{sources.length}</p>
             </Card>
           </div>
 
@@ -591,25 +591,25 @@ export default function QuestionBank() {
             <section className="mt-10" aria-labelledby="practice-evidence-heading">
               <h2
                 id="practice-evidence-heading"
-                className="text-xl font-bold text-[#2D3561] mb-4"
+                className="text-xl font-bold text-foreground mb-4"
               >
                 Your practice evidence
               </h2>
 
               {!isAuthenticated ? (
-                <Card className="p-6 bg-white">
-                  <p className="text-[#4A5578] mb-3">
+                <Card className="p-6 bg-card">
+                  <p className="text-muted-foreground mb-3">
                     Sign in to see calibration and timing from your recorded attempts.
                   </p>
                   <Button onClick={() => window.location.assign(getLoginUrl())}>Sign in</Button>
                 </Card>
               ) : practiceSummaryQuery.isLoading ? (
-                <Card className="p-6 bg-white" role="status">
-                  <p className="text-[#4A5578]">Loading your practice evidence…</p>
+                <Card className="p-6 bg-card" role="status">
+                  <p className="text-muted-foreground">Loading your practice evidence…</p>
                 </Card>
               ) : practiceSummaryQuery.isError ? (
-                <Card className="p-6 bg-white" role="alert">
-                  <p className="text-[#4A5578] mb-3">
+                <Card className="p-6 bg-card" role="alert">
+                  <p className="text-muted-foreground mb-3">
                     Your practice evidence could not be loaded.
                   </p>
                   <Button variant="outline" onClick={() => practiceSummaryQuery.refetch()}>
@@ -617,8 +617,8 @@ export default function QuestionBank() {
                   </Button>
                 </Card>
               ) : !practiceSummary || practiceSummary.totalAttempts === 0 ? (
-                <Card className="p-6 bg-white">
-                  <p className="text-[#4A5578]">
+                <Card className="p-6 bg-card">
+                  <p className="text-muted-foreground">
                     No attempts recorded yet. Answer any question with a confidence
                     choice and your calibration evidence will appear here.
                   </p>
@@ -626,53 +626,53 @@ export default function QuestionBank() {
               ) : (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <Card className="p-6 bg-white">
-                      <p className="text-[#4A5578] text-sm mb-2">Attempts</p>
-                      <p className="text-3xl font-bold text-[#2D3561]">
+                    <Card className="p-6 bg-card">
+                      <p className="text-muted-foreground text-sm mb-2">Attempts</p>
+                      <p className="text-3xl font-bold text-foreground">
                         {practiceSummary.totalAttempts}
                       </p>
                     </Card>
-                    <Card className="p-6 bg-white">
-                      <p className="text-[#4A5578] text-sm mb-2">Accuracy</p>
-                      <p className="text-3xl font-bold text-[#2D3561]">
+                    <Card className="p-6 bg-card">
+                      <p className="text-muted-foreground text-sm mb-2">Accuracy</p>
+                      <p className="text-3xl font-bold text-foreground">
                         {practiceSummary.accuracyPercent ?? 0}%
                       </p>
                     </Card>
-                    <Card className="p-6 bg-white">
-                      <p className="text-[#4A5578] text-sm mb-2">Active time (avg / median)</p>
-                      <p className="text-3xl font-bold text-[#2D3561]">
+                    <Card className="p-6 bg-card">
+                      <p className="text-muted-foreground text-sm mb-2">Active time (avg / median)</p>
+                      <p className="text-3xl font-bold text-foreground">
                         {formatActiveTime(practiceSummary.averageActiveTimeMs)} / {formatActiveTime(practiceSummary.medianActiveTimeMs)}
                       </p>
                     </Card>
-                    <Card className="p-6 bg-white">
-                      <p className="text-[#4A5578] text-sm mb-2">Attempts last 7 days</p>
-                      <p className="text-3xl font-bold text-[#2D3561]">
+                    <Card className="p-6 bg-card">
+                      <p className="text-muted-foreground text-sm mb-2">Attempts last 7 days</p>
+                      <p className="text-3xl font-bold text-foreground">
                         {practiceSummary.recentAttemptCount}
                       </p>
                     </Card>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                    <Card className="p-6 bg-white">
-                      <h3 className="font-bold text-[#2D3561] mb-4">Calibration</h3>
+                    <Card className="p-6 bg-card">
+                      <h3 className="font-bold text-foreground mb-4">Calibration</h3>
                       <ul className="space-y-2">
                         {CALIBRATION_LABELS.map(({ state, label, description }) => (
                           <li key={state} className="flex items-center justify-between gap-4">
-                            <span className="text-sm text-[#4A5578]" title={description}>
+                            <span className="text-sm text-muted-foreground" title={description}>
                               {label}
                             </span>
-                            <span className="font-bold text-[#2D3561]">
+                            <span className="font-bold text-foreground">
                               {practiceSummary.calibration[state]}
                             </span>
                           </li>
                         ))}
                       </ul>
                     </Card>
-                    <Card className="p-6 bg-white">
-                      <h3 className="font-bold text-[#2D3561] mb-4">Accuracy by confidence</h3>
+                    <Card className="p-6 bg-card">
+                      <h3 className="font-bold text-foreground mb-4">Accuracy by confidence</h3>
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="text-left text-[#4A5578]">
+                          <tr className="text-left text-muted-foreground">
                             <th className="pb-2 font-medium">Confidence</th>
                             <th className="pb-2 font-medium">Attempts</th>
                             <th className="pb-2 font-medium">Correct</th>
@@ -683,8 +683,8 @@ export default function QuestionBank() {
                           {CONFIDENCE_ROWS.map(({ value, label }) => {
                             const row = practiceSummary.byConfidence[value];
                             return (
-                              <tr key={value} className="border-t border-[#E8E6E1]">
-                                <td className="py-2 text-[#2D3561]">{label}</td>
+                              <tr key={value} className="border-t border-border">
+                                <td className="py-2 text-foreground">{label}</td>
                                 <td className="py-2">{row.attempts}</td>
                                 <td className="py-2">{row.correct}</td>
                                 <td className="py-2">
@@ -697,30 +697,30 @@ export default function QuestionBank() {
                       </table>
                     </Card>
                   </div>
-                  <Card className="mt-6 p-6 bg-white">
+                  <Card className="mt-6 p-6 bg-card">
                     <div className="mb-4 flex items-center justify-between gap-4">
                       <div>
-                        <h3 className="font-bold text-[#2D3561]">Latest question outcomes</h3>
-                        <p className="mt-1 text-sm text-[#4A5578]">Your most recent recorded result for each attempted question.</p>
+                        <h3 className="font-bold text-foreground">Latest question outcomes</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">Your most recent recorded result for each attempted question.</p>
                       </div>
                       <Badge variant="outline">{outcomesQuery.data?.uniqueQuestionsAttempted ?? 0} attempted</Badge>
                     </div>
                     {outcomesQuery.isLoading ? (
-                      <p className="text-sm text-[#4A5578]">Loading outcomes…</p>
+                      <p className="text-sm text-muted-foreground">Loading outcomes…</p>
                     ) : outcomesQuery.data?.outcomes.length ? (
-                      <ul className="divide-y divide-[#E8E6E1]">
+                      <ul className="divide-y divide-border">
                         {outcomesQuery.data.outcomes.map((outcome) => (
                           <li key={outcome.questionId} className="flex items-center justify-between gap-4 py-3">
                             <div className="min-w-0">
-                              <p className="truncate font-medium text-[#2D3561]">{questions.find((question) => question.id === outcome.questionId)?.questionText ?? outcome.questionKey}</p>
-                              <p className="mt-1 text-xs text-[#4A5578]">Selected {outcome.selectedAnswer} · {outcome.attemptCount} {outcome.attemptCount === 1 ? "attempt" : "attempts"}</p>
+                              <p className="truncate font-medium text-foreground">{questions.find((question) => question.id === outcome.questionId)?.questionText ?? outcome.questionKey}</p>
+                              <p className="mt-1 text-xs text-muted-foreground">Selected {outcome.selectedAnswer} · {outcome.attemptCount} {outcome.attemptCount === 1 ? "attempt" : "attempts"}</p>
                             </div>
-                            <Badge className={outcome.isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}>{outcome.isCorrect ? "Correct" : "Review"}</Badge>
+                            <Badge className={outcome.isCorrect ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}>{outcome.isCorrect ? "Correct" : "Review"}</Badge>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-sm text-[#4A5578]">No question outcomes are available yet.</p>
+                      <p className="text-sm text-muted-foreground">No question outcomes are available yet.</p>
                     )}
                   </Card>
                 </>
@@ -739,7 +739,7 @@ export default function QuestionBank() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold text-[#2D3561]">
+            <h1 className="text-4xl font-bold text-foreground">
               Question Bank
             </h1>
             {moduleName && (
@@ -748,13 +748,13 @@ export default function QuestionBank() {
               </Badge>
             )}
           </div>
-          <p className="text-[#4A5578]">
+          <p className="text-muted-foreground">
             {filteredQuestions.length} questions available
           </p>
           {isAuthenticated && outcomesQuery.data && (
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[#4A5578]">
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1.5"><CircleHelp className="h-4 w-4" /> {outcomesQuery.data.uniqueQuestionsAttempted} questions attempted</span>
-              <span>Open <strong className="text-[#2D3561]">Statistics</strong> to review your latest outcomes.</span>
+              <span>Open <strong className="text-foreground">Statistics</strong> to review your latest outcomes.</span>
             </div>
           )}
         </div>
@@ -774,7 +774,7 @@ export default function QuestionBank() {
           {/* Search */}
           <div className="lg:col-span-2">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-[#4A5578]" />
+              <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
               <Input
                 placeholder="Search questions..."
                 value={searchQuery}
@@ -872,8 +872,8 @@ export default function QuestionBank() {
             onClick={() => setViewMode("grid")}
             className={`${
               viewMode === "grid"
-                ? "bg-[#0052CC] text-white"
-                : "bg-white text-[#2D3561] border border-[#E8E6E1]"
+                ? "bg-primary text-white"
+                : "bg-card text-foreground border border-border"
             }`}
           >
             <Filter className="w-4 h-4 mr-2" />
@@ -883,8 +883,8 @@ export default function QuestionBank() {
             onClick={() => setViewMode("stats" as "grid" | "practice" | "stats")}
             className={`${
               viewMode === "stats"
-                ? "bg-[#0052CC] text-white"
-                : "bg-white text-[#2D3561] border border-[#E8E6E1]"
+                ? "bg-primary text-white"
+                : "bg-card text-foreground border border-border"
             }`}
           >
             <BarChart3 className="w-4 h-4 mr-2" />
@@ -917,7 +917,7 @@ export default function QuestionBank() {
             filteredQuestions.map((question) => (
               <Card
                 key={question.id}
-                className="p-6 bg-white hover:shadow-lg transition-all cursor-pointer"
+                className="p-6 bg-card hover:shadow-lg transition-all cursor-pointer"
                 onClick={() => handlePracticeMode(question)}
               >
                 {/* Header */}
@@ -926,10 +926,10 @@ export default function QuestionBank() {
                     <Badge
                       className={`${
                         question.difficulty === "easy"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-success/10 text-success"
                           : question.difficulty === "medium"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-warning/20 text-warning-foreground"
+                            : "bg-destructive/10 text-destructive"
                       }`}
                     >
                       {question.difficulty && (
@@ -940,7 +940,7 @@ export default function QuestionBank() {
                       )}
                     </Badge>
                     {outcomesByQuestionId.get(question.id) && (
-                      <Badge className={outcomesByQuestionId.get(question.id)?.isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}>
+                      <Badge className={outcomesByQuestionId.get(question.id)?.isCorrect ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}>
                         {outcomesByQuestionId.get(question.id)?.isCorrect ? <CheckCircle2 className="mr-1 h-3 w-3" /> : <XCircle className="mr-1 h-3 w-3" />}
                         {outcomesByQuestionId.get(question.id)?.isCorrect ? "Correct" : "Review"}
                       </Badge>
@@ -954,23 +954,23 @@ export default function QuestionBank() {
                 </div>
 
                 {/* Question Text Preview */}
-                <p className="text-[#2D3561] font-medium mb-4 line-clamp-3">
+                <p className="text-foreground font-medium mb-4 line-clamp-3">
                   {question.questionText}
                 </p>
 
                 {/* Source */}
                 {question.source && (
-                  <p className="text-xs text-[#4A5578]">
+                  <p className="text-xs text-muted-foreground">
                     Source: <strong>{question.source}</strong>
                   </p>
                 )}
 
                 {/* Action */}
                 <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xs text-[#4A5578]">
+                  <span className="text-xs text-muted-foreground">
                     ID: {question.questionId}
                   </span>
-                  <ChevronRight className="w-4 h-4 text-[#0052CC]" />
+                  <ChevronRight className="w-4 h-4 text-primary" />
                 </div>
               </Card>
             ))

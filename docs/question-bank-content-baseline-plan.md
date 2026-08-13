@@ -41,3 +41,9 @@ The final verification pass, after applying the semantic background and surface 
 ## Deferred Work
 
 Expanding the starter set into a broad curricular bank requires an approved original-question authoring and review pipeline. Diagnostic delivery and further evidence-derived mastery work remain separate, follow-on batches because they need their own assessment taxonomy and scoring contracts.
+
+### Final semantic-token verification
+
+The final desktop and mobile passes retain the intended hierarchy, original-content disclosure, single filter control per axis, and responsive card layout. The Question Bank no longer contains hardcoded color literals in its loading, browse, practice, or statistics view source; the active semantic tokens now carry those states consistently.
+
+Validation completed for this batch: `pnpm check` passed, the focused Question Bank suite passed with four tests, the full Vitest suite passed with 119 tests, and responsive `/practice` visual review passed at 1280px and 375px widths.
