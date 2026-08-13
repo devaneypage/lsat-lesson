@@ -8,6 +8,7 @@ import { BookMarked, CheckCircle2, CircleHelp, Tag, XCircle } from "lucide-react
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MetadataRow, SectionCard, StatePanel } from "@/components/PagePrimitives";
 import {
   Select,
   SelectContent,
@@ -42,6 +43,7 @@ import { useSearch } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { useFeatureFlag } from "@/lib/flags";
+import { buildQuestionBankContentBaseline } from "@/lib/questionBankContent";
 import type { ConfidenceLevel } from "../../../shared/learnerDomain";
 import type { AnswerLetter } from "../../../shared/practiceEvidence";
 
@@ -190,6 +192,10 @@ export default function QuestionBank() {
         .filter((s) => s !== null && s !== undefined)
     )
   ).sort() as string[];
+  const contentBaseline = useMemo(
+    () => buildQuestionBankContentBaseline({ totalQuestions, categories, sources }),
+    [totalQuestions, categories, sources],
+  );
 
   // Statistics
   const stats = useMemo(() => {
@@ -331,7 +337,7 @@ export default function QuestionBank() {
     ];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#F5F3F0] to-[#FFFBF8] py-8 px-4">
+      <div className="min-h-screen bg-background px-4 py-8 text-foreground">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <Button
@@ -343,7 +349,7 @@ export default function QuestionBank() {
           </Button>
 
           {/* Question Card */}
-          <Card className="p-8 bg-white mb-6">
+          <Card className="academic-surface mb-6 border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-card)]">
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <Badge
@@ -535,7 +541,7 @@ export default function QuestionBank() {
     const practiceSummary = practiceSummaryQuery.data;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#F5F3F0] to-[#FFFBF8] py-8 px-4">
+      <div className="min-h-screen bg-background px-4 py-8 text-foreground">
         <div className="max-w-6xl mx-auto">
           <Button
             onClick={() => setViewMode("grid")}
@@ -549,7 +555,7 @@ export default function QuestionBank() {
             Question Statistics
           </h1>
 
-          <Card className="p-8 bg-white">
+          <Card className="academic-surface border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-card)]">
             <h2 className="text-xl font-bold text-[#2D3561] mb-6">
               Questions by Difficulty
             </h2>
@@ -728,7 +734,7 @@ export default function QuestionBank() {
 
   // Main Grid View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F3F0] to-[#FFFBF8] py-8 px-4">
+    <div className="min-h-screen bg-background px-4 py-8 text-foreground">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -753,8 +759,18 @@ export default function QuestionBank() {
           )}
         </div>
 
+        <SectionCard title="Collection scope" description={contentBaseline.statement}>
+          <MetadataRow
+            items={[
+              { label: "Questions available", value: totalQuestions },
+              { label: "Current category coverage", value: contentBaseline.categories.length ? contentBaseline.categories.join(" · ") : "No categories loaded" },
+              { label: "Source", value: contentBaseline.sourceLabel },
+            ]}
+          />
+        </SectionCard>
+
         {/* Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+        <section className="academic-surface mb-8 grid grid-cols-1 gap-3 border border-border bg-card p-4 shadow-[var(--shadow-card)] sm:grid-cols-2 lg:p-5 xl:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))]" aria-label="Question Bank filters">
           {/* Search */}
           <div className="lg:col-span-2">
             <div className="relative">
@@ -763,7 +779,7 @@ export default function QuestionBank() {
                 placeholder="Search questions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white border-[#E8E6E1]"
+                className="bg-card pl-10"
               />
             </div>
           </div>
@@ -775,10 +791,10 @@ export default function QuestionBank() {
               setSelectedCategory(value as string | "all")
             }
           >
-            <SelectTrigger className="bg-white border-[#E8E6E1]">
-              <SelectValue placeholder="Category" />
+            <SelectTrigger className="bg-card" aria-label="Filter questions by category">
+            <SelectValue placeholder="Category" />
             </SelectTrigger>
-        <SelectContent>
+      <SelectContent>
           <SelectItem value="all">All Categories</SelectItem>
           {categories.map((category) => (
             <SelectItem key={category} value={category}>
@@ -788,23 +804,6 @@ export default function QuestionBank() {
         </SelectContent>
       </Select>
 
-      <Select
-        value={selectedDifficulty}
-        onValueChange={setSelectedDifficulty}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Difficulty" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Difficulties</SelectItem>
-          {difficulties.map((difficulty) => (
-            <SelectItem key={difficulty} value={difficulty}>
-              {difficulty}
-            </SelectItem>
-          ))}
-        </SelectContent>
-          </Select>
-
           {/* Difficulty Filter */}
           <Select
             value={selectedDifficulty}
@@ -812,8 +811,8 @@ export default function QuestionBank() {
               setSelectedDifficulty(value as string | "all")
             }
           >
-            <SelectTrigger className="bg-white border-[#E8E6E1]">
-              <SelectValue placeholder="Difficulty" />
+            <SelectTrigger className="bg-card" aria-label="Filter questions by difficulty">
+            <SelectValue placeholder="Difficulty" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Levels</SelectItem>
@@ -830,8 +829,8 @@ export default function QuestionBank() {
               setSelectedTagId(value === "all" ? null : Number(value))
             }
           >
-            <SelectTrigger className="bg-white border-[#E8E6E1]">
-              <div className="flex items-center gap-1.5">
+            <SelectTrigger className="bg-card" aria-label="Filter questions by tag">
+            <div className="flex items-center gap-1.5">
                 <Tag size={14} className="text-amber-600" />
                 <SelectValue placeholder="Filter by tag" />
               </div>
@@ -853,8 +852,8 @@ export default function QuestionBank() {
               setSelectedSource(value as string | "all")
             }
           >
-            <SelectTrigger className="bg-white border-[#E8E6E1]">
-              <SelectValue placeholder="Source" />
+            <SelectTrigger className="bg-card" aria-label="Filter questions by source">
+            <SelectValue placeholder="Source" />
             </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Sources</SelectItem>
@@ -865,24 +864,7 @@ export default function QuestionBank() {
           ))}
         </SelectContent>
       </Select>
-
-      <Select
-        value={selectedTagId === null ? "all" : selectedTagId.toString()}
-        onValueChange={(value) => setSelectedTagId(value === "all" ? null : Number(value))}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Tags" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Tags</SelectItem>
-          {tagsWithCounts.map((tag) => (
-            <SelectItem key={tag.id} value={tag.id.toString()}>
-              {tag.name} ({tag.questionCount})
-            </SelectItem>
-          ))}
-        </SelectContent>
-          </Select>
-        </div>
+        </section>
 
         {/* View Mode Buttons */}
         <div className="flex gap-2 mb-8">
@@ -921,12 +903,16 @@ export default function QuestionBank() {
         {/* Questions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuestions.length === 0 ? (
-            <div className="col-span-full text-center py-12">
-              <BookOpen size={48} className="mx-auto mb-4 text-[#4A5578]" />
-              <p className="text-[#4A5578] text-lg">
-                No questions found matching your filters.
-              </p>
-            </div>
+            <StatePanel
+              className="col-span-full"
+              icon={BookOpen}
+              eyebrow={totalQuestions === 0 ? "Content unavailable" : "No matching questions"}
+              title={totalQuestions === 0 ? "No practice questions are loaded" : "No questions match the active filters"}
+              description={totalQuestions === 0
+                ? "The Question Bank will remain intentionally empty until reviewed practice content is added."
+                : "Adjust or clear one or more filters to return to the currently available collection."}
+              tone={totalQuestions === 0 ? "warning" : "neutral"}
+            />
           ) : (
             filteredQuestions.map((question) => (
               <Card
