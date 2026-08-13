@@ -38,3 +38,11 @@
 - [x] Confirm no additional follow-up is required.
 - [x] Finalize implementation record.
 - [x] End task.
+- [x] Authoring workflow — define the rights-respecting draft, review, approval, rejection, and publication lifecycle.
+- [x] Authoring workflow — add the question-submission schema and protected persistence procedures.
+- [x] Authoring workflow — implement administrator authoring and review interfaces with clear status and provenance controls.
+- [x] Authoring workflow — test authorization, validation, state transitions, and learner-visible publication behavior.
+- [x] Authoring workflow — document the review protocol, verify responsive behavior, and save a checkpoint.
+- [x] Authoring workflow — allow authors to reopen and edit existing draft, revision-requested, and rejected submissions.
+- [x] Authoring workflow — add router-level authorization, input-validation, and publication-isolation contract tests.
+- [x] Authoring workflow — verify the learner contract never queries private submissions and publishes only approved records into the Question Bank.

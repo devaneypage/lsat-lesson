@@ -8,6 +8,7 @@ import { lessonPlanRouter } from "./routers/lessonPlan";
 import { practiceRouter } from "./routers/practice";
 import { preferencesRouter } from "./routers/preferences";
 import { questionsRouter } from "./routers/questions";
+import { questionAuthoringRouter } from "./routers/questionAuthoring";
 import { reviewRouter } from "./routers/review";
 import { searchRouter } from "./routers/search";
 import { studyPlanRouter } from "./routers/studyPlan";
@@ -24,6 +25,7 @@ export const appRouter = router({
   studyPlan: studyPlanRouter,
   analytics: analyticsRouter,
   questions: questionsRouter,
+  questionAuthoring: questionAuthoringRouter,
   tags: taxonomyRouter,
   flags: flagsRouter,
   lessonPlan: lessonPlanRouter,

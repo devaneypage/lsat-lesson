@@ -90,6 +90,46 @@ export type Question = typeof questions.$inferSelect;
 export type InsertQuestion = typeof questions.$inferInsert;
 
 /**
+ * Administrator-authored original questions remain isolated from the learner
+ * Question Bank until they have passed an explicit review and publication step.
+ */
+export const questionSubmissions = mysqlTable("questionSubmissions", {
+  id: int("id").autoincrement().primaryKey(),
+  submissionKey: varchar("submissionKey", { length: 64 }).notNull().unique(),
+  status: mysqlEnum("status", ["draft", "submitted", "needs_revision", "approved", "rejected", "published"]).default("draft").notNull(),
+  internalTitle: varchar("internalTitle", { length: 180 }).notNull(),
+  questionText: text("questionText").notNull(),
+  optionA: text("optionA").notNull(),
+  optionB: text("optionB").notNull(),
+  optionC: text("optionC").notNull(),
+  optionD: text("optionD").notNull(),
+  optionE: text("optionE"),
+  correctAnswer: varchar("correctAnswer", { length: 1 }).notNull(),
+  explanation: text("explanation").notNull(),
+  category: varchar("category", { length: 128 }).notNull(),
+  difficulty: varchar("difficulty", { length: 64 }).notNull(),
+  source: varchar("source", { length: 256 }).notNull(),
+  rightsConfirmed: int("rightsConfirmed").default(0).notNull(),
+  authorNotes: text("authorNotes"),
+  reviewNotes: text("reviewNotes"),
+  authorId: int("authorId").notNull().references(() => users.id),
+  reviewerId: int("reviewerId").references(() => users.id),
+  submittedAt: timestamp("submittedAt"),
+  reviewedAt: timestamp("reviewedAt"),
+  publishedQuestionId: int("publishedQuestionId").references(() => questions.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [
+  index("questionSubmissions_status_idx").on(table.status),
+  index("questionSubmissions_author_idx").on(table.authorId, table.status),
+  index("questionSubmissions_reviewer_idx").on(table.reviewerId),
+  index("questionSubmissions_publishedQuestion_idx").on(table.publishedQuestionId),
+]);
+
+export type QuestionSubmission = typeof questionSubmissions.$inferSelect;
+export type InsertQuestionSubmission = typeof questionSubmissions.$inferInsert;
+
+/**
  * Import history table for tracking CSV imports
  */
 export const importHistory = mysqlTable("importHistory", {

@@ -25,6 +25,7 @@ import LessonPlanGenerator from "@/pages/LessonPlanGenerator";
 import Lessons from "@/pages/Lessons";
 import NotFound from "@/pages/NotFound";
 import QuestionBank from "@/pages/QuestionBank";
+import QuestionAuthoring from "@/pages/QuestionAuthoring";
 import Resources from "@/pages/Resources";
 import TagManager from "@/pages/TagManager";
 import LessonCommonFlaws from "@/pages/lessons/LessonCommonFlaws";
@@ -169,6 +170,9 @@ function Router() {
       </Route>
       <Route path="/admin/content">
         <AdminPage><CurriculumGuide /></AdminPage>
+      </Route>
+      <Route path="/admin/content/authoring">
+        <AdminPage><QuestionAuthoring /></AdminPage>
       </Route>
       <Route path="/admin/content/import">
         <AdminPage>

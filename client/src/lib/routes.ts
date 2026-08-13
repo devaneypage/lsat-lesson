@@ -14,6 +14,7 @@ export type AppRouteId =
   | "resources"
   | "adminOverview"
   | "adminContent"
+  | "adminAuthoring"
   | "adminImport"
   | "adminTaxonomy"
   | "adminFlags"
@@ -148,6 +149,15 @@ export const APP_ROUTES: readonly AppRouteDefinition[] = [
     description: "Review curriculum and question-content readiness.",
     showInNav: true,
     end: true,
+  },
+  {
+    id: "adminAuthoring",
+    label: "Authoring",
+    path: "/admin/content/authoring",
+    audience: "admin",
+    navGroup: "management",
+    description: "Create, review, and publish original LSAT-style questions.",
+    showInNav: true,
   },
   {
     id: "adminImport",
