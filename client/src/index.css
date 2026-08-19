@@ -47,28 +47,28 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
   --font-sans: "Space Grotesk", sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Lora", serif;
   --font-serif: "Lora", serif;
 }
 
 :root {
-  /* LSAT Nexus — Academic Light: warm parchment, indigo ink, surgical color. */
-  --background: #F7F4EF;
-  --foreground: #1E2130;
-  --card: #FFFDF8;
-  --card-foreground: #1E2130;
-  --popover: #FFFDF8;
-  --popover-foreground: #1E2130;
-  --muted: #EDE8DF;
-  --muted-foreground: #5B6072;
-  --border: #CFC7BA;
-  --input: #B8B0A3;
-  --ring: #0052CC;
+  /* LSAT Nexus — Scholarly Command Center: parchment, ink, amber index, teal action. */
+  --background: #F4F0E8;
+  --foreground: #191B24;
+  --card: #FFFCF6;
+  --card-foreground: #191B24;
+  --popover: #FFFCF6;
+  --popover-foreground: #191B24;
+  --muted: #E9E3D8;
+  --muted-foreground: #5E6270;
+  --border: #CBC2B4;
+  --input: #B6AC9D;
+  --ring: #0E6F76;
 
-  --primary: #0052CC;
+  --primary: #0E6F76;
   --primary-foreground: #FFFFFF;
   --secondary: #C8860A;
-  --secondary-foreground: #1E2130;
+  --secondary-foreground: #191B24;
   --accent: #C94D12;
   --accent-foreground: #FFFFFF;
   --destructive: #B84030;
@@ -81,23 +81,31 @@
   --info-foreground: #FFFFFF;
 
   --sidebar: #FFFDF8;
-  --sidebar-foreground: #1E2130;
-  --sidebar-primary: #1E2130;
+  --sidebar-foreground: #191B24;
+  --sidebar-primary: #191B24;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #EDE8DF;
-  --sidebar-accent-foreground: #1E2130;
-  --sidebar-border: #CFC7BA;
-  --sidebar-ring: #0052CC;
+  --sidebar-accent-foreground: #191B24;
+  --sidebar-border: #CBC2B4;
+  --sidebar-ring: #0E6F76;
 
-  --chart-1: #0052CC;
+  --workspace-rail: #191B24;
+  --workspace-rail-raised: #22252F;
+  --workspace-rail-foreground: #F5EFE4;
+  --workspace-rail-muted: #A9A7A1;
+  --workspace-rail-border: #343741;
+  --paper-raised: #FFFCF6;
+  --paper-shadow: rgba(25, 27, 36, 0.09);
+
+  --chart-1: #0E6F76;
   --chart-2: #C8860A;
   --chart-3: #C94D12;
   --chart-4: #2E7D52;
   --chart-5: #5B4A8A;
 
-  --nexus-navy: #1E2130;
+  --nexus-navy: #191B24;
   --nexus-terra: #B84030;
-  --nexus-teal: #087F8C;
+  --nexus-teal: #0E6F76;
   --nexus-forest: #2E7D52;
   --nexus-amber: #C8860A;
   --nexus-lime: #4A7A2A;
@@ -112,8 +120,8 @@
   --section-logic: #F57C00;     /* Formal Logic: Gold / Amber */
   --section-strategy: #388E3C;  /* Test Strategy: Green */
 
-  --shadow-card: 0 1px 2px rgba(30, 33, 48, 0.06), 0 10px 28px rgba(30, 33, 48, 0.05);
-  --shadow-raised: 0 3px 8px rgba(30, 33, 48, 0.10), 0 18px 42px rgba(30, 33, 48, 0.08);
+  --shadow-card: 0 1px 2px rgba(25, 27, 36, 0.06), 0 12px 32px rgba(25, 27, 36, 0.045);
+  --shadow-raised: 0 4px 10px rgba(25, 27, 36, 0.10), 0 22px 48px rgba(25, 27, 36, 0.08);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --radius: 0.25rem;
@@ -137,14 +145,14 @@
     line-height: 1.6;
     background-image:
       radial-gradient(circle at 12% -10%, color-mix(in oklab, var(--secondary) 7%, transparent) 0, transparent 30rem),
-      linear-gradient(180deg, #F7F4EF 0%, #F4F0E9 100%);
+      linear-gradient(180deg, #F7F3EC 0%, #F1ECE3 100%);
     background-attachment: fixed;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Space Grotesk", sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: "Lora", serif;
+    font-weight: 600;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
@@ -203,6 +211,28 @@
       color-mix(in oklab, var(--foreground) 5%, transparent) calc(2.2rem + 1px)
     );
     border-left: 3px solid color-mix(in oklab, var(--secondary) 72%, var(--border));
+  }
+
+  .nexus-index-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .nexus-paper-panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+
+  .nexus-paper-grid {
+    background-color: var(--background);
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--foreground) 3.5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--foreground) 3.5%, transparent) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
   }
 
   /* Button Styles */

@@ -109,7 +109,13 @@ function NavLink({
   const className =
     variant === "public"
       ? `${base} px-3 py-2 ${active ? "bg-white/10 text-white" : "text-stone-300 hover:bg-white/5 hover:text-white"}`
-      : `${base} w-full px-3 py-2.5 ${
+      : variant === "learner"
+        ? `${base} relative w-full px-3 py-2.5 ${
+            active
+              ? "bg-[var(--workspace-rail-raised)] text-[var(--workspace-rail-foreground)] shadow-sm before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:bg-[var(--nexus-amber)]"
+              : "text-[var(--workspace-rail-muted)] hover:bg-white/5 hover:text-[var(--workspace-rail-foreground)]"
+          }`
+        : `${base} w-full px-3 py-2.5 ${
           active
             ? "bg-[var(--nexus-navy)] text-white shadow-sm"
             : "text-foreground/75 hover:bg-muted hover:text-foreground"
@@ -263,22 +269,23 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function AccountBlock({ compact = false }: { compact?: boolean }) {
+function AccountBlock({ compact = false, tone = "light" }: { compact?: boolean; tone?: "light" | "dark" }) {
   const { user, logout } = useAuth();
+  const dark = tone === "dark";
   return (
-    <div className={`border-t border-border ${compact ? "px-3 py-3" : "p-4"}`}>
+    <div className={`border-t ${dark ? "border-[var(--workspace-rail-border)]" : "border-border"} ${compact ? "px-3 py-3" : "p-4"}`}>
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--nexus-navy)] text-sm font-black text-white">
+        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${dark ? "bg-[var(--nexus-amber)] text-[var(--workspace-rail)]" : "bg-[var(--nexus-navy)] text-white"}`}>
           {(user?.name || user?.email || "L").charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold">{user?.name || "Learner"}</p>
-          {!compact ? <p className="truncate text-xs text-muted-foreground">{user?.email}</p> : null}
+          <p className={`truncate text-sm font-bold ${dark ? "text-[var(--workspace-rail-foreground)]" : ""}`}>{user?.name || "Learner"}</p>
+          {!compact ? <p className={`truncate text-xs ${dark ? "text-[var(--workspace-rail-muted)]" : "text-muted-foreground"}`}>{user?.email}</p> : null}
         </div>
         <button
           type="button"
           onClick={() => void logout()}
-          className="rounded-sm p-2 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={`rounded-sm p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${dark ? "text-[var(--workspace-rail-muted)] hover:bg-white/5 hover:text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
           aria-label="Sign out"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
@@ -298,27 +305,27 @@ export function LearnerShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[color:var(--background)] text-foreground md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
       <SkipLink />
-      <aside className="hidden min-h-screen border-r border-border bg-card md:sticky md:top-0 md:flex md:h-screen md:flex-col">
-        <div className="flex h-16 items-center bg-[#1f1f1f] px-5">
+      <aside className="hidden min-h-screen border-r border-[var(--workspace-rail-border)] bg-[var(--workspace-rail)] md:sticky md:top-0 md:flex md:h-screen md:flex-col">
+        <div className="flex h-20 items-center border-b border-[var(--workspace-rail-border)] px-5">
           <BrandMark compact />
         </div>
-        <div className="px-4 pb-2 pt-6">
-          <p className="px-3 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-muted-foreground">Study workspace</p>
+        <div className="px-4 pb-3 pt-7">
+          <p className="nexus-index-label px-3 text-[var(--workspace-rail-muted)]">Study workspace</p>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-4 pb-5" aria-label="Learner navigation">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-4 pb-6" aria-label="Learner navigation">
           {LEARNER_NAV_ROUTES.map((route) => (
             <NavLink key={route.id} route={route} variant="learner" />
           ))}
         </nav>
-        <AccountBlock />
+        <AccountBlock tone="dark" />
       </aside>
 
-      <div className="min-w-0">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-card px-4 shadow-sm md:hidden">
+      <div className="nexus-paper-grid min-w-0">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[var(--workspace-rail-border)] bg-[var(--workspace-rail)] px-4 shadow-sm md:hidden">
           <BrandMark compact />
           <button
             type="button"
-            className="rounded-sm p-2 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="rounded-sm p-2 text-[var(--workspace-rail-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--nexus-amber)]"
             aria-expanded={mobileOpen}
             aria-controls="learner-mobile-nav"
             aria-label={mobileOpen ? "Close study navigation" : "Open study navigation"}
@@ -328,13 +335,13 @@ export function LearnerShell({ children }: { children: React.ReactNode }) {
           </button>
         </header>
         {mobileOpen ? (
-          <div id="learner-mobile-nav" className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-border bg-card p-4 shadow-xl md:hidden">
+          <div id="learner-mobile-nav" className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-[var(--workspace-rail-border)] bg-[var(--workspace-rail)] p-4 shadow-xl md:hidden">
             <nav className="space-y-1" aria-label="Learner mobile navigation">
               {LEARNER_NAV_ROUTES.map((route) => (
                 <NavLink key={route.id} route={route} variant="learner" onNavigate={() => setMobileOpen(false)} />
               ))}
             </nav>
-            <AccountBlock compact />
+            <AccountBlock compact tone="dark" />
           </div>
         ) : null}
         <main id="main-content" className="min-h-screen">{children}</main>

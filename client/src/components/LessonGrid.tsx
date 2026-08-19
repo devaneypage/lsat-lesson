@@ -1,331 +1,140 @@
-/**
- * DESIGN: Nexus Command Center — Lesson Grid
- * Component: LessonGrid
- *
- * Grid of lesson cards linking to individual lessons.
- * Each card shows lesson title, description, and duration.
- *
- * P6 fix: Added sequence numbers and "Start Here" badge on card 1
- * P9 fix: Replaced rgba(17,17,17,0.7) with var(--muted-foreground)
- * P10 fix: Consolidated colors to 4 semantic groups (LR=amber/teal/terra/forest, RC=sky, Logic=purple)
- */
-
-import React from "react";
+import type { ComponentType } from "react";
+import { useMemo } from "react";
+import {
+  AlertCircle,
+  ArrowRight,
+  BookMarked,
+  BookOpen,
+  Brain,
+  CheckCircle2,
+  Circle,
+  Clock3,
+  Layers,
+  Target,
+  Zap,
+} from "lucide-react";
 import { Link } from "wouter";
 import {
-  BookOpen,
-  Zap,
-  Target,
-  BookMarked,
-  Brain,
-  Layers,
-  AlertCircle,
-} from "lucide-react";
+  CURRICULUM_LESSONS,
+  getLessonById,
+  type CurriculumLesson,
+} from "@shared/learnerDomain";
+import { canonicalizeAppPath } from "@/lib/routes";
+import { trpc } from "@/lib/trpc";
 
-interface Lesson {
-  id: string;
-  seq: number;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  color: string;
-  route: string;
-  duration: string;
-  group: "LR" | "RC" | "Logic";
+const LESSON_ICONS: Record<string, ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
+  "necessary-assumptions": BookOpen,
+  "sufficient-assumptions": Layers,
+  "flaw-in-reasoning": AlertCircle,
+  "common-flaws": Zap,
+  "strengthen-weaken": Target,
+  "reading-comprehension": BookMarked,
+  "formal-logic": Brain,
+};
+
+const DOMAIN_CONFIG: Record<CurriculumLesson["section"], { label: string; accent: string }> = {
+  LR: { label: "Logical Reasoning", accent: "var(--nexus-amber)" },
+  RC: { label: "Reading Comprehension", accent: "var(--nexus-blue)" },
+  Logic: { label: "Formal Logic", accent: "var(--nexus-purple)" },
+  Strategy: { label: "Test Strategy", accent: "var(--nexus-forest)" },
+};
+
+const GRID_CLASS_BY_SEQUENCE: Record<number, string> = {
+  1: "lg:col-span-7",
+  2: "lg:col-span-5",
+  3: "lg:col-span-4",
+  4: "lg:col-span-4",
+  5: "lg:col-span-4",
+  6: "lg:col-span-6",
+  7: "lg:col-span-6",
+};
+
+function statusPresentation(status: "not_started" | "in_progress" | "completed") {
+  if (status === "completed") return { label: "Completed", action: "Review lesson", Icon: CheckCircle2 };
+  if (status === "in_progress") return { label: "In progress", action: "Continue lesson", Icon: Clock3 };
+  return { label: "Not started", action: "Start lesson", Icon: Circle };
 }
 
-// P10: Color consolidation — 4 semantic groups
-// LR (Logical Reasoning): amber, teal, terra, forest, amber-2
-// RC (Reading Comprehension): nexus-sky (blue)
-// Logic (Formal Logic): nexus-purple
-const LESSONS: Lesson[] = [
-  {
-    seq: 1,
-    id: "necessary-assumptions",
-    title: "Necessary Assumptions",
-    description: "Master the Negation Test™ to identify unstated premises.",
-    icon: <BookOpen size={24} />,
-    color: "var(--nexus-amber)",
-    route: "/learn/necessary-assumptions",
-    duration: "14 min",
-    group: "LR",
-  },
-  {
-    seq: 2,
-    id: "sufficient-assumptions",
-    title: "Sufficient Assumptions",
-    description: "Master the Conditional Bridge Method to identify assumptions.",
-    icon: <Layers size={24} />,
-    color: "var(--nexus-teal)",
-    route: "/learn/sufficient-assumptions",
-    duration: "16 min",
-    group: "LR",
-  },
-  {
-    seq: 3,
-    id: "flaw-in-reasoning",
-    title: "Flaw in Reasoning",
-    description: "Identify logical fallacies and argument weaknesses.",
-    icon: <AlertCircle size={24} />,
-    color: "var(--nexus-terra)",
-    route: "/learn/flaw-in-reasoning",
-    duration: "15 min",
-    group: "LR",
-  },
-  {
-    seq: 4,
-    id: "common-flaws",
-    title: "Common Flaws",
-    description: "Learn the 19 most tested logical fallacies.",
-    icon: <Zap size={24} />,
-    color: "var(--nexus-lime)",  // P3 already darkened to #4A8A1A (WCAG AA)
-    route: "/learn/common-flaws",
-    duration: "18 min",
-    group: "LR",
-  },
-  {
-    seq: 5,
-    id: "strengthen-weaken",
-    title: "Strengthen & Weaken",
-    description: "Develop the systematic approach to finding answers.",
-    icon: <Target size={24} />,
-    color: "var(--nexus-forest)",
-    route: "/learn/strengthen-weaken",
-    duration: "16 min",
-    group: "LR",
-  },
-  {
-    seq: 6,
-    id: "reading-comprehension",
-    title: "Reading Comprehension",
-    description: "Master efficient passage annotation and mapping.",
-    icon: <BookMarked size={24} />,
-    color: "var(--nexus-blue)",  // P0 defined: #2E86C1
-    route: "/learn/reading-comprehension",
-    duration: "15 min",
-    group: "RC",
-  },
-  {
-    seq: 7,
-    id: "formal-logic",
-    title: "Formal Logic",
-    description: "Master logical notation, conditionals, and quantifiers.",
-    icon: <Brain size={24} />,
-    color: "var(--nexus-purple)",  // P0 defined: #7B5EA7
-    route: "/learn/formal-logic",
-    duration: "17 min",
-    group: "Logic",
-  },
-];
-
-// Group label colors
-const GROUP_COLORS: Record<Lesson["group"], string> = {
-  LR: "var(--nexus-teal)",
-  RC: "var(--nexus-blue)",
-  Logic: "var(--nexus-purple)",
-};
-
-const LessonGrid: React.FC = () => {
-  return (
-    <div
-      style={{
-        background: "var(--card)",
-        border: "1.5px solid var(--border)",
-        borderRadius: "0.25rem",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-        padding: "2rem",
-      }}
-    >
-      {/* Grid header — "Available Lessons" removed; page header in Lessons.tsx handles this */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
-        {LESSONS.map((lesson) => (
-          <Link
-            key={lesson.id}
-            href={lesson.route}
-            className="transition-all duration-200"
-            style={{
-              background: "var(--card)",
-              border: `1.5px solid ${lesson.color}`,
-              borderRadius: "0.25rem",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-              cursor: "pointer",
-              textDecoration: "none",
-              color: "inherit",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              padding: "1.5rem",
-              position: "relative",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = `0 4px 12px ${lesson.color}30`;
-              e.currentTarget.style.background = `${lesson.color}08`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.05)";
-              e.currentTarget.style.background = "var(--card)";
-            }}
-          >
-            {/* P6: Sequence number badge — top-right corner */}
-            <div
-              style={{
-                position: "absolute",
-                top: "0.75rem",
-                right: "0.75rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.35rem",
-              }}
-            >
-              {/* "Start Here" badge on lesson 1 */}
-              {lesson.seq === 1 && (
-                <span
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    color: "var(--nexus-amber)",
-                    background: "var(--nexus-amber)18",
-                    border: "1px solid var(--nexus-amber)60",
-                    borderRadius: "0.2rem",
-                    padding: "0.15rem 0.4rem",
-                  }}
-                >
-                  Start Here
-                </span>
-              )}
-              <span
-                style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  color: "var(--muted-foreground)",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {String(lesson.seq).padStart(2, "0")}
-              </span>
-            </div>
-
-            {/* Card header: icon + title + duration */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                paddingRight: "2.5rem",  // prevent overlap with seq badge
-              }}
-            >
-              <div
-                style={{
-                  color: lesson.color,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                {lesson.icon}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h3
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "1rem",
-                    fontWeight: 700,
-                    color: "var(--foreground)",
-                    margin: 0,
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {lesson.title}
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    marginTop: "0.25rem",
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "0.75rem",
-                      color: lesson.color,
-                      fontWeight: 600,
-                      letterSpacing: "0.05em",
-                      textTransform: "uppercase",
-                      margin: 0,
-                    }}
-                  >
-                    {lesson.duration}
-                  </p>
-                  {/* Group tag */}
-                  <span
-                    style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "0.65rem",
-                      fontWeight: 600,
-                      letterSpacing: "0.04em",
-                      textTransform: "uppercase",
-                      color: GROUP_COLORS[lesson.group],
-                      opacity: 0.75,
-                    }}
-                  >
-                    {lesson.group}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Description — P9: var(--muted-foreground) instead of rgba */}
-            <p
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: "0.9rem",  // P typography: increased from 0.85rem
-                color: "var(--muted-foreground)",
-                margin: 0,
-                lineHeight: 1.55,
-              }}
-            >
-              {lesson.description}
-            </p>
-
-            {/* CTA */}
-            <div
-              style={{
-                marginTop: "auto",
-                paddingTop: "1rem",
-                borderTop: `1.5px solid ${lesson.color}40`,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  color: lesson.color,
-                  letterSpacing: "0.02em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Start Lesson →
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
+export default function LessonGrid() {
+  const progressQuery = trpc.learner.progress.useQuery(undefined, { retry: false });
+  const progressByLesson = useMemo(
+    () => new Map((progressQuery.data ?? []).map((item) => [item.lessonId, item])),
+    [progressQuery.data],
   );
-};
 
-export default LessonGrid;
+  return (
+    <section className="nexus-paper-panel p-4 md:p-6" aria-label="Curriculum atlas">
+      <div className="mb-6 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="nexus-index-label text-[var(--nexus-amber)]">Curriculum atlas</p>
+          <h2 className="mt-2 font-display text-2xl font-semibold">Seven connected studies</h2>
+        </div>
+        <p className="max-w-md text-sm leading-6 text-muted-foreground sm:text-right">
+          Sequence indicates the recommended route; progress comes from your private learner record.
+        </p>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-12">
+        {CURRICULUM_LESSONS.map((lesson) => {
+          const progress = progressByLesson.get(lesson.id);
+          const status = progress?.status ?? "not_started";
+          const percent = progress?.percentComplete ?? 0;
+          const { label: statusLabel, action, Icon: StatusIcon } = statusPresentation(status);
+          const domain = DOMAIN_CONFIG[lesson.section];
+          const LessonIcon = LESSON_ICONS[lesson.id] ?? BookOpen;
+          const prerequisite = lesson.prerequisites.map(getLessonById).find(Boolean);
+          const isFirst = lesson.sequence === 1;
+
+          return (
+            <Link
+              key={lesson.id}
+              href={canonicalizeAppPath(lesson.route)}
+              className={`group relative flex min-h-64 flex-col border border-border border-t-2 bg-card p-5 text-card-foreground shadow-[0_1px_2px_var(--paper-shadow)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-raised)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:p-6 ${GRID_CLASS_BY_SEQUENCE[lesson.sequence] ?? "lg:col-span-4"}`}
+              style={{ borderTopColor: domain.accent }}
+            >
+              <div className="flex items-start justify-between gap-5">
+                <div className="flex items-start gap-4">
+                  <span className="flex size-10 shrink-0 items-center justify-center border border-border bg-background" style={{ color: domain.accent }}>
+                    <LessonIcon className="size-5" aria-hidden={true} />
+                  </span>
+                  <div>
+                    <p className="nexus-index-label" style={{ color: domain.accent }}>{domain.label}</p>
+                    <h3 className="mt-2 font-display text-xl font-semibold leading-tight">{lesson.title}</h3>
+                  </div>
+                </div>
+                <span className="font-mono text-xs font-semibold text-muted-foreground">{String(lesson.sequence).padStart(2, "0")}</span>
+              </div>
+
+              <p className="mt-5 max-w-2xl text-sm leading-6 text-muted-foreground">{lesson.description}</p>
+
+              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5"><Clock3 className="size-3.5" aria-hidden="true" />{lesson.durationMinutes} min</span>
+                <span className="inline-flex items-center gap-1.5"><StatusIcon className="size-3.5" aria-hidden="true" />{statusLabel}</span>
+                {prerequisite ? <span>After {prerequisite.title}</span> : <span>No prerequisite</span>}
+                {isFirst ? <span className="nexus-index-label border border-[color:var(--nexus-amber)]/50 bg-[color:var(--nexus-amber)]/10 px-2 py-1 text-[var(--nexus-amber)]">Recommended start</span> : null}
+              </div>
+
+              {status !== "not_started" ? (
+                <div className="mt-5" aria-label={`${percent}% complete`}>
+                  <div className="mb-2 flex justify-between nexus-index-label text-muted-foreground"><span>Progress</span><span>{percent}%</span></div>
+                  <div className="h-1.5 bg-muted"><div className="h-full bg-primary" style={{ width: `${percent}%` }} /></div>
+                </div>
+              ) : null}
+
+              <div className="mt-auto flex items-center justify-between border-t border-border pt-5">
+                <span className="text-sm font-bold text-foreground group-hover:text-primary">{action}</span>
+                <ArrowRight className="size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-primary" aria-hidden="true" />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      {progressQuery.isError ? (
+        <p className="mt-5 border-l-2 border-[var(--nexus-amber)] bg-muted/60 px-4 py-3 text-sm text-muted-foreground" role="status">
+          Curriculum is available, but progress status could not be refreshed. Lesson access is unaffected.
+        </p>
+      ) : null}
+    </section>
+  );
+}

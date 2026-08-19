@@ -1,110 +1,43 @@
-/**
- * DESIGN: Nexus Command Center — Dashboard Layout
- * Component: NexusDashboardLayout
- *
- * Two-column grid layout with a page-level header above it.
- * Header: page title + session date + horizontal rule — provides orientation anchor.
- * Main content spans full width on mobile; sidebar appears below on mobile.
- */
-
-import React from "react";
+import type { ReactNode } from "react";
 
 interface NexusDashboardLayoutProps {
-  mainContent: React.ReactNode;
-  sidebarContent: React.ReactNode;
+  mainContent: ReactNode;
+  sidebarContent: ReactNode;
 }
 
-function getTodayLabel(): string {
+function getSessionDate(): string {
   return new Date().toLocaleDateString("en-US", {
     weekday: "long",
-    year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
 }
 
-const NexusDashboardLayout: React.FC<NexusDashboardLayoutProps> = ({
+export default function NexusDashboardLayout({
   mainContent,
   sidebarContent,
-}) => {
+}: NexusDashboardLayoutProps) {
   return (
-    <div
-      style={{
-        background: "var(--background)",
-        minHeight: "100vh",
-        padding: "1.5rem 2rem 3rem",  // P11: increased outer padding
-      }}
-    >
-      {/* Page Header — orientation anchor */}
-      <header
-        style={{
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "0.5rem",
-            marginBottom: "0.75rem",
-          }}
-        >
-          <h1
-            style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: "1.75rem",
-              fontWeight: 900,
-              letterSpacing: "0.02em",
-              color: "var(--foreground)",
-              margin: 0,
-              lineHeight: 1.1,
-            }}
-          >
-            Study Dashboard
-          </h1>
-          <span
-            style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: "0.8rem",
-              fontWeight: 500,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-              color: "var(--muted-foreground)",
-            }}
-          >
-            {getTodayLabel()}
-          </span>
-        </div>
-        {/* Horizontal rule */}
-        <div
-          style={{
-            height: "1.5px",
-            background: "var(--border)",
-            width: "100%",
-          }}
-        />
-      </header>
+    <div className="min-h-screen px-4 py-7 md:px-8 md:py-9">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-6 grid gap-4 border-b border-border pb-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div>
+            <p className="nexus-index-label text-[var(--nexus-amber)]">01 · Session focus</p>
+            <h2 className="mt-2 font-display text-2xl font-semibold leading-tight md:text-[2rem]">Your next move</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+              One prioritized learning action, supported by the evidence already in your workspace.
+            </p>
+          </div>
+          <p className="nexus-index-label text-muted-foreground">{getSessionDate()}</p>
+        </header>
 
-      {/* Two-column grid */}
-      <div
-        className="grid grid-cols-1 lg:grid-cols-[1fr_320px]"
-        style={{ gap: "2rem" }}  // P11: increased gap
-      >
-        {/* Main Content Area */}
-        <div className="main-content">{mainContent}</div>
-
-        {/* Sidebar */}
-        <div
-          className="sidebar flex flex-col"
-          style={{ gap: "1.25rem", overflowY: "auto" }}
-        >
-          {sidebarContent}
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:gap-7">
+          <main>{mainContent}</main>
+          <aside className="flex flex-col gap-5" aria-label="Learning evidence">
+            {sidebarContent}
+          </aside>
         </div>
       </div>
     </div>
   );
-};
-
-export default NexusDashboardLayout;
+}
