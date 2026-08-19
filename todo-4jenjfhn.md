@@ -10,4 +10,4 @@
 - [x] Verify TypeScript, dependencies, LSP, and WebDev server health
 - [x] Run the complete regression suite: 32 files and 154 tests passed
 - [x] Diagnose the production-build SIGTERM as an external memory-supervisor limitation; record evidence and revert all experiments
-- [ ] Save the verified overhaul as a WebDev checkpoint
+- [x] Save the verified overhaul as WebDev checkpoint `a7874343`
