@@ -1,10 +1,11 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
-import { productEvents, questionAttempts, questionCategories, questionDifficulties, questionSkills, questionSources, questions } from "../../drizzle/schema";
+import { curriculumSkills, productEvents, questionAttempts, questionCategories, questionDifficulties, questionSkills, questionSources, questions } from "../../drizzle/schema";
 import { sanitizeProductEventMetadata, type ConfidenceLevel } from "../../shared/learnerDomain";
 import {
   PRACTICE_DISCOVERY_BATCH_MAX,
   derivePracticeSkillEvidence,
   evaluatePracticeSubmission,
+  normalizeActiveTimeMs,
   summarizePracticeAttempts,
   type AnswerLetter,
   type PracticeContext,
@@ -14,6 +15,125 @@ import { getDb } from "../db";
 import { summarizeLatestQuestionOutcomes } from "../../shared/questionProgress";
 
 const EVENT_RETENTION_MS = 90 * 24 * 60 * 60 * 1_000;
+export const TODAY_RECENT_PRACTICE_LIMIT = 12;
+export const TODAY_EVIDENCE_ATTEMPT_LIMIT = 100;
+export const TODAY_ESTABLISHED_EVIDENCE_COUNT = 5;
+
+export type TodayPracticeAttempt = {
+  attemptId: number;
+  questionId: number;
+  isCorrect: boolean;
+  activeTimeMs: number;
+  submittedAt: Date;
+};
+
+export type TodayMappedEvidence = {
+  attemptId: number;
+  isCorrect: boolean;
+  skillId: string | null;
+  skillTitle: string | null;
+  questionType: string | null;
+};
+
+export type TodayEvidenceGroup = {
+  key: string;
+  label: string;
+  evidenceCount: number;
+  correctCount: number;
+  accuracyPercent: number;
+  status: "provisional" | "established";
+};
+
+export type TodayPracticeAggregate = {
+  recentPractice: {
+    attempts: number;
+    correctCount: number;
+    activeTimeMs: number;
+    latestSubmittedAt: Date | null;
+  };
+  practiceEvidence: {
+    sampledAttempts: number;
+    attemptLimit: number;
+    establishedEvidenceCount: number;
+    bySkill: TodayEvidenceGroup[];
+    byType: TodayEvidenceGroup[];
+  };
+};
+
+function percent(correct: number, attempts: number) {
+  return attempts === 0 ? 0 : Math.round((correct / attempts) * 100);
+}
+
+function evidenceStatus(evidenceCount: number) {
+  return evidenceCount >= TODAY_ESTABLISHED_EVIDENCE_COUNT
+    ? "established" as const
+    : "provisional" as const;
+}
+
+function summarizeEvidenceGroups(
+  entries: Iterable<{ attemptId: number; key: string; label: string; isCorrect: boolean }>,
+) {
+  const groups = new Map<string, { label: string; attempts: Map<number, boolean> }>();
+  for (const entry of entries) {
+    const group = groups.get(entry.key) ?? { label: entry.label, attempts: new Map<number, boolean>() };
+    group.attempts.set(entry.attemptId, entry.isCorrect);
+    groups.set(entry.key, group);
+  }
+
+  return Array.from(groups, ([key, group]): TodayEvidenceGroup => {
+    const outcomes = Array.from(group.attempts.values());
+    const correctCount = outcomes.filter(Boolean).length;
+    return {
+      key,
+      label: group.label,
+      evidenceCount: outcomes.length,
+      correctCount,
+      accuracyPercent: percent(correctCount, outcomes.length),
+      status: evidenceStatus(outcomes.length),
+    };
+  }).sort((a, b) => b.evidenceCount - a.evidenceCount || a.label.localeCompare(b.label));
+}
+
+/** Builds the bounded practice portion of Today from persisted attempt rows. */
+export function summarizeTodayPractice(
+  attempts: TodayPracticeAttempt[],
+  mappedEvidence: TodayMappedEvidence[],
+): TodayPracticeAggregate {
+  const sampled = attempts.slice(0, TODAY_EVIDENCE_ATTEMPT_LIMIT);
+  const sampledAttemptIds = new Set(sampled.map(row => row.attemptId));
+  const recent = sampled.slice(0, TODAY_RECENT_PRACTICE_LIMIT);
+  const mapped = mappedEvidence.filter((row): row is TodayMappedEvidence & { skillId: string } =>
+    sampledAttemptIds.has(row.attemptId) && Boolean(row.skillId));
+  const correct = recent.filter(row => row.isCorrect).length;
+
+  return {
+    recentPractice: {
+      attempts: recent.length,
+      correctCount: correct,
+      activeTimeMs: recent.reduce((sum, row) => sum + normalizeActiveTimeMs(row.activeTimeMs), 0),
+      latestSubmittedAt: recent[0]?.submittedAt ?? null,
+    },
+    practiceEvidence: {
+      sampledAttempts: sampled.length,
+      attemptLimit: TODAY_EVIDENCE_ATTEMPT_LIMIT,
+      establishedEvidenceCount: TODAY_ESTABLISHED_EVIDENCE_COUNT,
+      bySkill: summarizeEvidenceGroups(mapped.map(row => ({
+        attemptId: row.attemptId,
+        key: row.skillId,
+        label: row.skillTitle ?? row.skillId,
+        isCorrect: row.isCorrect,
+      }))),
+      byType: summarizeEvidenceGroups(mapped
+        .filter((row): row is typeof row & { questionType: string } => Boolean(row.questionType))
+        .map(row => ({
+          attemptId: row.attemptId,
+          key: row.questionType,
+          label: row.questionType,
+          isCorrect: row.isCorrect,
+        }))),
+    },
+  };
+}
 
 async function requireDb() {
   const db = await getDb();
@@ -143,6 +263,49 @@ export async function getPracticeSummary(userId: number, now: Date = new Date())
       submittedAt: row.submittedAt,
     })),
     now,
+  );
+}
+
+/** Returns bounded, user-scoped practice evidence for the Today aggregate. */
+export async function getTodayPracticeEvidence(userId: number) {
+  const db = await requireDb();
+  const rows = await db
+    .select({
+      attemptId: questionAttempts.id,
+      questionId: questionAttempts.questionId,
+      isCorrect: questionAttempts.isCorrect,
+      activeTimeMs: questionAttempts.activeTimeMs,
+      submittedAt: questionAttempts.submittedAt,
+    })
+    .from(questionAttempts)
+    .where(eq(questionAttempts.userId, userId))
+    .orderBy(desc(questionAttempts.submittedAt), desc(questionAttempts.id))
+    .limit(TODAY_EVIDENCE_ATTEMPT_LIMIT);
+
+  if (rows.length === 0) return summarizeTodayPractice([], []);
+
+  const attemptIds = rows.map(row => row.attemptId);
+  const evidenceRows = await db
+    .select({
+      attemptId: questionAttempts.id,
+      isCorrect: questionAttempts.isCorrect,
+      skillId: questionSkills.skillId,
+      skillTitle: curriculumSkills.title,
+      questionType: questionCategories.name,
+    })
+    .from(questionAttempts)
+    .innerJoin(questions, eq(questionAttempts.questionId, questions.id))
+    .leftJoin(questionSkills, eq(questions.id, questionSkills.questionId))
+    .leftJoin(curriculumSkills, eq(questionSkills.skillId, curriculumSkills.skillId))
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .where(and(
+      eq(questionAttempts.userId, userId),
+      inArray(questionAttempts.id, attemptIds),
+    ));
+
+  return summarizeTodayPractice(
+    rows.map(row => ({ ...row, isCorrect: row.isCorrect === 1 })),
+    evidenceRows.map(row => ({ ...row, isCorrect: row.isCorrect === 1 })),
   );
 }
 
@@ -318,6 +481,7 @@ export const practiceRepository = {
   recordQuestionStarted,
   recordQuestionsDiscovered,
   getPracticeSummary,
+  getTodayPracticeEvidence,
   getQuestionOutcomes,
   submitPracticeAttempt,
 };

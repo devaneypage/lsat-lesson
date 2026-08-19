@@ -1,4 +1,5 @@
 import LessonGrid from "@/components/LessonGrid";
+import { LedgerFrame } from "@/components/ledger/LedgerPrimitives";
 import PageMeta from "@/components/PageMeta";
 import PathSelector from "@/components/PathSelector";
 import { useFeatureFlag } from "@/lib/flags";
@@ -17,7 +18,7 @@ export default function Lessons() {
   if (!lessonGridEnabled) return <PathSelector />;
 
   return (
-    <div className="min-h-screen px-4 py-7 md:px-8 md:py-9">
+    <div className="min-h-screen">
       <PageMeta
         title="LSAT Lessons: Logical Reasoning & Reading | Devaney"
         description="Seven structured LSAT lessons covering necessary assumptions, sufficient assumptions, flaw in reasoning, reading comprehension, and more."
@@ -32,9 +33,9 @@ export default function Lessons() {
         ]}
         canonical="https://devasophy.blog/lessons"
       />
-      <div className="mx-auto max-w-7xl">
+      <LedgerFrame>
         <LessonGrid />
-      </div>
+      </LedgerFrame>
     </div>
   );
 }

@@ -46,38 +46,38 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
-  --font-sans: "Space Grotesk", sans-serif;
-  --font-display: "Lora", serif;
-  --font-serif: "Lora", serif;
+  --font-sans: "Archivo", sans-serif;
+  --font-display: "Spectral", serif;
+  --font-serif: "Spectral", serif;
 }
 
 :root {
-  /* LSAT Nexus — Scholarly Command Center: parchment, ink, amber index, teal action. */
-  --background: #F4F0E8;
-  --foreground: #191B24;
-  --card: #FFFCF6;
-  --card-foreground: #191B24;
-  --popover: #FFFCF6;
-  --popover-foreground: #191B24;
-  --muted: #E9E3D8;
-  --muted-foreground: #5E6270;
-  --border: #CBC2B4;
-  --input: #B6AC9D;
-  --ring: #0E6F76;
+  /* LSAT Nexus — research ledger: paper, navy ink, cobalt action, explicit evidence. */
+  --background: #F2F2EE;
+  --foreground: #1E2749;
+  --card: #FFFFFF;
+  --card-foreground: #1E2749;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E2749;
+  --muted: #E8E9E5;
+  --muted-foreground: #586079;
+  --border: #AEB4C3;
+  --input: #9299AC;
+  --ring: #1D4ED8;
 
-  --primary: #0E6F76;
+  --primary: #1D4ED8;
   --primary-foreground: #FFFFFF;
-  --secondary: #C8860A;
-  --secondary-foreground: #191B24;
-  --accent: #C94D12;
+  --secondary: #D9E2FF;
+  --secondary-foreground: #1E2749;
+  --accent: #284FA8;
   --accent-foreground: #FFFFFF;
-  --destructive: #B84030;
+  --destructive: #A32B2B;
   --destructive-foreground: #FFFFFF;
-  --success: #2E7D52;
+  --success: #2F6B4F;
   --success-foreground: #FFFFFF;
-  --warning: #E7B62A;
-  --warning-foreground: #3A2A00;
-  --info: #5B4A8A;
+  --warning: #B7791F;
+  --warning-foreground: #241800;
+  --info: #425E99;
   --info-foreground: #FFFFFF;
 
   --sidebar: #FFFDF8;
@@ -89,13 +89,28 @@
   --sidebar-border: #CBC2B4;
   --sidebar-ring: #0E6F76;
 
-  --workspace-rail: #191B24;
-  --workspace-rail-raised: #22252F;
-  --workspace-rail-foreground: #F5EFE4;
-  --workspace-rail-muted: #A9A7A1;
-  --workspace-rail-border: #343741;
-  --paper-raised: #FFFCF6;
-  --paper-shadow: rgba(25, 27, 36, 0.09);
+  --workspace-rail: #1E2749;
+  --workspace-rail-raised: #28345F;
+  --workspace-rail-foreground: #F7F7F3;
+  --workspace-rail-muted: #B9C0D4;
+  --workspace-rail-border: #3D486F;
+  --paper-raised: #FFFFFF;
+  --paper-shadow: rgba(30, 39, 73, 0.09);
+
+  --ledger-paper: #F2F2EE;
+  --ledger-surface: #FFFFFF;
+  --ledger-ink: #1E2749;
+  --ledger-rule: #AEB4C3;
+  --ledger-rule-strong: #1E2749;
+  --ledger-accent: #1D4ED8;
+  --ledger-accent-tint: #EEF3FF;
+  --ledger-positive: #2F6B4F;
+  --ledger-positive-tint: #F0F6F2;
+  --ledger-negative: #A32B2B;
+  --ledger-negative-tint: #FBF1F1;
+  --ledger-provisional: #8A5B19;
+  --ledger-track: #E5E7E2;
+  --ledger-faint: #747B90;
 
   --chart-1: #0E6F76;
   --chart-2: #C8860A;
@@ -140,17 +155,17 @@
   body {
     @apply bg-background text-foreground antialiased;
     min-width: 320px;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Archivo", sans-serif;
     font-weight: 400;
     line-height: 1.6;
     background-image:
-      radial-gradient(circle at 12% -10%, color-mix(in oklab, var(--secondary) 7%, transparent) 0, transparent 30rem),
-      linear-gradient(180deg, #F7F3EC 0%, #F1ECE3 100%);
+      radial-gradient(circle at 12% -10%, color-mix(in oklab, var(--primary) 4%, transparent) 0, transparent 30rem),
+      linear-gradient(180deg, #F7F7F3 0%, var(--ledger-paper) 100%);
     background-attachment: fixed;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Lora", serif;
+    font-family: "Spectral", serif;
     font-weight: 600;
     letter-spacing: -0.025em;
     text-wrap: balance;
@@ -161,7 +176,7 @@
   }
 
   :where(.lesson-content, .reading-passage, blockquote) {
-    font-family: "Lora", serif;
+    font-family: "Spectral", serif;
   }
 
   :focus-visible {
@@ -235,6 +250,30 @@
     background-size: 2.5rem 2.5rem;
   }
 
+  .learner-ledger {
+    --background: var(--ledger-paper);
+    --foreground: var(--ledger-ink);
+    --card: var(--ledger-surface);
+    --card-foreground: var(--ledger-ink);
+    --border: var(--ledger-rule);
+    --primary: var(--ledger-accent);
+    --ring: var(--ledger-accent);
+    background: var(--ledger-paper);
+    color: var(--ledger-ink);
+  }
+
+  .ledger-desktop-nav {
+    min-height: 4rem;
+  }
+
+  .ledger-mobile-nav {
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+  }
+
+  .ledger-mobile-content {
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+
   /* Button Styles */
   .btn-primary {
     @apply px-4 py-2 font-semibold transition-[transform,background-color,box-shadow] duration-150;
@@ -246,8 +285,8 @@
   }
   
   .btn-primary:hover {
-    background-color: #003D99;
-    border-color: #003D99;
+    background-color: color-mix(in oklab, var(--primary) 82%, black);
+    border-color: color-mix(in oklab, var(--primary) 82%, black);
     box-shadow: var(--shadow-raised);
   }
 
@@ -269,8 +308,8 @@
   }
   
   .btn-secondary:hover {
-    background-color: #A96F05;
-    border-color: #A96F05;
+    background-color: color-mix(in oklab, var(--secondary) 82%, black);
+    border-color: color-mix(in oklab, var(--secondary) 82%, black);
     box-shadow: var(--shadow-raised);
   }
   
@@ -284,8 +323,8 @@
   }
   
   .btn-accent:hover {
-    background-color: #A83D0D;
-    border-color: #A83D0D;
+    background-color: color-mix(in oklab, var(--accent) 82%, black);
+    border-color: color-mix(in oklab, var(--accent) 82%, black);
     box-shadow: var(--shadow-raised);
   }
   

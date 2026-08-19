@@ -10,17 +10,31 @@ async function requireDb() {
 
 export type TodayReviewSignal = {
   count: number;
+  id?: number;
+  questionId?: number;
+  stage?: number;
+  status?: "active";
   nextDueAt: Date;
+  snoozedUntil?: Date | null;
+  lastAttemptId?: number | null;
   reason: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type TodayPlanTaskSignal = {
   id: number;
+  planId?: number;
   title: string;
   itemType: "lesson" | "practice" | "review" | "reflection";
   lessonId: string | null;
   skillId: string | null;
   dueAt: Date | null;
+  position?: number;
+  status?: "pending";
+  completedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export async function getTodaySignals(userId: number, now = new Date()) {
@@ -35,7 +49,18 @@ export async function getTodaySignals(userId: number, now = new Date()) {
   const [reviewCountRows, nextReviewRows, nextPlanTaskRows] = await Promise.all([
     db.select({ value: count() }).from(reviewItems).where(reviewPredicate),
     db
-      .select({ dueAt: reviewItems.dueAt, reason: reviewItems.reason })
+      .select({
+        id: reviewItems.id,
+        questionId: reviewItems.questionId,
+        stage: reviewItems.stage,
+        status: reviewItems.status,
+        dueAt: reviewItems.dueAt,
+        snoozedUntil: reviewItems.snoozedUntil,
+        lastAttemptId: reviewItems.lastAttemptId,
+        reason: reviewItems.reason,
+        createdAt: reviewItems.createdAt,
+        updatedAt: reviewItems.updatedAt,
+      })
       .from(reviewItems)
       .where(reviewPredicate)
       .orderBy(asc(reviewItems.dueAt), asc(reviewItems.id))
@@ -43,11 +68,17 @@ export async function getTodaySignals(userId: number, now = new Date()) {
     db
       .select({
         id: studyPlanTasks.id,
+        planId: studyPlanTasks.planId,
         title: studyPlanTasks.title,
         itemType: studyPlanTasks.itemType,
         lessonId: studyPlanTasks.lessonId,
         skillId: studyPlanTasks.skillId,
         dueAt: studyPlanTasks.dueAt,
+        position: studyPlanTasks.position,
+        status: studyPlanTasks.status,
+        completedAt: studyPlanTasks.completedAt,
+        createdAt: studyPlanTasks.createdAt,
+        updatedAt: studyPlanTasks.updatedAt,
       })
       .from(studyPlanTasks)
       .innerJoin(studyPlans, eq(studyPlanTasks.planId, studyPlans.id))
@@ -66,8 +97,10 @@ export async function getTodaySignals(userId: number, now = new Date()) {
 
   return {
     dueReview: reviewCount > 0 && nextReview
-      ? { count: reviewCount, nextDueAt: nextReview.dueAt, reason: nextReview.reason }
+      ? { ...nextReview, count: reviewCount, nextDueAt: nextReview.dueAt, status: "active" as const }
       : null,
-    activePlanTask: nextPlanTaskRows[0] ?? null,
+    activePlanTask: nextPlanTaskRows[0]
+      ? { ...nextPlanTaskRows[0], status: "pending" as const }
+      : null,
   };
 }

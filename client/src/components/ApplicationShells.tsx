@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { PageFrame, PageHeader, StatePanel } from "@/components/PagePrimitives";
 import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
 import {
   ADMIN_NAV_ROUTES,
   AppRouteDefinition,
@@ -26,6 +27,7 @@ import {
   ListChecks,
   LogOut,
   Menu,
+  MoreHorizontal,
   Search,
   Settings2,
   ShieldCheck,
@@ -55,10 +57,10 @@ const ICONS: Record<string, typeof Home> = {
   adminAnalytics: BarChart3,
 };
 
-function BrandMark({ compact = false }: { compact?: boolean }) {
+function BrandMark({ compact = false, ledger = false }: { compact?: boolean; ledger?: boolean }) {
   return (
     <Link
-      href={ROUTE_BY_ID.home.path}
+      href={ledger ? ROUTE_BY_ID.today.path : ROUTE_BY_ID.home.path}
       className="inline-flex items-center gap-2.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="LSAT Nexus home"
     >
@@ -69,16 +71,16 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
         fill="none"
         aria-hidden="true"
       >
-        <rect x="1" y="1" width="26" height="26" rx="2" fill="var(--nexus-amber)" />
+        <rect x="1" y="1" width="26" height="26" rx="1" fill={ledger ? "var(--ledger-ink)" : "var(--nexus-amber)"} />
         <path
           d="M7 21V7L21 21V7"
-          stroke="#111111"
+          stroke={ledger ? "#FFFFFF" : "#111111"}
           strokeWidth="2.8"
           strokeLinecap="square"
           strokeLinejoin="miter"
         />
       </svg>
-      <span className="font-display text-sm font-black uppercase tracking-[0.08em] text-[var(--nexus-amber)]">
+      <span className={ledger ? "font-display text-base font-semibold tracking-[-0.01em] text-[var(--ledger-ink)]" : "font-display text-sm font-black uppercase tracking-[0.08em] text-[var(--nexus-amber)]"}>
         LSAT Nexus
       </span>
     </Link>
@@ -89,6 +91,36 @@ function isRouteActive(location: string, route: AppRouteDefinition) {
   const canonical = canonicalizeAppPath(location);
   if (route.end) return canonical === route.path;
   return canonical === route.path || canonical.startsWith(`${route.path}/`);
+}
+
+function LedgerDesktopNavLink({ route }: { route: AppRouteDefinition }) {
+  const [location] = useLocation();
+  const active = isRouteActive(location, route);
+  return (
+    <Link
+      href={route.path}
+      aria-current={active ? "page" : undefined}
+      className={`relative inline-flex min-h-11 items-center px-3 text-[0.78rem] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${active ? "text-[var(--ledger-ink)] after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-[var(--ledger-accent)]" : "text-muted-foreground hover:text-[var(--ledger-ink)]"}`}
+    >
+      {route.label}
+    </Link>
+  );
+}
+
+function LedgerMobileNavLink({ route }: { route: AppRouteDefinition }) {
+  const [location] = useLocation();
+  const active = isRouteActive(location, route);
+  const Icon = ICONS[route.id] ?? ChevronRight;
+  return (
+    <Link
+      href={route.path}
+      aria-current={active ? "page" : undefined}
+      className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-[0.62rem] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${active ? "text-[var(--ledger-accent)] before:absolute before:inset-x-3 before:top-0 before:h-0.5 before:bg-[var(--ledger-accent)]" : "text-muted-foreground"}`}
+    >
+      <Icon className="h-4 w-4" aria-hidden="true" />
+      <span>{route.label}</span>
+    </Link>
+  );
 }
 
 function NavLink({
@@ -296,56 +328,80 @@ function AccountBlock({ compact = false, tone = "light" }: { compact?: boolean; 
 }
 
 export function LearnerShell({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading, logout } = useAuth();
+  const workspaceQuery = trpc.learner.continueLearning.useQuery(undefined, {
+    enabled: Boolean(user),
+    retry: false,
+  });
 
   if (loading) return <LoadingShell label="Opening learner workspace" />;
   if (!user) return <SignInState />;
 
-  return (
-    <div className="min-h-screen bg-[color:var(--background)] text-foreground md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
-      <SkipLink />
-      <aside className="hidden min-h-screen border-r border-[var(--workspace-rail-border)] bg-[var(--workspace-rail)] md:sticky md:top-0 md:flex md:h-screen md:flex-col">
-        <div className="flex h-20 items-center border-b border-[var(--workspace-rail-border)] px-5">
-          <BrandMark compact />
-        </div>
-        <div className="px-4 pb-3 pt-7">
-          <p className="nexus-index-label px-3 text-[var(--workspace-rail-muted)]">Study workspace</p>
-        </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-4 pb-6" aria-label="Learner navigation">
-          {LEARNER_NAV_ROUTES.map((route) => (
-            <NavLink key={route.id} route={route} variant="learner" />
-          ))}
-        </nav>
-        <AccountBlock tone="dark" />
-      </aside>
+  const primaryRoutes = LEARNER_NAV_ROUTES.filter((route) => route.navGroup === "primary");
+  const mobileRoutes = primaryRoutes.filter((route) => route.id !== "plan").slice(0, 5);
+  const targetTestDate = workspaceQuery.data?.workspaceContext?.targetTestDate ?? null;
+  const targetLabel = targetTestDate
+    ? `Test ${new Date(targetTestDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
+    : "Set test date";
 
-      <div className="nexus-paper-grid min-w-0">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[var(--workspace-rail-border)] bg-[var(--workspace-rail)] px-4 shadow-sm md:hidden">
-          <BrandMark compact />
-          <button
-            type="button"
-            className="rounded-sm p-2 text-[var(--workspace-rail-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--nexus-amber)]"
-            aria-expanded={mobileOpen}
-            aria-controls="learner-mobile-nav"
-            aria-label={mobileOpen ? "Close study navigation" : "Open study navigation"}
-            onClick={() => setMobileOpen((open) => !open)}
-          >
-            {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-          </button>
-        </header>
-        {mobileOpen ? (
-          <div id="learner-mobile-nav" className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-[var(--workspace-rail-border)] bg-[var(--workspace-rail)] p-4 shadow-xl md:hidden">
-            <nav className="space-y-1" aria-label="Learner mobile navigation">
-              {LEARNER_NAV_ROUTES.map((route) => (
-                <NavLink key={route.id} route={route} variant="learner" onNavigate={() => setMobileOpen(false)} />
-              ))}
-            </nav>
-            <AccountBlock compact tone="dark" />
+  return (
+    <div className="learner-ledger min-h-screen bg-[var(--ledger-paper)] text-[var(--ledger-ink)]">
+      <SkipLink />
+      <header className="sticky top-0 z-50 border-b-2 border-[var(--ledger-rule-strong)] bg-[var(--ledger-surface)]">
+        <div className="ledger-desktop-nav mx-auto hidden h-16 max-w-[1440px] items-stretch px-8 lg:flex">
+          <div className="flex shrink-0 items-center border-r-2 border-[var(--ledger-rule)] pr-8">
+            <BrandMark compact ledger />
           </div>
-        ) : null}
-        <main id="main-content" className="min-h-screen">{children}</main>
-      </div>
+          <nav className="flex min-w-0 flex-1 items-stretch gap-1 px-7" aria-label="Learner navigation">
+            {primaryRoutes.map((route) => <LedgerDesktopNavLink key={route.id} route={route} />)}
+          </nav>
+          <div className="flex shrink-0 items-center gap-4 border-l-2 border-[var(--ledger-rule)] pl-6">
+            <Link href={ROUTE_BY_ID.plan.path} className="text-[0.68rem] font-bold uppercase tracking-[0.09em] text-muted-foreground hover:text-[var(--ledger-accent)]">
+              {targetLabel}
+            </Link>
+            <details className="group relative">
+              <summary className="flex h-9 w-9 list-none items-center justify-center bg-[var(--ledger-ink)] text-xs font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden" aria-label="Open account menu">
+                {(user.name || user.email || "L").charAt(0).toUpperCase()}
+              </summary>
+              <div className="absolute right-0 top-11 z-50 w-64 border-2 border-[var(--ledger-rule-strong)] bg-[var(--ledger-surface)] p-2 shadow-xl">
+                <div className="border-b-2 border-[var(--ledger-rule)] px-3 py-2">
+                  <p className="truncate text-sm font-bold">{user.name || "Learner"}</p>
+                  <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                </div>
+                <Link href={ROUTE_BY_ID.resources.path} className="mt-2 flex min-h-11 items-center px-3 text-sm font-semibold hover:bg-[var(--ledger-accent-tint)]">Resources</Link>
+                <button type="button" onClick={() => void logout()} className="flex min-h-11 w-full items-center px-3 text-left text-sm font-semibold hover:bg-[var(--ledger-negative-tint)] hover:text-[var(--ledger-negative)]">Sign out</button>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div className="flex h-14 items-center justify-between px-4 lg:hidden">
+          <BrandMark compact ledger />
+          <div className="flex items-center gap-3">
+            <span className="text-[0.65rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{targetLabel}</span>
+            <details className="group relative">
+              <summary className="flex min-h-11 min-w-11 list-none items-center justify-center text-[var(--ledger-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden" aria-label="Open more navigation">
+                <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
+              </summary>
+              <div className="absolute right-0 top-12 z-50 w-64 border-2 border-[var(--ledger-rule-strong)] bg-[var(--ledger-surface)] p-2 shadow-xl">
+                <Link href={ROUTE_BY_ID.plan.path} className="flex min-h-11 items-center px-3 text-sm font-semibold hover:bg-[var(--ledger-accent-tint)]">Plan</Link>
+                <Link href={ROUTE_BY_ID.resources.path} className="flex min-h-11 items-center px-3 text-sm font-semibold hover:bg-[var(--ledger-accent-tint)]">Resources</Link>
+                <div className="border-t-2 border-[var(--ledger-rule)] px-3 py-2">
+                  <p className="truncate text-sm font-bold">{user.name || "Learner"}</p>
+                  <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                </div>
+                <button type="button" onClick={() => void logout()} className="flex min-h-11 w-full items-center px-3 text-left text-sm font-semibold hover:bg-[var(--ledger-negative-tint)] hover:text-[var(--ledger-negative)]">Sign out</button>
+              </div>
+            </details>
+          </div>
+        </div>
+      </header>
+
+      <main id="main-content" className="ledger-mobile-content min-h-screen lg:pb-0">{children}</main>
+
+      <nav className="ledger-mobile-nav fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t-2 border-[var(--ledger-rule-strong)] bg-[var(--ledger-surface)] lg:hidden" aria-label="Learner mobile navigation">
+        {mobileRoutes.map((route) => <LedgerMobileNavLink key={route.id} route={route} />)}
+      </nav>
     </div>
   );
 }

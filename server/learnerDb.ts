@@ -17,6 +17,7 @@ import {
   type LessonProgressStatus,
 } from "../shared/learnerDomain";
 import { getDb } from "./db";
+import { getTodayPracticeEvidence, summarizeTodayPractice } from "./repositories/practice";
 import { getTodaySignals, type TodayPlanTaskSignal, type TodayReviewSignal } from "./repositories/today";
 
 export type LearnerPreference = typeof learnerPreferences.$inferSelect;
@@ -163,9 +164,42 @@ type TodaySignals = {
   activePlanTask: TodayPlanTaskSignal | null;
 };
 
+export type TodayWorkspaceContext = {
+  targetTestDate: Date | null;
+  weeklyStudyMinutes: number | null;
+  studyWeek: null;
+};
+
+type ContinueLearningEvidence = ReturnType<typeof summarizeTodayPractice>;
+
+type ContinueLearningContext = ContinueLearningEvidence & {
+  workspaceContext: TodayWorkspaceContext;
+};
+
 const EMPTY_TODAY_SIGNALS: TodaySignals = {
   dueReview: null,
   activePlanTask: null,
+};
+
+const EMPTY_CONTINUE_LEARNING_CONTEXT: ContinueLearningContext = {
+  workspaceContext: {
+    targetTestDate: null,
+    weeklyStudyMinutes: null,
+    studyWeek: null,
+  },
+  recentPractice: {
+    attempts: 0,
+    correctCount: 0,
+    activeTimeMs: 0,
+    latestSubmittedAt: null,
+  },
+  practiceEvidence: {
+    sampledAttempts: 0,
+    attemptLimit: 100,
+    establishedEvidenceCount: 5,
+    bySkill: [],
+    byType: [],
+  },
 };
 
 function planTaskRoute(task: TodayPlanTaskSignal, lessons: CurriculumLesson[]) {
@@ -189,6 +223,7 @@ export function buildContinueLearning(
   progress: ContinueLearningProgress[],
   lessons: CurriculumLesson[] = CURRICULUM_LESSONS,
   signals: TodaySignals = EMPTY_TODAY_SIGNALS,
+  context: ContinueLearningContext = EMPTY_CONTINUE_LEARNING_CONTEXT,
 ) {
   const orderedLessons = [...lessons].sort((a, b) => a.sequence - b.sequence);
   const progressByLesson = new Map(progress.map(item => [item.lessonId, item]));
@@ -272,6 +307,11 @@ export function buildContinueLearning(
       dueReviewCount: signals.dueReview?.count ?? 0,
       hasActivePlanTask: Boolean(signals.activePlanTask),
     },
+    workspaceContext: context.workspaceContext,
+    dueReview: signals.dueReview,
+    activePlanTask: signals.activePlanTask,
+    recentPractice: context.recentPractice,
+    practiceEvidence: context.practiceEvidence,
     primaryAction,
     recentLessons: [...progress]
       .filter(item => orderedLessons.some(lesson => lesson.id === item.lessonId))
@@ -287,11 +327,21 @@ export function buildContinueLearning(
 }
 
 export async function getContinueLearning(userId: number) {
-  const [progress, signals] = await Promise.all([
+  const [progress, signals, profile, practice] = await Promise.all([
     listLessonProgress(userId),
     getTodaySignals(userId),
+    getLearnerProfile(userId),
+    getTodayPracticeEvidence(userId),
   ]);
-  return buildContinueLearning(progress, CURRICULUM_LESSONS, signals);
+  return buildContinueLearning(progress, CURRICULUM_LESSONS, signals, {
+    workspaceContext: {
+      targetTestDate: profile?.targetTestDate ?? null,
+      weeklyStudyMinutes: profile?.weeklyStudyMinutes ?? null,
+      // There is no authoritative study-plan start date in the current schema.
+      studyWeek: null,
+    },
+    ...practice,
+  });
 }
 
 export async function upsertLessonProgress(

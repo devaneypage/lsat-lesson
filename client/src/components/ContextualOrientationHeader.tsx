@@ -32,9 +32,9 @@ export function ContextualOrientationHeader({
   nextAction,
 }: OrientationHeaderProps) {
   return (
-    <section className="border-b border-border bg-card/80 px-4 py-5 text-card-foreground backdrop-blur-sm md:px-8" aria-labelledby="orientation-title">
-      <div className="mx-auto max-w-7xl">
-        <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    <section className="bg-[var(--ledger-paper)] px-4 pt-5 text-[var(--ledger-ink)] md:px-8 md:pt-7" aria-labelledby="orientation-title">
+      <div className="mx-auto max-w-[1360px] border-b-2 border-[var(--ledger-rule-strong)] pb-5">
+        <nav aria-label="Breadcrumb" className="mb-2 flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           {breadcrumb.map((item, index) => (
             <span key={`${item.label}-${index}`} className="flex items-center gap-2">
               {index > 0 && <span aria-hidden="true">/</span>}
@@ -43,18 +43,18 @@ export function ContextualOrientationHeader({
           ))}
         </nav>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div>
-            <div className="mb-2 flex flex-wrap items-center gap-3">
-              <Compass className="size-5 text-primary" aria-hidden="true" />
-              <span className="rounded-sm border border-border bg-background px-2 py-1 text-[0.7rem] font-bold uppercase tracking-[0.14em]">
+            <div className="mb-1.5 flex flex-wrap items-center gap-3">
+              <Compass className="size-4 text-primary" aria-hidden="true" />
+              <span className="border border-[var(--ledger-rule)] bg-[var(--ledger-surface)] px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.11em]">
                 {status === "completed" && <CheckCircle2 className="mr-1 inline size-3" aria-hidden="true" />}
                 {statusLabel ?? statusLabels[status]}
               </span>
               {estimate && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" aria-hidden="true" />{estimate}</span>}
             </div>
-            <h1 id="orientation-title" className="font-display font-bold text-2xl leading-tight md:text-3xl">{title}</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground"><strong className="text-foreground">Why this matters:</strong> {purpose}</p>
+            <h1 id="orientation-title" className="font-display text-2xl font-semibold leading-tight md:text-[2rem]">{title}</h1>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{purpose}</p>
             {prerequisites.length > 0 && (
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <LockKeyhole className="size-3.5" aria-hidden="true" /><span>Prerequisites:</span>
@@ -63,7 +63,7 @@ export function ContextualOrientationHeader({
             )}
           </div>
           {nextAction && (
-            <Link href={nextAction.href} className="inline-flex items-center justify-center gap-2 rounded-sm bg-primary px-4 py-3 text-sm font-bold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Link href={nextAction.href} className="inline-flex min-h-11 items-center justify-center gap-2 bg-[var(--ledger-ink)] px-4 py-2.5 text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               {nextAction.label}<ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           )}

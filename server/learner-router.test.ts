@@ -25,6 +25,7 @@ describe("learner router authorization", () => {
     const caller = appRouter.createCaller(createAnonymousContext());
     await expect(caller.learner.curriculum()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
     await expect(caller.learner.progress()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    await expect(caller.learner.continueLearning()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 
   it("rejects anonymous preference mutations", async () => {

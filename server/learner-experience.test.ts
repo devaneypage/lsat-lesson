@@ -36,6 +36,12 @@ describe("Continue Learning aggregation", () => {
     expect(result.primaryAction?.kind).toBe("start");
     expect(result.primaryAction?.lesson.id).toBe(lessons[0].id);
     expect(result.summary).toMatchObject({ completedLessons: 0, inProgressLessons: 0, percentComplete: 0 });
+    expect(result).toMatchObject({
+      workspaceContext: { targetTestDate: null, weeklyStudyMinutes: null, studyWeek: null },
+      dueReview: null,
+      activePlanTask: null,
+      recentPractice: { attempts: 0, correctCount: 0, activeTimeMs: 0, latestSubmittedAt: null },
+    });
   });
 
   it("resumes the most recently accessed in-progress lesson before proposing an unstarted one", () => {
@@ -128,6 +134,29 @@ describe("Continue Learning aggregation", () => {
       percentComplete: 100,
     });
     expect(result.primaryAction).toMatchObject({ kind: "lesson_review", lesson: { id: lessons[2].id } });
+  });
+
+  it("returns configured workspace context and complete current signals", () => {
+    const dueReview = {
+      count: 1, id: 31, questionId: 410, stage: 2, status: "active" as const,
+      nextDueAt: new Date("2026-07-03T09:00:00Z"), snoozedUntil: null,
+      lastAttemptId: 81, reason: "Incorrect answer due for retrieval practice.",
+    };
+    const activePlanTask = {
+      id: 12, planId: 4, title: "Complete a strengthen drill", itemType: "practice" as const,
+      lessonId: null, skillId: "strengthen-weaken", dueAt: new Date("2026-07-03T10:00:00Z"),
+      position: 2, status: "pending" as const,
+    };
+    const result = buildContinueLearning([], lessons, { dueReview, activePlanTask }, {
+      workspaceContext: { targetTestDate: new Date("2026-10-10T00:00:00Z"), weeklyStudyMinutes: 420, studyWeek: null },
+      recentPractice: { attempts: 2, correctCount: 1, activeTimeMs: 75_000, latestSubmittedAt: new Date("2026-07-04T12:00:00Z") },
+      practiceEvidence: { sampledAttempts: 2, attemptLimit: 100, establishedEvidenceCount: 5, bySkill: [], byType: [] },
+    });
+
+    expect(result.workspaceContext).toEqual({ targetTestDate: new Date("2026-10-10T00:00:00Z"), weeklyStudyMinutes: 420, studyWeek: null });
+    expect(result.dueReview).toEqual(dueReview);
+    expect(result.activePlanTask).toEqual(activePlanTask);
+    expect(result.primaryAction?.kind).toBe("due_review");
   });
 });
 

@@ -6,6 +6,7 @@ const root = process.cwd();
 const stylesheet = readFileSync(join(root, "client/src/index.css"), "utf8");
 const document = readFileSync(join(root, "client/index.html"), "utf8");
 const primitives = readFileSync(join(root, "client/src/components/PagePrimitives.tsx"), "utf8");
+const ledgerPrimitives = readFileSync(join(root, "client/src/components/ledger/LedgerPrimitives.tsx"), "utf8");
 
 function collectSourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -15,7 +16,7 @@ function collectSourceFiles(directory: string): string[] {
   });
 }
 
-describe("Academic Light design-system contract", () => {
+describe("Research ledger design-system contract", () => {
   it("defines every required semantic state token", () => {
     for (const token of [
       "--background",
@@ -33,14 +34,14 @@ describe("Academic Light design-system contract", () => {
   });
 
   it("loads only the selected interface, reading, and notation families", () => {
-    expect(document).toContain("family=Space+Grotesk");
-    expect(document).toContain("family=Lora");
+    expect(document).toContain("family=Archivo");
+    expect(document).toContain("family=Spectral");
     expect(document).toContain("family=JetBrains+Mono");
 
     const clientSource = collectSourceFiles(join(root, "client"))
       .map((path) => readFileSync(path, "utf8"))
       .join("\n");
-    expect(clientSource).not.toMatch(/Archivo(?:_Black| Black)?/);
+    expect(clientSource).not.toContain("family=Lora");
   });
 
   it("preserves global preference behavior and system reduced motion", () => {
@@ -57,5 +58,8 @@ describe("Academic Light design-system contract", () => {
     }
     expect(stylesheet).toContain(".academic-surface");
     expect(primitives).toContain("academic-surface");
+    for (const component of ["LedgerFrame", "LedgerHeader", "LedgerSection", "LedgerProgress", "EvidenceStatus"]) {
+      expect(ledgerPrimitives).toContain(`function ${component}`);
+    }
   });
 });

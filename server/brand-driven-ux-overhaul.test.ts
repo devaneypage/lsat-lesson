@@ -6,50 +6,49 @@ const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8"
 
 const stylesheet = read("client/src/index.css");
 const shells = read("client/src/components/ApplicationShells.tsx");
-const dashboardLayout = read("client/src/components/NexusDashboardLayout.tsx");
-const continueLearning = read("client/src/components/ContinueLearningDashboard.tsx");
+const dashboard = read("client/src/components/ContinueLearningDashboard.tsx");
 const lessonGrid = read("client/src/components/LessonGrid.tsx");
+const orientation = read("client/src/components/ContextualOrientationHeader.tsx");
 
-describe("Scholarly Command Center UX contract", () => {
-  it("defines the ink rail, raised paper, teal action, and scholarly display system", () => {
+describe("LSAT Nexus ledger workspace UX contract", () => {
+  it("defines paper, navy ink, cobalt action, and explicit evidence states", () => {
     for (const token of [
-      "--workspace-rail:",
-      "--workspace-rail-foreground:",
-      "--workspace-rail-muted:",
-      "--workspace-rail-border:",
-      "--paper-raised:",
-      "--primary: #0E6F76",
-    ]) {
-      expect(stylesheet).toContain(token);
-    }
-    expect(stylesheet).toContain('--font-display: "Lora", serif');
-    expect(stylesheet).toContain(".nexus-paper-grid");
+      "--ledger-paper:",
+      "--ledger-ink:",
+      "--ledger-rule:",
+      "--ledger-accent:",
+      "--ledger-positive:",
+      "--ledger-negative:",
+      "--ledger-provisional:",
+    ]) expect(stylesheet).toContain(token);
+    expect(stylesheet).toContain('--font-display: "Spectral", serif');
+    expect(stylesheet).toContain('--font-sans: "Archivo", sans-serif');
   });
 
-  it("renders learner navigation as a continuous inverse rail with an amber active index", () => {
-    expect(shells).toContain('bg-[var(--workspace-rail)]');
-    expect(shells).toContain('border-[var(--workspace-rail-border)]');
-    expect(shells).toContain('before:bg-[var(--nexus-amber)]');
-    expect(shells).toContain('<AccountBlock tone="dark" />');
+  it("renders authenticated navigation as a desktop ledger header and mobile bottom bar", () => {
+    expect(shells).toContain("ledger-desktop-nav");
+    expect(shells).toContain("ledger-mobile-nav");
+    expect(shells).toContain('aria-label="Learner navigation"');
+    expect(shells).toContain('aria-label="Learner mobile navigation"');
+    expect(shells).toContain("targetTestDate");
+    expect(shells).not.toContain('md:grid-cols-[15rem_minmax(0,1fr)]');
   });
 
-  it("keeps Today focused on one next move instead of a duplicate dashboard title", () => {
-    expect(dashboardLayout).toContain("Your next move");
-    expect(dashboardLayout).toContain("Session focus");
-    expect(dashboardLayout).not.toContain("Study Dashboard");
-    expect(continueLearning).toContain("data.summary.dueReviewCount");
-    expect(continueLearning).toContain("data.summary.hasActivePlanTask");
-    expect(continueLearning).toContain("query.data.primaryAction?.route");
-    expect(continueLearning).toContain("Evidence ledger");
+  it("keeps orientation compact and Today grounded in one server-selected next move", () => {
+    expect(orientation).toContain("ledger-rule-strong");
+    expect(orientation).not.toContain("Why this matters:");
+    expect(dashboard).toContain("data.summary.dueReviewCount");
+    expect(dashboard).toContain("data.summary.hasActivePlanTask");
+    expect(dashboard).toContain("data.primaryAction?.route");
   });
 
-  it("builds the curriculum atlas from shared lessons and authoritative progress", () => {
-    expect(lessonGrid).toContain("CURRICULUM_LESSONS.map");
+  it("builds the sequenced curriculum ledger from shared lessons and authoritative progress", () => {
+    expect(lessonGrid).toContain("CURRICULUM_LESSONS");
     expect(lessonGrid).toContain("trpc.learner.progress.useQuery");
     expect(lessonGrid).toContain("canonicalizeAppPath(lesson.route)");
-    expect(lessonGrid).toContain('LR: { label: "Logical Reasoning"');
-    expect(lessonGrid).toContain('RC: { label: "Reading Comprehension"');
-    expect(lessonGrid).toContain('Logic: { label: "Formal Logic"');
+    expect(lessonGrid).toContain('LR: "Logical Reasoning"');
+    expect(lessonGrid).toContain('RC: "Reading Comprehension"');
+    expect(lessonGrid).toContain('Logic: "Formal Logic"');
     expect(lessonGrid).not.toContain("Logic Games");
   });
 });
