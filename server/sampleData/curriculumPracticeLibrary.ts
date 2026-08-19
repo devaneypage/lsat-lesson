@@ -1067,3 +1067,15 @@ export function assertCurriculumPracticeLibraryProvenance() {
     }
   }
 }
+
+const INTRODUCTORY_SUBSKILLS_BY_LESSON = {
+  "necessary-assumptions": ["basic-assumption-link", "causal-alternative", "generalization-bridge", "access-condition", "representativeness", "net-revenue-baseline"],
+  "sufficient-assumptions": ["direct-bridge", "performance-indicator", "causal-sufficiency", "traffic-contribution", "single-factor-sufficiency", "proportion-shift"],
+  "flaw-in-reasoning": ["post-hoc-causation", "volunteer-sampling", "aggregate-scope", "correlation-causation", "affirming-consequent", "cross-case-causation"],
+  "common-flaws": ["correlation-causation", "basic-equivocation", "composition", "relative-absolute", "circular-reasoning", "hybrid-causal-scope"],
+  "strengthen-weaken": ["receptacle-causal-support", "survey-support", "alternative-cause", "plan-impact", "representative-evidence", "comparative-causation"],
+  "reading-comprehension": ["passage-structure-baseline", "author-viewpoint-baseline", "supported-inference-baseline", "purpose-baseline", "evidence-role-baseline", "qualification-baseline"],
+  "formal-logic": ["basic-conditional", "basic-contraposition", "simple-quantifier", "single-chain", "conditional-application", "necessary-condition"],
+} as const;
+
+export const CURRICULUM_PRACTICE_SUBSKILL_MANIFEST = Object.entries(INTRODUCTORY_SUBSKILLS_BY_LESSON).flatMap(([lessonId, subskills]) => CURRICULUM_PRACTICE_LIBRARY.filter((question) => question.lessonId === lessonId).map((question, index) => ({ questionId: question.questionId, lessonId, subskill: subskills[index] })));

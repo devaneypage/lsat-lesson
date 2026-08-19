@@ -55,6 +55,21 @@ export function evaluatePracticeSubmission(input: {
   } as const;
 }
 
+export type PracticeSkillMapping = { skillId: string; weight: number };
+
+export function derivePracticeSkillEvidence(input: {
+  questionId: number;
+  mappings: PracticeSkillMapping[];
+  isCorrect: boolean;
+}) {
+  return input.mappings.map((mapping) => ({
+    questionId: input.questionId,
+    skillId: mapping.skillId,
+    weight: mapping.weight,
+    isCorrect: input.isCorrect,
+  }));
+}
+
 /** Minimal per-attempt evidence used for aggregate calibration metrics. */
 export type PracticeAttemptEvidence = {
   isCorrect: boolean;

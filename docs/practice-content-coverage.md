@@ -23,3 +23,9 @@ Every seeded item is covered by the `CURRICULUM_PRACTICE_REVIEW_MANIFEST`, which
 ## Visual Verification
 
 The desktop `/practice` view displays the coverage cards and the lesson filter alongside the expanded practice grid. At the mobile viewport, the coverage cards, lesson selector, existing browse controls, and question cards stack without horizontal clipping. The first load presents the full library, while selecting a coverage card or lesson filter confines the server query to that canonical lesson.
+
+## Evidence-Ready Second Tranche
+
+No learner attempts were present when this tranche was designed, so the additional 42 items target **structural evidence gaps**, not fabricated performance trends. One easy, two medium, and three hard items were added to every lesson. The learner database now verifies twelve items per active lesson with a **3-easy, 5-medium, 4-hard** distribution.
+
+The final desktop review shows the expanded 84-item Question Bank with seven coverage cards reporting twelve practice items each. The mobile review confirms that the coverage cards, lesson filter, browse controls, and expanded grid continue to stack without horizontal clipping. The second tranche passed the same original-content provenance gate before the idempotent seed inserted its 42 new records.

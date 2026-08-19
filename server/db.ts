@@ -23,7 +23,10 @@ import {
   validateSampleLogicalReasoningQuestions,
 } from "./sampleData/logicalReasoning";
 import { assertCurriculumPracticeLibraryProvenance, CURRICULUM_PRACTICE_LIBRARY, CURRICULUM_PRACTICE_LIBRARY_SOURCE } from "./sampleData/curriculumPracticeLibrary";
+import { assertEvidenceReadyPracticeLibraryProvenance, EVIDENCE_READY_PRACTICE_LIBRARY } from "./sampleData/evidenceReadyPracticeLibrary";
 import { seedCurriculumRegistry } from "./learnerDb";
+
+const ALL_CURRICULUM_PRACTICE_LIBRARY = [...CURRICULUM_PRACTICE_LIBRARY, ...EVIDENCE_READY_PRACTICE_LIBRARY];
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -205,12 +208,13 @@ export async function seedOriginalLogicalReasoningSamples(): Promise<{ inserted:
  */
 export async function seedCurriculumPracticeLibrary(): Promise<{ inserted: number; total: number }> {
   assertCurriculumPracticeLibraryProvenance();
+  assertEvidenceReadyPracticeLibraryProvenance();
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await seedCurriculumRegistry();
 
-  const categoryNames = [...new Set(CURRICULUM_PRACTICE_LIBRARY.map((question) => question.topic))];
-  const difficultyNames = [...new Set(CURRICULUM_PRACTICE_LIBRARY.map((question) => question.difficulty))];
+  const categoryNames = [...new Set(ALL_CURRICULUM_PRACTICE_LIBRARY.map((question) => question.topic))];
+  const difficultyNames = [...new Set(ALL_CURRICULUM_PRACTICE_LIBRARY.map((question) => question.difficulty))];
   await db.insert(questionCategories).values(categoryNames.map((name) => ({ name }))).onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
   await db.insert(questionDifficulties).values(difficultyNames.map((name) => ({ name }))).onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
   await db.insert(questionSources).values({ name: CURRICULUM_PRACTICE_LIBRARY_SOURCE }).onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
@@ -219,7 +223,7 @@ export async function seedCurriculumPracticeLibrary(): Promise<{ inserted: numbe
     db.select().from(questionCategories).where(inArray(questionCategories.name, categoryNames)),
     db.select().from(questionDifficulties).where(inArray(questionDifficulties.name, difficultyNames)),
     db.select().from(questionSources).where(eq(questionSources.name, CURRICULUM_PRACTICE_LIBRARY_SOURCE)).limit(1),
-    db.select({ questionId: questions.questionId }).from(questions).where(inArray(questions.questionId, CURRICULUM_PRACTICE_LIBRARY.map((question) => question.questionId))),
+    db.select({ questionId: questions.questionId }).from(questions).where(inArray(questions.questionId, ALL_CURRICULUM_PRACTICE_LIBRARY.map((question) => question.questionId))),
   ]);
   const categoryByName = new Map(categories.map((category) => [category.name, category.id]));
   const difficultyByName = new Map(difficulties.map((difficulty) => [difficulty.name, difficulty.id]));
@@ -227,7 +231,7 @@ export async function seedCurriculumPracticeLibrary(): Promise<{ inserted: numbe
   if (!sourceId) throw new Error("Unable to resolve the curriculum practice source.");
 
   const existingIds = new Set(existing.map((question) => question.questionId));
-  const missing = CURRICULUM_PRACTICE_LIBRARY.filter((question) => !existingIds.has(question.questionId));
+  const missing = ALL_CURRICULUM_PRACTICE_LIBRARY.filter((question) => !existingIds.has(question.questionId));
   if (missing.length) {
     await db.insert(questions).values(missing.map((question) => ({
       questionId: question.questionId,
@@ -245,14 +249,30 @@ export async function seedCurriculumPracticeLibrary(): Promise<{ inserted: numbe
     })));
   }
 
-  const published = await db.select({ id: questions.id, questionId: questions.questionId }).from(questions).where(inArray(questions.questionId, CURRICULUM_PRACTICE_LIBRARY.map((question) => question.questionId)));
+  for (const question of ALL_CURRICULUM_PRACTICE_LIBRARY) {
+    await db.update(questions).set({
+      questionText: question.questionText,
+      optionA: question.optionA,
+      optionB: question.optionB,
+      optionC: question.optionC,
+      optionD: question.optionD,
+      optionE: question.optionE,
+      correctAnswer: question.correctAnswer,
+      explanation: question.explanation,
+      categoryId: categoryByName.get(question.topic) ?? null,
+      difficultyId: difficultyByName.get(question.difficulty) ?? null,
+      sourceId,
+    }).where(eq(questions.questionId, question.questionId));
+  }
+
+  const published = await db.select({ id: questions.id, questionId: questions.questionId }).from(questions).where(inArray(questions.questionId, ALL_CURRICULUM_PRACTICE_LIBRARY.map((question) => question.questionId)));
   const publishedByKey = new Map(published.map((question) => [question.questionId, question.id]));
-  const skillRows = CURRICULUM_PRACTICE_LIBRARY.flatMap((question) => question.skillMappings.map((mapping) => ({ questionId: publishedByKey.get(question.questionId)!, skillId: mapping.skillId, weight: mapping.weight })));
-  const curriculumRows = CURRICULUM_PRACTICE_LIBRARY.map((question) => ({ questionId: publishedByKey.get(question.questionId)!, lessonId: question.lessonId, module: question.module, topic: question.topic }));
+  const skillRows = ALL_CURRICULUM_PRACTICE_LIBRARY.flatMap((question) => question.skillMappings.map((mapping) => ({ questionId: publishedByKey.get(question.questionId)!, skillId: mapping.skillId, weight: mapping.weight })));
+  const curriculumRows = ALL_CURRICULUM_PRACTICE_LIBRARY.map((question) => ({ questionId: publishedByKey.get(question.questionId)!, lessonId: question.lessonId, module: question.module, topic: question.topic }));
   if (skillRows.some((row) => !row.questionId) || curriculumRows.some((row) => !row.questionId)) throw new Error("Unable to resolve every curriculum practice question after seeding.");
   await db.insert(questionSkills).values(skillRows).onDuplicateKeyUpdate({ set: { weight: sql`VALUES(weight)` } });
   await db.insert(questionCurriculumMappings).values(curriculumRows).onDuplicateKeyUpdate({ set: { module: sql`VALUES(module)`, topic: sql`VALUES(topic)` } });
-  return { inserted: missing.length, total: CURRICULUM_PRACTICE_LIBRARY.length };
+  return { inserted: missing.length, total: ALL_CURRICULUM_PRACTICE_LIBRARY.length };
 }
 
 /**

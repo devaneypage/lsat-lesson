@@ -61,3 +61,15 @@
 - [x] Practice-content expansion — create six original practice items for each of the seven active curriculum lessons, for a 42-item initial library.
 - [x] Practice-content expansion — include original answer choices and pedagogical explanations for every scored item, with lesson, topic, module, and skill metadata.
 - [x] Practice-content expansion — ensure no proprietary LSAC material or deprecated Logic Games content enters the learner database.
+- [x] Performance-informed expansion — analyze lesson-level difficulty, skill, and learner-evidence coverage across the current 42-item library.
+- [x] Performance-informed expansion — define six differentiated gap-filling items for each active lesson, expanding every lesson from six to twelve items.
+- [x] Performance-informed expansion — author, review, and publish 42 additional original LSAT-style items with answers, explanations, and canonical curriculum mappings.
+- [x] Performance-informed expansion — verify the twelve-item coverage, provenance, learner filtering, and assessment-evidence contracts before checkpointing.
+- [x] Performance-informed expansion — add one easy, two medium, and three hard original items per lesson to achieve a 3-easy, 5-medium, 4-hard twelve-item architecture.
+- [x] Performance-informed expansion — target distinct advanced subskills instead of duplicating existing introductory question patterns.
+- [x] Performance-informed expansion — prove nexus-84 questions participate in the existing mastery-evidence pipeline through a focused regression contract.
+- [x] Performance-informed expansion — run a rollback-only live transaction that exercises complete persisted practice submission for a nexus-84 question without retaining learner data.
+- [x] Performance-informed expansion — add a non-mutating live-database regression for the persisted nexus-84 skill-evidence loader shared with practice submission.
+- [x] Performance-informed expansion — add content-bound evidence markers and cross-tranche similarity checks for all advanced items.
+- [x] Performance-informed expansion — verify a persisted nexus-84 question’s stored skill mappings through the real practice submission boundary.
+- [x] Performance-informed expansion — add a reviewed per-lesson advanced-subskill manifest and non-duplication audit for the second tranche.

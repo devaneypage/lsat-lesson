@@ -1,8 +1,9 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
-import { productEvents, questionAttempts, questionCategories, questionDifficulties, questionSources, questions } from "../../drizzle/schema";
+import { productEvents, questionAttempts, questionCategories, questionDifficulties, questionSkills, questionSources, questions } from "../../drizzle/schema";
 import { sanitizeProductEventMetadata, type ConfidenceLevel } from "../../shared/learnerDomain";
 import {
   PRACTICE_DISCOVERY_BATCH_MAX,
+  derivePracticeSkillEvidence,
   evaluatePracticeSubmission,
   summarizePracticeAttempts,
   type AnswerLetter,
@@ -22,6 +23,26 @@ async function requireDb() {
 
 function eventExpiry(now: Date) {
   return new Date(now.getTime() + EVENT_RETENTION_MS);
+}
+
+type PracticeQuestionRecord = {
+  id: number;
+  correctAnswer: string;
+  explanation: string | null;
+};
+
+async function loadPersistedSkillMappings(executor: { select: (...args: any[]) => any }, questionId: number) {
+  return executor.select({ skillId: questionSkills.skillId, weight: questionSkills.weight }).from(questionSkills).where(eq(questionSkills.questionId, questionId)) as Promise<{ skillId: string; weight: number }[]>;
+}
+
+export async function getPracticeQuestionSkillEvidenceByKey(questionKey: string) {
+  const db = await requireDb();
+  const [question] = await db.select({ id: questions.id, correctAnswer: questions.correctAnswer, explanation: questions.explanation }).from(questions).where(eq(questions.questionId, questionKey)).limit(1) as PracticeQuestionRecord[];
+  if (!question) return null;
+  return {
+    question,
+    skillMappings: await loadPersistedSkillMappings(db, question.id),
+  };
 }
 
 export async function recordQuestionStarted(input: {
@@ -189,6 +210,7 @@ export async function submitPracticeAttempt(input: {
       .limit(1);
 
     if (!question) return null;
+    const skillMappings = await loadPersistedSkillMappings(tx, question.id);
 
     const [existing] = await tx
       .select()
@@ -213,6 +235,7 @@ export async function submitPracticeAttempt(input: {
           confidence: existing.confidence,
           activeTimeMs: existing.activeTimeMs,
         }).calibration,
+        skillEvidence: derivePracticeSkillEvidence({ questionId: question.id, mappings: skillMappings, isCorrect: existing.isCorrect === 1 }),
         idempotentReplay: true,
       };
     }
@@ -285,6 +308,7 @@ export async function submitPracticeAttempt(input: {
       confidence: attempt.confidence,
       activeTimeMs: attempt.activeTimeMs,
       calibration: evaluation.calibration,
+      skillEvidence: derivePracticeSkillEvidence({ questionId: question.id, mappings: skillMappings, isCorrect: evaluation.isCorrect }),
       idempotentReplay: false,
     };
   });
