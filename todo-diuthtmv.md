@@ -53,3 +53,11 @@
 - [x] Authoring extensions — add focused tests, responsive verification, documentation, and a final checkpoint.
 - [x] Authoring extensions — support row removal and re-preview as an explicit CSV remediation path for invalid drafts.
 - [x] Authoring extensions — verify malformed CSV rows return issues instead of failing before preview.
+- [x] Practice-content system — audit existing questions, explanations, skill mappings, and curriculum lesson/module associations.
+- [x] Practice-content system — define a lesson/topic/module taxonomy and substantive original-content coverage targets.
+- [x] Practice-content system — add durable curriculum associations and coverage reporting to practice questions.
+- [x] Practice-content system — author, review, and publish a first substantive batch of original LSAT-style questions with answers and pedagogical explanations where appropriate.
+- [x] Practice-content system — verify content rights, curricular alignment, learner visibility, and assessment evidence before checkpointing.
+- [x] Practice-content expansion — create six original practice items for each of the seven active curriculum lessons, for a 42-item initial library.
+- [x] Practice-content expansion — include original answer choices and pedagogical explanations for every scored item, with lesson, topic, module, and skill metadata.
+- [x] Practice-content expansion — ensure no proprietary LSAC material or deprecated Logic Games content enters the learner database.

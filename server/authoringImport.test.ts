@@ -9,8 +9,10 @@ const validRow = {
   option_c: "The process accepts written votes.",
   option_d: "The chair can verify every vote.",
   correct_answer: "D" as const,
-  explanation: "The credited response supplies the condition that guarantees the conclusion.",
+  explanation: "The credited response supplies the condition that guarantees the stated conclusion.",
   category: "Sufficient Assumption",
+  lesson_id: "sufficient-assumptions",
+  topic: "Conditional bridge",
   difficulty: "medium" as const,
   skill_ids: "lr-assumptions; lr-sufficient",
 };

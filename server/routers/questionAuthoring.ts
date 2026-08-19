@@ -5,6 +5,7 @@ import { adminProcedure, router } from "../_core/trpc";
 import { authoringCsvRowSchema, previewAuthoringDraftRows } from "../authoringImport";
 import { canTransitionQuestionSubmission, requireReviewNotes, type AuthoringStatus } from "../questionAuthoring";
 import { questionSubmissionRepository } from "../repositories/questionSubmissions";
+import { CURRICULUM_LESSONS } from "../../shared/learnerDomain";
 
 const contentSchema = z.object({
   internalTitle: z.string().trim().min(3).max(180),
@@ -17,6 +18,8 @@ const contentSchema = z.object({
   correctAnswer: z.enum(["A", "B", "C", "D", "E"]),
   explanation: z.string().trim().min(20).max(30_000),
   category: z.string().trim().min(2).max(128),
+  lessonId: z.string().trim().min(2).max(64),
+  topic: z.string().trim().min(2).max(128),
   difficulty: z.enum(["easy", "medium", "hard"]),
   source: z.string().trim().min(3).max(256).default("LSAT Nexus Original"),
   rightsConfirmed: z.literal(true),
@@ -34,9 +37,16 @@ function requireRecord<T>(record: T | null): T {
   return record;
 }
 
+function curriculumFields(lessonId: string, topic: string) {
+  const lesson = CURRICULUM_LESSONS.find((candidate) => candidate.id === lessonId);
+  if (!lesson) throw new TRPCError({ code: "BAD_REQUEST", message: "Select an active curriculum lesson." });
+  return { lessonId, module: lesson.section, topic };
+}
+
 export const questionAuthoringRouter = router({
   list: adminProcedure.input(z.object({ status: statusSchema.optional() })).query(({ input }) => questionSubmissionRepository.list(input.status)),
   listSkills: adminProcedure.query(() => questionSubmissionRepository.listSkills()),
+  practiceCoverage: adminProcedure.query(() => questionSubmissionRepository.listPracticeCoverage()),
   listReviewers: adminProcedure.query(() => questionSubmissionRepository.listReviewers()),
 
   createDraft: adminProcedure.input(contentSchema).mutation(async ({ ctx, input }) => {
@@ -44,6 +54,7 @@ export const questionAuthoringRouter = router({
       ...input,
       optionE: input.optionE ?? null,
       authorNotes: input.authorNotes ?? null,
+      ...curriculumFields(input.lessonId, input.topic),
       authorId: ctx.user.id,
       submissionKey: `submission-${nanoid(16)}`,
     });
@@ -55,7 +66,7 @@ export const questionAuthoringRouter = router({
     if (existing.authorId !== ctx.user.id || !["draft", "needs_revision", "rejected"].includes(existing.status)) {
       throw new TRPCError({ code: "FORBIDDEN", message: "Only the author may revise an editable submission." });
     }
-    return requireRecord(await questionSubmissionRepository.updateDraft(input.submissionKey, ctx.user.id, { ...input.content, optionE: input.content.optionE ?? null, authorNotes: input.content.authorNotes ?? null }));
+    return requireRecord(await questionSubmissionRepository.updateDraft(input.submissionKey, ctx.user.id, { ...input.content, optionE: input.content.optionE ?? null, authorNotes: input.content.authorNotes ?? null, ...curriculumFields(input.content.lessonId, input.content.topic) }));
   }),
 
   submit: adminProcedure.input(z.object({ submissionKey: z.string().min(1).max(64) })).mutation(async ({ ctx, input }) => {

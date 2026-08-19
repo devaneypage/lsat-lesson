@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { CheckCircle2, ClipboardCheck, FilePenLine, Loader2, Send, ShieldCheck, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { CURRICULUM_LESSONS } from "../../../shared/learnerDomain";
 
 type SubmissionStatus = "draft" | "submitted" | "needs_revision" | "approved" | "rejected" | "published";
 
@@ -44,6 +45,8 @@ type AuthoringForm = {
   correctAnswer: "A" | "B" | "C" | "D" | "E";
   explanation: string;
   category: string;
+  lessonId: string;
+  topic: string;
   difficulty: "easy" | "medium" | "hard";
   source: string;
   authorNotes: string;
@@ -61,6 +64,8 @@ const initialForm: AuthoringForm = {
   correctAnswer: "A",
   explanation: "",
   category: "",
+  lessonId: "necessary-assumptions",
+  topic: "Necessary Assumptions",
   difficulty: "medium",
   source: "LSAT Nexus Original",
   authorNotes: "",
@@ -121,6 +126,8 @@ export default function QuestionAuthoring() {
       correctAnswer: selected.correctAnswer as AuthoringForm["correctAnswer"],
       explanation: selected.explanation,
       category: selected.category,
+      lessonId: selected.lessonId ?? "necessary-assumptions",
+      topic: selected.topic ?? selected.category,
       difficulty: selected.difficulty as AuthoringForm["difficulty"],
       source: selected.source,
       authorNotes: selected.authorNotes ?? "",
@@ -177,6 +184,7 @@ export default function QuestionAuthoring() {
               <div className="space-y-2"><Label htmlFor="internalTitle">Internal title</Label><Input id="internalTitle" value={form.internalTitle} onChange={(event) => update("internalTitle", event.target.value)} placeholder="LR — necessary assumption — transit authority" required /></div>
               <div className="space-y-2"><Label htmlFor="category">Question type / category</Label><Input id="category" value={form.category} onChange={(event) => update("category", event.target.value)} placeholder="Necessary Assumption" required /></div>
             </div>
+            <div className="grid gap-4 sm:grid-cols-2"><div className="space-y-2"><Label>Curriculum lesson</Label><Select value={form.lessonId} onValueChange={(value) => { const lesson = CURRICULUM_LESSONS.find((candidate) => candidate.id === value); update("lessonId", value); if (lesson) update("topic", lesson.title); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CURRICULUM_LESSONS.map((lesson) => <SelectItem key={lesson.id} value={lesson.id}>{lesson.sequence}. {lesson.title}</SelectItem>)}</SelectContent></Select></div><div className="space-y-2"><Label htmlFor="topic">Practice topic</Label><Input id="topic" value={form.topic} onChange={(event) => update("topic", event.target.value)} placeholder="Negation test" required /></div></div>
             <div className="space-y-2"><Label htmlFor="questionText">Question stem</Label><Textarea id="questionText" value={form.questionText} onChange={(event) => update("questionText", event.target.value)} placeholder="Write the stimulus and question stem in original language." className="min-h-32" required /></div>
             <div className="grid gap-3 sm:grid-cols-2">
               {(["A", "B", "C", "D", "E"] as const).map((letter) => <div className="space-y-2" key={letter}><Label htmlFor={`option${letter}`}>Option {letter}{letter === "E" ? " (optional)" : ""}</Label><Input id={`option${letter}`} value={form[`option${letter}`]} onChange={(event) => update(`option${letter}`, event.target.value)} required={letter !== "E" || form.correctAnswer === "E"} /></div>)}

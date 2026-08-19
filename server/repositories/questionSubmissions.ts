@@ -1,5 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { curriculumSkills, questionCategories, questionDifficulties, questionSkills, questionSources, questions, questionSubmissionSkills, questionSubmissions, users } from "../../drizzle/schema";
+import { curriculumSkills, questionCategories, questionCurriculumMappings, questionDifficulties, questionSkills, questionSources, questions, questionSubmissionSkills, questionSubmissions, users } from "../../drizzle/schema";
 import { getDb } from "../db";
 import { seedCurriculumRegistry } from "../learnerDb";
 import { learnerQuestionKeyForSubmission, type AuthoringStatus } from "../questionAuthoring";
@@ -18,6 +18,9 @@ export type SubmissionInput = {
   category: string;
   difficulty: string;
   source: string;
+  lessonId: string;
+  module: string;
+  topic: string;
   rightsConfirmed: boolean;
   authorNotes?: string | null;
   skillMappings?: { skillId: string; weight: number }[];
@@ -106,6 +109,12 @@ export const questionSubmissionRepository = {
     return db.select().from(curriculumSkills).orderBy(curriculumSkills.section, curriculumSkills.title);
   },
 
+  async listPracticeCoverage() {
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+    return db.select().from(questionCurriculumMappings).orderBy(questionCurriculumMappings.lessonId, questionCurriculumMappings.topic);
+  },
+
   async listReviewers() {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
@@ -165,6 +174,9 @@ export const questionSubmissionRepository = {
       }
       const skillMappings = await tx.select().from(questionSubmissionSkills).where(eq(questionSubmissionSkills.submissionId, submission.id));
       if (publishedQuestionId && skillMappings.length) await tx.insert(questionSkills).values(skillMappings.map((mapping) => ({ questionId: publishedQuestionId!, skillId: mapping.skillId, weight: mapping.weight }))).onDuplicateKeyUpdate({ set: { weight: 100 } });
+      if (publishedQuestionId && submission.lessonId && submission.module && submission.topic) {
+        await tx.insert(questionCurriculumMappings).values({ questionId: publishedQuestionId, lessonId: submission.lessonId, module: submission.module, topic: submission.topic }).onDuplicateKeyUpdate({ set: { module: submission.module, topic: submission.topic } });
+      }
       await tx.update(questionSubmissions).set({ status: "published", publishedQuestionId }).where(eq(questionSubmissions.submissionKey, submissionKey));
 
       const updated = await tx.select().from(questionSubmissions).where(eq(questionSubmissions.submissionKey, submissionKey)).limit(1);

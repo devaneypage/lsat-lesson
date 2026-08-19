@@ -45,6 +45,7 @@ import { getLoginUrl } from "@/const";
 import { useFeatureFlag } from "@/lib/flags";
 import { buildQuestionBankContentBaseline } from "@/lib/questionBankContent";
 import type { ConfidenceLevel } from "../../../shared/learnerDomain";
+import { CURRICULUM_LESSONS } from "../../../shared/learnerDomain";
 import type { AnswerLetter } from "../../../shared/practiceEvidence";
 
 const QUESTIONS_PER_PAGE = 200;
@@ -77,16 +78,20 @@ export default function QuestionBank() {
   const moduleName = params.get("moduleName");
   const linkedQuestionId = Number(params.get("question")) || null;
   const [page, setPage] = useState(0);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | "all">("all");
   const { isAuthenticated } = useAuth();
   const { enabled: confidenceTrackingEnabled } = useFeatureFlag("question_confidence_tracking");
   const activeStartedAtRef = useRef<number | null>(null);
   const accumulatedActiveMsRef = useRef(0);
 
   // Fetch a bounded page for browsing and one explicit item for deep links.
-  const { data: questionsData, isLoading } = trpc.questions.list.useQuery({
+  const questionListInput = useMemo(() => ({
     limit: QUESTIONS_PER_PAGE,
     offset: page * QUESTIONS_PER_PAGE,
-  });
+    lessonId: selectedLessonId === "all" ? undefined : selectedLessonId,
+  }), [page, selectedLessonId]);
+  const { data: questionsData, isLoading } = trpc.questions.list.useQuery(questionListInput);
+  const coverageQuery = trpc.questions.curriculumCoverage.useQuery();
   const { data: linkedQuestion, isLoading: isLinkedQuestionLoading, error: linkedQuestionError } = trpc.questions.getById.useQuery(
     { questionId: linkedQuestionId ?? 1 },
     { enabled: linkedQuestionId !== null, retry: false },
@@ -94,6 +99,7 @@ export default function QuestionBank() {
 
   const questions = questionsData?.questions || [];
   const totalQuestions = questionsData?.total ?? 0;
+  const coverageByLesson = useMemo(() => new Map((coverageQuery.data ?? []).map((row) => [row.lessonId, Number(row.questionCount)])), [coverageQuery.data]);
   const linkedQuestionMissing = linkedQuestionId !== null && !isLinkedQuestionLoading && linkedQuestion === null;
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -767,10 +773,11 @@ export default function QuestionBank() {
               { label: "Source", value: contentBaseline.sourceLabel },
             ]}
           />
+          {coverageQuery.data?.length ? <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{CURRICULUM_LESSONS.map((lesson) => <button type="button" key={lesson.id} onClick={() => { setSelectedLessonId(lesson.id); setPage(0); }} className={`rounded-sm border px-3 py-2 text-left text-xs transition-colors ${selectedLessonId === lesson.id ? "border-primary bg-primary/10 text-primary" : "border-border bg-muted/25 text-muted-foreground hover:border-primary/60"}`}><span className="block font-semibold text-foreground">{lesson.sequence}. {lesson.title}</span><span>{coverageByLesson.get(lesson.id) ?? 0} practice items</span></button>)}</div> : null}
         </SectionCard>
 
         {/* Controls */}
-        <section className="academic-surface mb-8 grid grid-cols-1 gap-3 border border-border bg-card p-4 shadow-[var(--shadow-card)] sm:grid-cols-2 lg:p-5 xl:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))]" aria-label="Question Bank filters">
+        <section className="academic-surface mb-8 grid grid-cols-1 gap-3 border border-border bg-card p-4 shadow-[var(--shadow-card)] sm:grid-cols-2 lg:p-5 xl:grid-cols-[minmax(0,2fr)_repeat(6,minmax(0,1fr))]" aria-label="Question Bank filters">
           {/* Search */}
           <div className="lg:col-span-2">
             <div className="relative">
@@ -802,7 +809,12 @@ export default function QuestionBank() {
             </SelectItem>
           ))}
         </SelectContent>
-      </Select>
+          </Select>
+
+          <Select value={selectedLessonId} onValueChange={(value) => { setSelectedLessonId(value as string | "all"); setPage(0); }}>
+            <SelectTrigger className="bg-card" aria-label="Filter questions by curriculum lesson"><SelectValue placeholder="Lesson" /></SelectTrigger>
+            <SelectContent><SelectItem value="all">All Lessons</SelectItem>{CURRICULUM_LESSONS.map((lesson) => <SelectItem key={lesson.id} value={lesson.id}>{lesson.sequence}. {lesson.title}</SelectItem>)}</SelectContent>
+          </Select>
 
           {/* Difficulty Filter */}
           <Select

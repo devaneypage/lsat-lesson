@@ -109,6 +109,9 @@ export const questionSubmissions = mysqlTable("questionSubmissions", {
   category: varchar("category", { length: 128 }).notNull(),
   difficulty: varchar("difficulty", { length: 64 }).notNull(),
   source: varchar("source", { length: 256 }).notNull(),
+  lessonId: varchar("lessonId", { length: 64 }),
+  module: varchar("module", { length: 32 }),
+  topic: varchar("topic", { length: 128 }),
   rightsConfirmed: int("rightsConfirmed").default(0).notNull(),
   authorNotes: text("authorNotes"),
   reviewNotes: text("reviewNotes"),
@@ -124,6 +127,7 @@ export const questionSubmissions = mysqlTable("questionSubmissions", {
 }, table => [
   index("questionSubmissions_status_idx").on(table.status),
   index("questionSubmissions_author_idx").on(table.authorId, table.status),
+  index("questionSubmissions_lesson_idx").on(table.lessonId),
   index("questionSubmissions_assignedReviewer_idx").on(table.assignedReviewerId, table.status),
   index("questionSubmissions_reviewer_idx").on(table.reviewerId),
   index("questionSubmissions_due_idx").on(table.editorialDueAt),
@@ -147,6 +151,23 @@ export const questionSubmissionSkills = mysqlTable("questionSubmissionSkills", {
 
 export type QuestionSubmissionSkill = typeof questionSubmissionSkills.$inferSelect;
 export type InsertQuestionSubmissionSkill = typeof questionSubmissionSkills.$inferInsert;
+
+/** Learner-visible practice taxonomy used for curriculum filtering and coverage reporting. */
+export const questionCurriculumMappings = mysqlTable("questionCurriculumMappings", {
+  id: int("id").autoincrement().primaryKey(),
+  questionId: int("questionId").notNull().references(() => questions.id),
+  lessonId: varchar("lessonId", { length: 64 }).notNull(),
+  module: varchar("module", { length: 32 }).notNull(),
+  topic: varchar("topic", { length: 128 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [
+  uniqueIndex("questionCurriculumMappings_question_lesson_unique").on(table.questionId, table.lessonId),
+  index("questionCurriculumMappings_lesson_idx").on(table.lessonId),
+  index("questionCurriculumMappings_module_topic_idx").on(table.module, table.topic),
+]);
+
+export type QuestionCurriculumMapping = typeof questionCurriculumMappings.$inferSelect;
+export type InsertQuestionCurriculumMapping = typeof questionCurriculumMappings.$inferInsert;
 
 /**
  * Import history table for tracking CSV imports

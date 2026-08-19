@@ -78,6 +78,13 @@
       "when": 1786656535742,
       "tag": "0010_empty_paper_doll",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1787131481874,
+      "tag": "0011_smart_kat_farrell",
+      "breakpoints": true
     }
   ]
 }

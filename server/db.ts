@@ -13,6 +13,8 @@ import {
   questionCategories,
   questionDifficulties,
   questionSources,
+  questionSkills,
+  questionCurriculumMappings,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import {
@@ -20,6 +22,8 @@ import {
   SAMPLE_LOGICAL_REASONING_SOURCE,
   validateSampleLogicalReasoningQuestions,
 } from "./sampleData/logicalReasoning";
+import { assertCurriculumPracticeLibraryProvenance, CURRICULUM_PRACTICE_LIBRARY, CURRICULUM_PRACTICE_LIBRARY_SOURCE } from "./sampleData/curriculumPracticeLibrary";
+import { seedCurriculumRegistry } from "./learnerDb";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -196,6 +200,62 @@ export async function seedOriginalLogicalReasoningSamples(): Promise<{ inserted:
 }
 
 /**
+ * Idempotently publishes the reviewed original curriculum library. Each record
+ * receives canonical lesson, module, topic, and mastery-skill associations.
+ */
+export async function seedCurriculumPracticeLibrary(): Promise<{ inserted: number; total: number }> {
+  assertCurriculumPracticeLibraryProvenance();
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await seedCurriculumRegistry();
+
+  const categoryNames = [...new Set(CURRICULUM_PRACTICE_LIBRARY.map((question) => question.topic))];
+  const difficultyNames = [...new Set(CURRICULUM_PRACTICE_LIBRARY.map((question) => question.difficulty))];
+  await db.insert(questionCategories).values(categoryNames.map((name) => ({ name }))).onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
+  await db.insert(questionDifficulties).values(difficultyNames.map((name) => ({ name }))).onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
+  await db.insert(questionSources).values({ name: CURRICULUM_PRACTICE_LIBRARY_SOURCE }).onDuplicateKeyUpdate({ set: { name: sql`VALUES(name)` } });
+
+  const [categories, difficulties, sources, existing] = await Promise.all([
+    db.select().from(questionCategories).where(inArray(questionCategories.name, categoryNames)),
+    db.select().from(questionDifficulties).where(inArray(questionDifficulties.name, difficultyNames)),
+    db.select().from(questionSources).where(eq(questionSources.name, CURRICULUM_PRACTICE_LIBRARY_SOURCE)).limit(1),
+    db.select({ questionId: questions.questionId }).from(questions).where(inArray(questions.questionId, CURRICULUM_PRACTICE_LIBRARY.map((question) => question.questionId))),
+  ]);
+  const categoryByName = new Map(categories.map((category) => [category.name, category.id]));
+  const difficultyByName = new Map(difficulties.map((difficulty) => [difficulty.name, difficulty.id]));
+  const sourceId = sources[0]?.id;
+  if (!sourceId) throw new Error("Unable to resolve the curriculum practice source.");
+
+  const existingIds = new Set(existing.map((question) => question.questionId));
+  const missing = CURRICULUM_PRACTICE_LIBRARY.filter((question) => !existingIds.has(question.questionId));
+  if (missing.length) {
+    await db.insert(questions).values(missing.map((question) => ({
+      questionId: question.questionId,
+      questionText: question.questionText,
+      optionA: question.optionA,
+      optionB: question.optionB,
+      optionC: question.optionC,
+      optionD: question.optionD,
+      optionE: question.optionE,
+      correctAnswer: question.correctAnswer,
+      explanation: question.explanation,
+      categoryId: categoryByName.get(question.topic) ?? null,
+      difficultyId: difficultyByName.get(question.difficulty) ?? null,
+      sourceId,
+    })));
+  }
+
+  const published = await db.select({ id: questions.id, questionId: questions.questionId }).from(questions).where(inArray(questions.questionId, CURRICULUM_PRACTICE_LIBRARY.map((question) => question.questionId)));
+  const publishedByKey = new Map(published.map((question) => [question.questionId, question.id]));
+  const skillRows = CURRICULUM_PRACTICE_LIBRARY.flatMap((question) => question.skillMappings.map((mapping) => ({ questionId: publishedByKey.get(question.questionId)!, skillId: mapping.skillId, weight: mapping.weight })));
+  const curriculumRows = CURRICULUM_PRACTICE_LIBRARY.map((question) => ({ questionId: publishedByKey.get(question.questionId)!, lessonId: question.lessonId, module: question.module, topic: question.topic }));
+  if (skillRows.some((row) => !row.questionId) || curriculumRows.some((row) => !row.questionId)) throw new Error("Unable to resolve every curriculum practice question after seeding.");
+  await db.insert(questionSkills).values(skillRows).onDuplicateKeyUpdate({ set: { weight: sql`VALUES(weight)` } });
+  await db.insert(questionCurriculumMappings).values(curriculumRows).onDuplicateKeyUpdate({ set: { module: sql`VALUES(module)`, topic: sql`VALUES(topic)` } });
+  return { inserted: missing.length, total: CURRICULUM_PRACTICE_LIBRARY.length };
+}
+
+/**
  * Get all questions with optional filtering
  */
 export async function getQuestions(limit = 100, offset = 0) {
@@ -237,6 +297,58 @@ export async function getQuestions(limit = 100, offset = 0) {
     console.error("[Database] Failed to get questions:", error);
     return [];
   }
+}
+
+/** Get learner-visible questions associated with a single canonical lesson. */
+export async function getQuestionsByLesson(lessonId: string, limit = 100, offset = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: questions.id,
+    questionId: questions.questionId,
+    questionText: questions.questionText,
+    optionA: questions.optionA,
+    optionB: questions.optionB,
+    optionC: questions.optionC,
+    optionD: questions.optionD,
+    optionE: questions.optionE,
+    correctAnswer: questions.correctAnswer,
+    explanation: questions.explanation,
+    categoryId: questions.categoryId,
+    difficultyId: questions.difficultyId,
+    sourceId: questions.sourceId,
+    createdAt: questions.createdAt,
+    updatedAt: questions.updatedAt,
+    category: questionCategories.name,
+    difficulty: questionDifficulties.name,
+    source: questionSources.name,
+  })
+    .from(questions)
+    .innerJoin(questionCurriculumMappings, eq(questions.id, questionCurriculumMappings.questionId))
+    .leftJoin(questionCategories, eq(questions.categoryId, questionCategories.id))
+    .leftJoin(questionDifficulties, eq(questions.difficultyId, questionDifficulties.id))
+    .leftJoin(questionSources, eq(questions.sourceId, questionSources.id))
+    .where(eq(questionCurriculumMappings.lessonId, lessonId))
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function getQuestionCountByLesson(lessonId: string) {
+  const db = await getDb();
+  if (!db) return 0;
+  const rows = await db.select({ count: sql<number>`count(*)` }).from(questionCurriculumMappings).where(eq(questionCurriculumMappings.lessonId, lessonId));
+  return Number(rows[0]?.count ?? 0);
+}
+
+export async function getCurriculumPracticeCoverage() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    lessonId: questionCurriculumMappings.lessonId,
+    module: questionCurriculumMappings.module,
+    topic: questionCurriculumMappings.topic,
+    questionCount: sql<number>`count(${questionCurriculumMappings.questionId})`,
+  }).from(questionCurriculumMappings).groupBy(questionCurriculumMappings.lessonId, questionCurriculumMappings.module, questionCurriculumMappings.topic).orderBy(questionCurriculumMappings.lessonId);
 }
 
 /**

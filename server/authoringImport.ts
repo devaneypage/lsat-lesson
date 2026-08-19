@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CURRICULUM_LESSONS } from "../shared/learnerDomain";
 
 export const MAX_AUTHORING_IMPORT_ROWS = 100;
 
@@ -13,6 +14,8 @@ export const authoringCsvRowSchema = z.object({
   correct_answer: z.enum(["A", "B", "C", "D", "E"]),
   explanation: z.string().trim().min(20).max(30_000),
   category: z.string().trim().min(2).max(128),
+  lesson_id: z.string().trim().min(2).max(64),
+  topic: z.string().trim().min(2).max(128),
   difficulty: z.enum(["easy", "medium", "hard"]),
   source: z.string().trim().min(3).max(256).optional(),
   author_notes: z.string().trim().max(8_000).optional(),
@@ -39,6 +42,8 @@ export function previewAuthoringDraftRows(rows: AuthoringCsvRow[], knownSkillIds
     const skillIds = parseSkillIds(row.skill_ids);
     const unknownSkills = skillIds.filter((skillId) => !known.has(skillId));
     if (unknownSkills.length) issues.push(`Unknown curriculum skill: ${unknownSkills.join(", ")}`);
+    const lesson = CURRICULUM_LESSONS.find((candidate) => candidate.id === row.lesson_id);
+    if (!lesson) issues.push(`Unknown curriculum lesson: ${row.lesson_id || "missing lesson_id"}`);
     return {
       rowNumber: index + 2,
       internalTitle: row.internal_title?.trim() || `Row ${index + 2}`,
@@ -56,6 +61,9 @@ export function previewAuthoringDraftRows(rows: AuthoringCsvRow[], knownSkillIds
         correctAnswer: result.data.correct_answer,
         explanation: result.data.explanation,
         category: result.data.category,
+        lessonId: result.data.lesson_id,
+        module: lesson?.section ?? "",
+        topic: result.data.topic,
         difficulty: result.data.difficulty,
         source: result.data.source ?? "LSAT Nexus Original",
         authorNotes: result.data.author_notes ?? null,

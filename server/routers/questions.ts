@@ -27,6 +27,7 @@ const importedQuestionSchema = z.object({
 const paginationSchema = z.object({
   limit: z.number().int().min(1).max(200).default(100),
   offset: z.number().int().min(0).max(100_000).default(0),
+  lessonId: z.string().trim().min(2).max(64).optional(),
 });
 
 export const questionsRouter = router({
@@ -108,11 +109,13 @@ export const questionsRouter = router({
 
   list: publicProcedure.input(paginationSchema).query(async ({ input }) => {
     const [questions, total] = await Promise.all([
-      questionRepository.list(input.limit, input.offset),
-      questionRepository.count(),
+      input.lessonId ? questionRepository.listByLesson(input.lessonId, input.limit, input.offset) : questionRepository.list(input.limit, input.offset),
+      input.lessonId ? questionRepository.countByLesson(input.lessonId) : questionRepository.count(),
     ]);
     return { questions: questions.map(toBrowseSafeQuestion), total };
   }),
+
+  curriculumCoverage: publicProcedure.query(() => questionRepository.curriculumCoverage()),
 
   getById: publicProcedure
     .input(z.object({ questionId: z.number().int().positive() }))

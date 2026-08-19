@@ -23,6 +23,8 @@ type CsvDraftInput = {
   correct_answer: "A" | "B" | "C" | "D" | "E";
   explanation: string;
   category: string;
+  lesson_id: string;
+  topic: string;
   difficulty: "easy" | "medium" | "hard";
   source?: string;
   author_notes?: string;
