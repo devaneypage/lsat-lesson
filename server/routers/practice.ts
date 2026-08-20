@@ -8,6 +8,8 @@ import {
   PRACTICE_DISCOVERY_BATCH_MAX,
 } from "../../shared/practiceEvidence";
 import { protectedProcedure, router } from "../_core/trpc";
+import { generatePracticeHint } from "../practiceHints";
+import { practiceHintRepository } from "../repositories/practiceHints";
 import { practiceRepository } from "../repositories/practice";
 
 const routeContextSchema = z.object({
@@ -44,6 +46,19 @@ export const practiceRouter = router({
   outcomes: protectedProcedure
     .input(z.object({ limit: z.number().int().min(1).max(50).default(12) }).default({ limit: 12 }))
     .query(({ ctx, input }) => practiceRepository.getQuestionOutcomes(ctx.user.id, input.limit)),
+
+  hint: protectedProcedure
+    .input(z.object({ questionId: z.number().int().positive() }))
+    .mutation(async ({ input }) => {
+      const context = await practiceHintRepository.getPracticeQuestionHintContext(input.questionId);
+      if (!context) throw new TRPCError({ code: "NOT_FOUND", message: "Question not found" });
+      try {
+        return { hint: await generatePracticeHint(context) };
+      } catch (error) {
+        console.error("[PracticeHint] Generation failed:", error);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "A contextual hint is unavailable right now. Please try again." });
+      }
+    }),
 
   submit: protectedProcedure
     .input(routeContextSchema.extend({

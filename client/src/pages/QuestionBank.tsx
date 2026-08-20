@@ -113,9 +113,13 @@ export default function QuestionBank() {
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
   const [showExplanation, setShowExplanation] = useState(false);
   const [showStudyExplanation, setShowStudyExplanation] = useState(false);
+  const [contextualHint, setContextualHint] = useState<string | null>(null);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const startMutation = trpc.practice.start.useMutation();
   const submitMutation = trpc.practice.submit.useMutation();
+  const hintMutation = trpc.practice.hint.useMutation({
+    onSuccess: ({ hint }) => setContextualHint(hint),
+  });
   const discoveredMutation = trpc.practice.discovered.useMutation();
   const lastDiscoveryKeyRef = useRef<string | null>(null);
   const submissionResult = submitMutation.data;
@@ -224,7 +228,9 @@ export default function QuestionBank() {
     setIdempotencyKey(crypto.randomUUID());
     setShowExplanation(false);
     setShowStudyExplanation(false);
+    setContextualHint(null);
     submitMutation.reset();
+    hintMutation.reset();
     accumulatedActiveMsRef.current = 0;
     activeStartedAtRef.current = Date.now();
   };
@@ -476,6 +482,30 @@ export default function QuestionBank() {
                     <BookMarked className="mr-2 h-4 w-4" />
                     {showStudyExplanation ? "Hide detailed explanation" : "Study detailed explanation"}
                   </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => selectedQuestion && hintMutation.mutate({ questionId: selectedQuestion.id })}
+                  disabled={!isAuthenticated || hintMutation.isPending}
+                  className="w-full"
+                >
+                  {hintMutation.isPending ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <CircleHelp className="mr-2 h-4 w-4" />}
+                  {hintMutation.isPending ? "Finding a reasoning clue…" : "Get a contextual hint"}
+                </Button>
+                <p className="text-center text-xs leading-5 text-muted-foreground">
+                  Hints direct your reasoning; they never reveal an answer choice or the full explanation.
+                </p>
+                {contextualHint && (
+                  <div className="rounded-sm border border-secondary/40 bg-secondary/10 p-4" role="status" aria-live="polite">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-secondary">Contextual hint</p>
+                    <p className="mt-2 leading-7 text-foreground">{contextualHint}</p>
+                  </div>
+                )}
+                {hintMutation.isError && (
+                  <p className="rounded-sm border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
+                    A hint could not be generated safely. Please try again.
+                  </p>
                 )}
                 <Button
                   onClick={handleSubmitAnswer}

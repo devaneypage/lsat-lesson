@@ -73,3 +73,11 @@
 - [x] Performance-informed expansion — add content-bound evidence markers and cross-tranche similarity checks for all advanced items.
 - [x] Performance-informed expansion — verify a persisted nexus-84 question’s stored skill mappings through the real practice submission boundary.
 - [x] Performance-informed expansion — add a reviewed per-lesson advanced-subskill manifest and non-duplication audit for the second tranche.
+- [x] Practice hints — define answer-safe contextual hint constraints and audit the current practice question payload.
+- [x] Practice hints — add a protected AI hint-generation procedure that never returns the credited answer, answer-letter labels, or full explanation.
+- [x] Practice hints — build an accessible contextual-hint action with loading, retry, and non-revealing disclosure states.
+- [x] Practice hints — add deterministic safeguard tests, verify the learner practice flow, and save a checkpoint.
+- [x] Practice hints — verify protected hint-mutation success and safe failure behavior through the practice router contract.
+- [x] Practice hints — run one live protected contextual-hint generation against persisted practice content and verify its sanitized output before release.
+- [x] Practice hints — invoke the live protected `practice.hint` procedure against persisted content and verify its sanitized response.
+- [x] Practice hints — exercise rendered hint success and retry states through the learner interface before release.
