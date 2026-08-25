@@ -94,8 +94,9 @@
 }
 
 :root {
-  /* LSAT Nexus — research ledger: paper, navy ink, cobalt action, explicit evidence. */
-  --background: #F2F2EE;
+  /* LSAT Nexus — research ledger: paper, navy ink, cobalt action, explicit evidence.
+     Verdict palette: off-white paper (not gray), navy ink, heavier 2px rules. */
+  --background: #FBFBF9;
   --foreground: #1E2749;
   --card: #FFFFFF;
   --card-foreground: #1E2749;
@@ -139,7 +140,7 @@
   --paper-raised: #FFFFFF;
   --paper-shadow: rgba(30, 39, 73, 0.09);
 
-  --ledger-paper: #F2F2EE;
+  --ledger-paper: #FBFBF9;
   --ledger-surface: #FFFFFF;
   --ledger-ink: #1E2749;
   --ledger-rule: #AEB4C3;
@@ -170,6 +171,14 @@
   --nexus-blue: #0052CC;
   --nexus-purple: #5B4A8A;
   --nexus-orange: #C94D12;
+
+  /* Verdict unit color-coding — Conditional logic/Assumptions/Flaws/Reading comp,
+     applied to unit headers, curriculum-map columns, and progress bars everywhere.
+     Exact values from the Verdict mockup's default palette (Navy & cobalt). */
+  --unit-conditional-logic: #CA8A04;
+  --unit-assumptions: #312E81;
+  --unit-flaws: #0EA5E9;
+  --unit-reading-comp: #7C3AED;
 
   /* Section-specific color mapping requested by user */
   --section-lr: #D32F2F;        /* Logical Reasoning: Red */

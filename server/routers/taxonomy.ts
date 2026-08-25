@@ -102,7 +102,11 @@ export const taxonomyRouter = router({
 
   questionsWithTags: publicProcedure
     .input(paginationSchema.extend({ limit: z.number().int().min(1).max(500).default(200) }))
-    .query(({ input }) => taxonomyRepository.listQuestionsWithTags(input.limit, input.offset)),
+    .query(async ({ input }) => {
+      const rows = await taxonomyRepository.listQuestionsWithTags(input.limit, input.offset);
+      // Public procedure: never return the answer key or explanation.
+      return rows.map(({ correctAnswer: _correctAnswer, explanation: _explanation, ...safe }) => safe);
+    }),
 
   filteredQuestions: publicProcedure
     .input(
@@ -112,5 +116,9 @@ export const taxonomyRouter = router({
         category: z.string().trim().max(128).optional(),
       }),
     )
-    .query(({ input }) => taxonomyRepository.filterQuestions(input)),
+    .query(async ({ input }) => {
+      const { questions, total } = await taxonomyRepository.filterQuestions(input);
+      // Public procedure: never return the answer key or explanation.
+      return { questions: questions.map(({ correctAnswer: _correctAnswer, explanation: _explanation, ...safe }) => safe), total };
+    }),
 });

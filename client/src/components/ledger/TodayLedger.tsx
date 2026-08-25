@@ -2,7 +2,9 @@ import type { inferRouterOutputs } from "@trpc/server";
 import { ArrowRight, BookOpen, CalendarClock, CheckCircle2, Clock3, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 import type { AppRouter } from "../../../../server/routers";
+import { CurriculumMap } from "./CurriculumMap";
 import { EvidenceStatus, LedgerEmptyState, LedgerLabel, LedgerProgress, LedgerSection } from "./LedgerPrimitives";
+import { TodayBaselineNotice, TodayGreeting, TodayStatTiles, TodayWeekStrip } from "./TodayOverview";
 
 type TodayData = inferRouterOutputs<AppRouter>["learner"]["continueLearning"];
 type TodayLessonItem = TodayData["recentLessons"][number];
@@ -19,7 +21,7 @@ function formatMinutes(milliseconds: number) {
   return `${minutes} minute${minutes === 1 ? "" : "s"}`;
 }
 
-function actionEyebrow(kind: TodayData["primaryAction"] extends infer T ? T extends { kind: infer K } ? K : never : never) {
+export function actionEyebrow(kind: TodayData["primaryAction"] extends infer T ? T extends { kind: infer K } ? K : never : never) {
   if (kind === "due_review") return "Due retrieval practice";
   if (kind === "plan") return "Study plan priority";
   if (kind === "resume") return "Continue learning";
@@ -34,6 +36,8 @@ export function TodayLedgerMain({ data }: { data: TodayData }) {
 
   return (
     <div className="space-y-5">
+      <TodayGreeting data={data} />
+
       <section className="border-2 border-[var(--ledger-rule-strong)] bg-[var(--ledger-surface)] shadow-[inset_4px_0_0_var(--ledger-accent)]" aria-labelledby="today-primary-action">
         <div className="grid gap-6 p-5 md:p-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
           <div className="max-w-3xl">
@@ -51,6 +55,12 @@ export function TodayLedgerMain({ data }: { data: TodayData }) {
           ) : null}
         </div>
       </section>
+
+      {data.state === "empty" ? <TodayBaselineNotice /> : null}
+
+      <TodayStatTiles data={data} />
+
+      {data.state !== "empty" ? <TodayWeekStrip data={data} /> : null}
 
       <LedgerSection title="Today’s plan" eyebrow="Current commitments">
         <div className="divide-y-2 divide-[var(--ledger-rule)]">
@@ -106,8 +116,12 @@ export function TodayLedgerMain({ data }: { data: TodayData }) {
 export function TodayLedgerEvidence({ data }: { data: TodayData }) {
   const targetTestDate = formatDate(data.workspaceContext.targetTestDate);
   const evidence = data.practiceEvidence.bySkill.slice(0, 4);
+  const currentLessonId = data.primaryAction && "lesson" in data.primaryAction ? data.primaryAction.lesson.id : null;
+
   return (
     <div className="space-y-5">
+      <CurriculumMap currentLessonId={currentLessonId} />
+
       <LedgerSection title="Curriculum position" eyebrow="Evidence ledger">
         <div className="p-5 md:p-6">
           <LedgerProgress value={data.summary.percentComplete} label={`${data.summary.completedLessons} of ${data.summary.totalLessons} lessons complete`} />

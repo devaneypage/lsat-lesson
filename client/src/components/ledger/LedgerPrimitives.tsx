@@ -1,4 +1,4 @@
-import type { ComponentType, HTMLAttributes, ReactNode } from "react";
+import type { ComponentType, CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export function LedgerFrame({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -67,8 +67,8 @@ export function LedgerRule({ strong = false, className }: { strong?: boolean; cl
   return <div aria-hidden="true" className={cn(strong ? "border-t-2 border-[var(--ledger-rule-strong)]" : "border-t-2 border-[var(--ledger-rule)]", className)} />;
 }
 
-export function LedgerLabel({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cn("font-mono text-[0.67rem] font-semibold uppercase tracking-[0.12em] text-[var(--ledger-faint)]", className)}>{children}</p>;
+export function LedgerLabel({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
+  return <p className={cn("font-mono text-[0.67rem] font-semibold uppercase tracking-[0.12em] text-[var(--ledger-faint)]", className)} style={style}>{children}</p>;
 }
 
 export function LedgerProgress({ value, label, className }: { value: number; label: string; className?: string }) {

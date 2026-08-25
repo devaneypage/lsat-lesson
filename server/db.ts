@@ -886,8 +886,8 @@ const DEFAULT_FLAGS: InsertFeatureFlag[] = [
     key: "learner_dashboard_v2",
     name: "Continue Learning Dashboard",
     description: "Use server-derived learner state to recommend one primary next action and accurate supporting metrics.",
-    enabled: 0,
-    rolloutPercentage: 0,
+    enabled: 1,
+    rolloutPercentage: 100,
   },
   {
     key: "adaptive_review_queue",
