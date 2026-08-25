@@ -21,6 +21,7 @@ import Booking from "@/pages/Booking";
 import CurriculumGuide from "@/pages/CurriculumGuide";
 import Dashboard from "@/pages/Dashboard";
 import FlagAdmin from "@/pages/FlagAdmin";
+import NexusApp from "@/pages/nexus/NexusApp";
 import LessonPlanGenerator from "@/pages/LessonPlanGenerator";
 import Lessons from "@/pages/Lessons";
 import NotFound from "@/pages/NotFound";
@@ -77,6 +78,51 @@ function PlanRoute() {
 
 function Router() {
   return (
+    <>
+      <MainNavigationBar />
+      <Switch>
+        <Route path={"/"} component={PathSelector} />
+        <Route path={"/dashboard"} component={UnifiedDashboard} />
+        <Route path={"/progress"} component={ProgressTracker} />
+        <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
+        
+        {/* Lessons — /lessons is the interactive lesson hub (7 cards + progress bar) */}
+        <Route path={"/lessons"} component={Dashboard} />
+        <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
+        <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
+        <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
+        <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
+        <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
+        <Route path={'/lessons/sufficient-assumptions'} component={LessonSufficientAssumptions} />
+        <Route path={'/lessons/flaw-in-reasoning'} component={LessonFlawInReasoning} />
+        
+        {/* LSAT Nexus — interactive reference app */}
+        <Route path="/nexus" component={NexusApp} />
+        <Route path="/nexus/:section" component={NexusApp} />
+
+        {/* Main Features */}
+        <Route path="/resources" component={Resources} />
+        <Route path={"/question-bank"} component={QuestionBank} />
+        <Route path={"/curriculum"} component={CurriculumGuide} />
+        <Route path={"/import"} component={CSVImportManager} />
+        <Route path={'/study-guide'} component={StudyGuide} />
+        <Route path={'/lesson-plan-generator'} component={LessonPlanGenerator} />
+        <Route path={'/tag-manager'} component={TagManager} />
+        
+        {/* About / Hire Me */}
+        <Route path="/about" component={About} />
+
+        {/* Contact & Booking — Calendly embed */}
+        <Route path="/booking" component={Booking} />
+
+        {/* Admin — owner-only */}
+        <Route path="/admin/flags" component={FlagAdmin} />
+
+        {/* Error handling */}
+        <Route path={"/404"} component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
     <Switch>
       {/* Public shell */}
       <Route path="/">

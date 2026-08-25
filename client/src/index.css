@@ -1,7 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* ----------------------------------------------------------------- */
+/* LSAT Nexus — neo-brutalist design scope                            */
+/* Scoped under .nexus-app so it never bleeds into the rest of the    */
+/* product, which uses its own theme.                                 */
+/* ----------------------------------------------------------------- */
+.nexus-app {
+  --nx-ink: #111111;
+  --nx-off-white: #fffdf8;
+  --nx-cream: #f4efe2;
+  --nx-terra: #d0452a;
+  --nx-teal: #1aabbc;
+  --nx-pine: #2a6b58;
+  --nx-amber: #efa01c;
+  --nx-lime: #79c53e;
+  background: var(--nx-off-white);
+  color: var(--nx-ink);
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+.nexus-app .nx-display {
+  font-family: "Archivo Black", "Archivo", sans-serif;
+}
+.nexus-app .nx-mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+/* Hard-edged "brutalist" card: thick ink border + offset drop shadow. */
+.nexus-app .nx-card {
+  background: var(--nx-off-white);
+  border: 2px solid var(--nx-ink);
+  box-shadow: 4px 4px 0 0 var(--nx-ink);
+}
+.nexus-app .nx-card-flat {
+  background: var(--nx-off-white);
+  border: 2px solid var(--nx-ink);
+}
+.nexus-app .nx-label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

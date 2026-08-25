@@ -33,6 +33,8 @@
     {
       "idx": 4,
       "version": "5",
+      "when": 1781891242563,
+      "tag": "0004_white_nomad",
       "when": 1784180117378,
       "tag": "0004_aromatic_moondragon",
       "breakpoints": true

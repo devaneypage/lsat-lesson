@@ -1,6 +1,11 @@
 {
   "version": "5",
   "dialect": "mysql",
+  "id": "620838e8-6b18-46b5-9bf1-fd2b97b973ab",
+  "prevId": "bc66408f-759e-4028-9a4a-44a2802ff295",
+  "tables": {
+    "errorLogEntries": {
+      "name": "errorLogEntries",
   "id": "bd95bd90-3e0e-4919-acb4-20d5b4a4713a",
   "prevId": "bc66408f-759e-4028-9a4a-44a2802ff295",
   "tables": {
@@ -14,6 +19,15 @@
           "notNull": true,
           "autoincrement": true
         },
+        "userId": {
+          "name": "userId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "category": {
+          "name": "category",
         "skillId": {
           "name": "skillId",
           "type": "varchar(64)",
@@ -21,6 +35,9 @@
           "notNull": true,
           "autoincrement": false
         },
+        "questionType": {
+          "name": "questionType",
+          "type": "varchar(64)",
         "title": {
           "name": "title",
           "type": "varchar(160)",
@@ -28,6 +45,29 @@
           "notNull": true,
           "autoincrement": false
         },
+        "errorReason": {
+          "name": "errorReason",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "source": {
+          "name": "source",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "confidence": {
+          "name": "confidence",
         "section": {
           "name": "section",
           "type": "enum('LR','RC','Logic')",
@@ -57,6 +97,14 @@
           "autoincrement": false,
           "default": 1
         },
+        "resolved": {
+          "name": "resolved",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -75,6 +123,11 @@
           "default": "(now())"
         }
       },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "errorLogEntries_id": {
+          "name": "errorLogEntries_id",
       "indexes": {
         "curriculumSkills_skillId_unique": {
           "name": "curriculumSkills_skillId_unique",
@@ -274,6 +327,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "questionTags": {
+      "name": "questionTags",
     "learnerPreferences": {
       "name": "learnerPreferences",
       "columns": {
@@ -284,6 +339,8 @@
           "notNull": true,
           "autoincrement": true
         },
+        "questionId": {
+          "name": "questionId",
         "userId": {
           "name": "userId",
           "type": "int",
@@ -291,6 +348,12 @@
           "notNull": true,
           "autoincrement": false
         },
+        "tagId": {
+          "name": "tagId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         "textScale": {
           "name": "textScale",
           "type": "enum('default','large','extra_large')",
@@ -346,6 +409,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "questionTags_id": {
+          "name": "questionTags_id",
         },
         "updatedAt": {
           "name": "updatedAt",
@@ -378,6 +448,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "questions": {
+      "name": "questions",
     "learnerProfiles": {
       "name": "learnerProfiles",
       "columns": {
@@ -388,6 +460,9 @@
           "notNull": true,
           "autoincrement": true
         },
+        "questionId": {
+          "name": "questionId",
+          "type": "varchar(64)",
         "userId": {
           "name": "userId",
           "type": "int",
@@ -395,6 +470,51 @@
           "notNull": true,
           "autoincrement": false
         },
+        "questionText": {
+          "name": "questionText",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "optionA": {
+          "name": "optionA",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "optionB": {
+          "name": "optionB",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "optionC": {
+          "name": "optionC",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "optionD": {
+          "name": "optionD",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "optionE": {
+          "name": "optionE",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "correctAnswer": {
+          "name": "correctAnswer",
+          "type": "varchar(1)",
         "timezone": {
           "name": "timezone",
           "type": "varchar(64)",
@@ -481,6 +601,30 @@
           "notNull": true,
           "autoincrement": false
         },
+        "explanation": {
+          "name": "explanation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "difficulty": {
+          "name": "difficulty",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "source": {
+          "name": "source",
+          "type": "varchar(255)",
         "status": {
           "name": "status",
           "type": "enum('not_started','in_progress','completed')",
@@ -544,6 +688,24 @@
           "autoincrement": false,
           "onUpdate": true,
           "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "questions_id": {
+          "name": "questions_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "questions_questionId_unique": {
+          "name": "questions_questionId_unique",
+          "columns": [
+            "questionId"
+          ]
         }
       },
       "indexes": {

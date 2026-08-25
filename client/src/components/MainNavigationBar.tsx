@@ -22,6 +22,7 @@ import {
   Tag,
   User,
   Calendar,
+  Compass,
 } from "lucide-react";
 import QuickImportModal from "./QuickImportModal";
 import { useFeatureFlag } from "@/lib/flags";
@@ -45,6 +46,12 @@ const NAV_ITEMS: NavItem[] = [
     route: "/lessons",
     icon: <BookOpen size={18} />,
     description: "Core concepts",
+  },
+  {
+    label: "Nexus",
+    route: "/nexus",
+    icon: <Compass size={18} />,
+    description: "Interactive reference",
   },
   {
     label: "Question Bank",
