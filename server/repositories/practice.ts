@@ -477,6 +477,75 @@ export async function submitPracticeAttempt(input: {
   });
 }
 
+/** Question type + difficulty options actually present, for the set-builder's filter chips. */
+async function getPracticeSetFilters() {
+  const db = await requireDb();
+  const [categories, difficulties] = await Promise.all([
+    db.select({ name: questionCategories.name }).from(questionCategories).orderBy(questionCategories.name),
+    db.select({ name: questionDifficulties.name }).from(questionDifficulties).orderBy(questionDifficulties.name),
+  ]);
+  return { categories: categories.map((c) => c.name), difficulties: difficulties.map((d) => d.name) };
+}
+
+function shuffle<T>(items: T[]) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+/**
+ * Selects up to `length` questions matching the optional category/difficulty
+ * filter, preferring questions the user hasn't attempted before. Returns
+ * browse-safe questions only — correctAnswer/explanation are never sent to
+ * the client before an answer is submitted.
+ */
+async function buildPracticeSet(input: {
+  userId: number;
+  category?: string;
+  difficulty?: string;
+  length: number;
+}) {
+  const db = await requireDb();
+
+  const conditions = [];
+  if (input.category) {
+    const [row] = await db.select({ id: questionCategories.id }).from(questionCategories).where(eq(questionCategories.name, input.category)).limit(1);
+    if (!row) return { questionIds: [] as number[], totalMatching: 0, unseenMatching: 0 };
+    conditions.push(eq(questions.categoryId, row.id));
+  }
+  if (input.difficulty) {
+    const [row] = await db.select({ id: questionDifficulties.id }).from(questionDifficulties).where(eq(questionDifficulties.name, input.difficulty)).limit(1);
+    if (!row) return { questionIds: [] as number[], totalMatching: 0, unseenMatching: 0 };
+    conditions.push(eq(questions.difficultyId, row.id));
+  }
+
+  const matching = await db
+    .select({ id: questions.id })
+    .from(questions)
+    .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+  if (matching.length === 0) return { questionIds: [] as number[], totalMatching: 0, unseenMatching: 0 };
+
+  const attemptedRows = await db
+    .selectDistinct({ questionId: questionAttempts.questionId })
+    .from(questionAttempts)
+    .where(and(eq(questionAttempts.userId, input.userId), inArray(questionAttempts.questionId, matching.map((q) => q.id))));
+  const attemptedIds = new Set(attemptedRows.map((row) => row.questionId));
+
+  const unseen = matching.filter((q) => !attemptedIds.has(q.id));
+  const seen = matching.filter((q) => attemptedIds.has(q.id));
+  const ordered = [...shuffle(unseen), ...shuffle(seen)].slice(0, input.length);
+
+  return {
+    questionIds: ordered.map((q) => q.id),
+    totalMatching: matching.length,
+    unseenMatching: unseen.length,
+  };
+}
+
 export const practiceRepository = {
   recordQuestionStarted,
   recordQuestionsDiscovered,
@@ -484,4 +553,6 @@ export const practiceRepository = {
   getTodayPracticeEvidence,
   getQuestionOutcomes,
   submitPracticeAttempt,
+  getPracticeSetFilters,
+  buildPracticeSet,
 };

@@ -1,24 +1,11 @@
 import { useMemo } from "react";
 import { Check, Circle, Clock3, LockKeyhole } from "lucide-react";
 import { Link } from "wouter";
-import { LedgerEmptyState, LedgerLabel, LedgerProgress, LedgerSection } from "@/components/ledger/LedgerPrimitives";
+import { UNIT_DEFS, unitLessons } from "@/components/ledger/CurriculumMap";
+import { LedgerEmptyState, LedgerHeader, LedgerLabel, LedgerProgress, LedgerSection } from "@/components/ledger/LedgerPrimitives";
 import { trpc } from "@/lib/trpc";
 import { canonicalizeAppPath } from "@/lib/routes";
 import { CURRICULUM_LESSONS, getLessonById, type CurriculumLesson, type LessonProgressStatus } from "@shared/learnerDomain";
-
-const SECTION_LABELS: Record<CurriculumLesson["section"], string> = {
-  LR: "Logical Reasoning",
-  RC: "Reading Comprehension",
-  Logic: "Formal Logic",
-  Strategy: "Strategy",
-};
-
-const SECTION_COLORS: Record<CurriculumLesson["section"], string> = {
-  LR: "#284FA8",
-  RC: "#2F6B4F",
-  Logic: "#6A4E94",
-  Strategy: "#8A5B19",
-};
 
 type ProgressRecord = {
   lessonId: string;
@@ -55,11 +42,10 @@ export default function LessonGrid() {
   }, [progressByLesson]);
   const currentProgress = currentLesson ? progressByLesson.get(currentLesson.id) : undefined;
   const completedCount = CURRICULUM_LESSONS.filter((lesson) => progressByLesson.get(lesson.id)?.status === "completed").length;
-  const groups = useMemo(() => {
-    const result = new Map<CurriculumLesson["section"], CurriculumLesson[]>();
-    for (const lesson of CURRICULUM_LESSONS) result.set(lesson.section, [...(result.get(lesson.section) ?? []), lesson]);
-    return Array.from(result.entries());
-  }, []);
+  const groups = useMemo(
+    () => UNIT_DEFS.map((unit) => ({ unit, lessons: unitLessons(unit) })).filter((g) => g.lessons.length > 0),
+    [],
+  );
 
   if (progressQuery.isLoading) {
     return <div className="border-2 border-[var(--ledger-rule)] bg-[var(--ledger-surface)] p-6 text-sm text-muted-foreground">Loading your curriculum record…</div>;
@@ -69,7 +55,13 @@ export default function LessonGrid() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start">
+    <div className="space-y-6">
+      <LedgerHeader
+        title="Learn"
+        description="Sequenced lessons with prerequisites."
+        meta={<span className="text-xs font-semibold uppercase tabular-nums tracking-[0.08em] text-muted-foreground">{completedCount} of {CURRICULUM_LESSONS.length} lessons complete</span>}
+      />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start">
       <LedgerSection
         title="Seven connected studies"
         eyebrow="Curriculum ledger"
@@ -77,13 +69,13 @@ export default function LessonGrid() {
         className="order-2 lg:order-1"
       >
         <div className="divide-y-2 divide-[var(--ledger-rule)]">
-          {groups.map(([section, lessons]) => (
-            <section key={section} aria-labelledby={`curriculum-${section}`}>
+          {groups.map(({ unit, lessons }) => (
+            <section key={unit.id} aria-labelledby={`curriculum-${unit.id}`}>
               <div className="flex items-center justify-between gap-4 bg-[var(--ledger-paper)] px-5 py-3 md:px-6">
-                <p className="font-mono text-[0.67rem] font-semibold uppercase tracking-[0.12em]" style={{ color: SECTION_COLORS[section] }}>{SECTION_LABELS[section]}</p>
+                <p className="font-mono text-[0.67rem] font-semibold uppercase tracking-[0.12em]" style={{ color: unit.color }}>{unit.label}</p>
                 <span className="text-xs text-muted-foreground">{lessons.filter((lesson) => progressByLesson.get(lesson.id)?.status === "completed").length} / {lessons.length}</span>
               </div>
-              <div id={`curriculum-${section}`} className="divide-y-2 divide-[var(--ledger-rule)]">
+              <div id={`curriculum-${unit.id}`} className="divide-y-2 divide-[var(--ledger-rule)]">
                 {lessons.map((lesson) => {
                   const status = lessonStatus(lesson, progressByLesson, currentLesson.id);
                   const record = progressByLesson.get(lesson.id);
@@ -138,6 +130,7 @@ export default function LessonGrid() {
           </Link>
         </div>
       </aside>
+      </div>
     </div>
   );
 }

@@ -25,10 +25,14 @@ import NexusApp from "@/pages/nexus/NexusApp";
 import LessonPlanGenerator from "@/pages/LessonPlanGenerator";
 import Lessons from "@/pages/Lessons";
 import NotFound from "@/pages/NotFound";
+import Practice from "@/pages/Practice";
+import DrillPlayer from "@/pages/DrillPlayer";
 import QuestionBank from "@/pages/QuestionBank";
 import QuestionAuthoring from "@/pages/QuestionAuthoring";
 import Resources from "@/pages/Resources";
 import TagManager from "@/pages/TagManager";
+import TodayBroadsheetPreview from "@/pages/TodayBroadsheetPreview";
+import TodayDocketPreview from "@/pages/TodayDocketPreview";
 import LessonCommonFlaws from "@/pages/lessons/LessonCommonFlaws";
 import LessonFlawInReasoning from "@/pages/lessons/LessonFlawInReasoning";
 import LessonFormalLogic from "@/pages/lessons/LessonFormalLogic";
@@ -69,6 +73,14 @@ function LearnRoute() {
 }
 
 function PracticeRoute() {
+  return <LearnerPage><Practice /></LearnerPage>;
+}
+
+function DrillRoute() {
+  return <LearnerPage><DrillPlayer /></LearnerPage>;
+}
+
+function QuestionBankRoute() {
   return <LearnerPage><QuestionBank /></LearnerPage>;
 }
 
@@ -78,51 +90,6 @@ function PlanRoute() {
 
 function Router() {
   return (
-    <>
-      <MainNavigationBar />
-      <Switch>
-        <Route path={"/"} component={PathSelector} />
-        <Route path={"/dashboard"} component={UnifiedDashboard} />
-        <Route path={"/progress"} component={ProgressTracker} />
-        <Route path={"/session-plan-generator"} component={SessionPlanGenerator} />
-        
-        {/* Lessons — /lessons is the interactive lesson hub (7 cards + progress bar) */}
-        <Route path={"/lessons"} component={Dashboard} />
-        <Route path={"/lessons/necessary-assumptions"} component={LessonNecessaryAssumptions} />
-        <Route path={"/lessons/common-flaws"} component={LessonCommonFlaws} />
-        <Route path={"/lessons/strengthen-weaken"} component={LessonStrengthenWeaken} />
-        <Route path={"/lessons/reading-comprehension"} component={LessonReadingComprehension} />
-        <Route path={"/lessons/formal-logic"} component={LessonFormalLogic} />
-        <Route path={'/lessons/sufficient-assumptions'} component={LessonSufficientAssumptions} />
-        <Route path={'/lessons/flaw-in-reasoning'} component={LessonFlawInReasoning} />
-        
-        {/* LSAT Nexus — interactive reference app */}
-        <Route path="/nexus" component={NexusApp} />
-        <Route path="/nexus/:section" component={NexusApp} />
-
-        {/* Main Features */}
-        <Route path="/resources" component={Resources} />
-        <Route path={"/question-bank"} component={QuestionBank} />
-        <Route path={"/curriculum"} component={CurriculumGuide} />
-        <Route path={"/import"} component={CSVImportManager} />
-        <Route path={'/study-guide'} component={StudyGuide} />
-        <Route path={'/lesson-plan-generator'} component={LessonPlanGenerator} />
-        <Route path={'/tag-manager'} component={TagManager} />
-        
-        {/* About / Hire Me */}
-        <Route path="/about" component={About} />
-
-        {/* Contact & Booking — Calendly embed */}
-        <Route path="/booking" component={Booking} />
-
-        {/* Admin — owner-only */}
-        <Route path="/admin/flags" component={FlagAdmin} />
-
-        {/* Error handling */}
-        <Route path={"/404"} component={NotFound} />
-        <Route component={NotFound} />
-      </Switch>
-    </>
     <Switch>
       {/* Public shell */}
       <Route path="/">
@@ -135,10 +102,15 @@ function Router() {
         <PublicPage><Booking /></PublicPage>
       </Route>
 
+      {/* LSAT Nexus — interactive reference app, own chrome */}
+      <Route path="/nexus" component={NexusApp} />
+      <Route path="/nexus/:section" component={NexusApp} />
+
       {/* Canonical learner shell */}
       <Route path="/today" component={TodayRoute} />
       <Route path="/learn" component={LearnRoute} />
       <Route path="/practice" component={PracticeRoute} />
+      <Route path="/practice/drill" component={DrillRoute} />
       <Route path="/review">
         <LearnerPage><ReviewUnavailablePage /></LearnerPage>
       </Route>
@@ -149,6 +121,16 @@ function Router() {
       <Route path="/resources">
         <LearnerPage><Resources /></LearnerPage>
       </Route>
+
+      {/*
+        Preview-only Today layout directions ("Docket" / "Broadsheet") from
+        the Verdict dashboard mockup. Real data, own nav chrome, intentionally
+        NOT wrapped in LearnerPage/LearnerShell and NOT linked from any nav —
+        reachable only by direct URL, for side-by-side comparison against the
+        live /today ("Ledger") dashboard.
+      */}
+      <Route path="/today/docket" component={TodayDocketPreview} />
+      <Route path="/today/broadsheet" component={TodayBroadsheetPreview} />
 
       {/* Canonical learner lesson routes */}
       <Route path="/learn/necessary-assumptions">
@@ -176,7 +158,7 @@ function Router() {
       {/* Compatibility aliases retained during link migration */}
       <Route path="/dashboard" component={TodayRoute} />
       <Route path="/lessons" component={LearnRoute} />
-      <Route path="/question-bank" component={PracticeRoute} />
+      <Route path="/question-bank" component={QuestionBankRoute} />
       <Route path="/lesson-plan-generator" component={PlanRoute} />
       <Route path="/session-plan-generator" component={PlanRoute} />
       <Route path="/study-guide">

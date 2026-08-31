@@ -46,9 +46,11 @@ describe("LSAT Nexus ledger workspace UX contract", () => {
     expect(lessonGrid).toContain("CURRICULUM_LESSONS");
     expect(lessonGrid).toContain("trpc.learner.progress.useQuery");
     expect(lessonGrid).toContain("canonicalizeAppPath(lesson.route)");
-    expect(lessonGrid).toContain('LR: "Logical Reasoning"');
-    expect(lessonGrid).toContain('RC: "Reading Comprehension"');
-    expect(lessonGrid).toContain('Logic: "Formal Logic"');
+    // Verdict unit color-coding (Conditional logic/Assumptions/Flaws/Reading
+    // comp) replaced the earlier LR/RC/Logic section labels as the ledger's
+    // grouping scheme, shared with the curriculum map on Today.
+    expect(lessonGrid).toContain("UNIT_DEFS");
+    expect(lessonGrid).toContain("unitLessons");
     expect(lessonGrid).not.toContain("Logic Games");
   });
 });

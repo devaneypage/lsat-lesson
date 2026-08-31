@@ -18,6 +18,18 @@ const routeContextSchema = z.object({
 });
 
 export const practiceRouter = router({
+  setFilters: protectedProcedure.query(() => practiceRepository.getPracticeSetFilters()),
+
+  buildSet: protectedProcedure
+    .input(
+      z.object({
+        category: z.string().trim().min(1).max(128).optional(),
+        difficulty: z.string().trim().min(1).max(64).optional(),
+        length: z.union([z.literal(5), z.literal(10), z.literal(25)]),
+      }),
+    )
+    .query(({ ctx, input }) => practiceRepository.buildPracticeSet({ userId: ctx.user.id, ...input })),
+
   start: protectedProcedure
     .input(routeContextSchema.extend({
       questionId: z.number().int().positive(),
